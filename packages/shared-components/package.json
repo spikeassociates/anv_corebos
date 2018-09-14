@@ -1,0 +1,27 @@
+{
+  "name": "shared-components",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "shared-repo": "*",
+    "shared-utils": "*",
+    "lodash-es": "^4.17.4",
+    "moment": "^2.20.1",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0",
+    "react-redux": "^5.0.6",
+    "react-router-dom": "^4.2.2",
+    "react-router-redux": "^5.0.0-alpha.8",
+    "redux": "^3.7.2",
+    "redux-modulist": "https://github.com/turningspace/redux-modulist.git#staging",
+    "reselect": "^3.0.1",
+    "styled-components": "^2.4.0"
+  }
+}

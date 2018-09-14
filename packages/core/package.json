@@ -1,0 +1,32 @@
+{
+  "name": "core",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "shared-repo": "*",
+    "shared-utils": "*",
+    "shared-components": "*",
+    "shared-resource": "*",
+    "feature-listview": "*",
+    "feature-detailview": "*",
+    "history": "^4.7.2",
+    "loadable-components": "^0.4.0",
+    "react": "^16.3.0",
+    "react-dom": "^16.3.0",
+    "react-redux": "^5.0.6",
+    "react-router-dom": "^4.2.2",
+    "react-router-redux": "^5.0.0-alpha.8",
+    "redux": "^3.7.2",
+    "redux-form": "^7.1.2",
+    "redux-modulist": "https://github.com/turningspace/redux-modulist.git#staging",
+    "reselect": "^3.0.1",
+    "styled-components": "^2.4.0"
+  }
+}

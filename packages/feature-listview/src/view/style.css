@@ -1,0 +1,36 @@
+.lv-action-button {
+  border: none !important;
+  padding: 0 !important;
+  color: inherit !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+th:nth-child(2) {
+  width: 35px;
+}
+
+.preview-icon {
+  height: 0%;
+}
+
+.preview-icon svg {
+  width: 5rem !important;
+  height: 5rem !important;
+}
+
+.view-details {
+  color: #fff !important;
+  margin: 10px 0;
+}
+
+.slds-table--fixed-layout {
+  table-layout: inherit !important;
+}
+
+@media screen and (max-width: 750px) {
+  .slds-page-header .slds-grid {
+    display: grid;
+    grid-gap: 10px;
+  }
+}

@@ -1,0 +1,11 @@
+node_modules/
+public/build/
+file_templates/
+flow-typed/
+dist/
+.DS_Store
+package-lock.json
+npm-debug.log
+.vscode
+lerna-debug.log
+yarn.lock
