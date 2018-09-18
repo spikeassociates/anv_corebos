@@ -18,7 +18,7 @@ const Content = ({ Module }) => (
         <Switch>
           {routes.map(route => (
             <Page.Route
-              title={route.module}
+              title={route.corebosModule}
               key={route.module}
               path={`/${route.name}`}
               render={props => {

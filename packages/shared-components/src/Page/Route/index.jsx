@@ -3,11 +3,13 @@ import { capitalize } from "shared-utils";
 import { Route as ReactRouterRoute, Redirect } from "react-router-dom";
 
 class Route extends Component {
+  state = {};
+
   static getDerivedStateFromProps(nextProps) {
     const { title } = nextProps;
     document.title = title ? `coreBOS ${capitalize(title)}` : document.title;
 
-    return null;
+    return {};
   }
 
   render() {

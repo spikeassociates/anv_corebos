@@ -36,7 +36,8 @@ class Module extends Component {
       bodyData: [],
       index: ""
     },
-    visible: true
+    visible: true,
+    hasMore: true
   };
 
   constructor(props) {
@@ -131,7 +132,8 @@ class Module extends Component {
           linkfields,
           moduleInfo,
           page: page + 1,
-          loading: false
+          loading: false,
+          hasMore: reqData.length > 0
         },
         () => {
           if (this.state.visible) {
@@ -319,7 +321,7 @@ class Module extends Component {
       data = [],
       fields,
       selectedRows,
-      loading,
+      hasMore,
       isMenuOpen,
       previewData
     } = this.state;
@@ -340,7 +342,7 @@ class Module extends Component {
             fixedLayout
             items={data}
             selection={selectedRows}
-            onChange={this.handleSelect}
+            onRowChange={this.handleSelect}
             onSort={this.handleSort}
           >
             <DataTableColumn key="actions" property="actions" width="200px">
@@ -354,9 +356,15 @@ class Module extends Component {
           </DataTable>
         </TableContainer>
 
-        <VisibilitySensor onChange={this.onVisibilityChange} />
-
-        {data.length > 0 && loading && <Loader />}
+        {hasMore && (
+          <VisibilitySensor
+            partialVisibility
+            scrollCheck
+            onChange={this.onVisibilityChange}
+          >
+            {() => <Loader />}
+          </VisibilitySensor>
+        )}
 
         <PreviewMenu isOpen={isMenuOpen} innerRef={menu => (this.previewMenu = menu)}>
           <Preview

@@ -7,7 +7,7 @@ import {
   TabsPanel
 } from "@salesforce/design-system-react";
 
-import { cbClient, phpSerialize, phpUnserialize, debounce } from "shared-utils";
+import { cbClient, phpSerialize, phpUnserialize } from "shared-utils";
 import {
   Container,
   SectionContainer,
@@ -41,10 +41,6 @@ class Module extends Component {
   async componentDidMount() {
     const client = await cbClient();
     this.setState({ client }, () => this.loadData());
-  }
-
-  componentDidUpdate(prevProps) {
-    console.log(prevProps, this.props);
   }
 
   loadData = () => {
