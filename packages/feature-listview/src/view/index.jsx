@@ -152,7 +152,7 @@ class Module extends Component {
     this.setState({ selectedRows });
   };
 
-  handleSort = async sortColumn => {
+  handleSort = sortColumn => {
     const { property, sortDirection } = sortColumn;
 
     this.setState({ sort: { property, direction: sortDirection }, page: 0 }, () =>

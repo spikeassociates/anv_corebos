@@ -4,9 +4,12 @@ import {
   Accordion,
   AccordionPanel,
   Tabs,
-  TabsPanel
+  TabsPanel,
+  DataTable,
+  DataTableColumn
 } from "@salesforce/design-system-react";
 
+import { LinkCell } from "shared-components";
 import { cbClient, phpSerialize, phpUnserialize } from "shared-utils";
 import {
   Container,
@@ -15,11 +18,20 @@ import {
   Value,
   Label,
   Separator,
-  Image
+  Image,
+  RelatedList,
+  RelatedModule,
+  PreviewContainer
 } from "./styles";
 import "./styles.css";
 
 class Module extends Component {
+  defaultPreviewModule = {
+    relatedModule: "",
+    data: [],
+    fields: []
+  };
+
   constructor(props) {
     super(props);
 
@@ -34,14 +46,33 @@ class Module extends Component {
       sections: [],
       headerMeta: {},
       expandedSections: {},
-      collapseHeader: false
+      collapseHeader: false,
+      relatedModules: [],
+      isPreviewOpen: false,
+      previewModule: this.defaultPreviewModule,
+      previewTopDistance: 0,
+      orderBy: {}
     };
   }
 
   async componentDidMount() {
+    window.addEventListener("click", this.handleClick);
+
     const client = await cbClient();
     this.setState({ client }, () => this.loadData());
   }
+
+  componentWillUnmount() {
+    window.removeEventListener("click", this.handleClick);
+  }
+
+  handleClick = e => {
+    const clickedInsidePreview = this.preview.contains(e.target);
+
+    if (!clickedInsidePreview) {
+      this.setState({ isPreviewOpen: false });
+    }
+  };
 
   loadData = () => {
     const { client, module, id } = this.state;
@@ -51,11 +82,12 @@ class Module extends Component {
       client.doQuery(
         `select contentjson from cbMap where mapname='${module}_ListColumns'`
       ),
-      client.doDescribe(module)
+      client.doDescribe(module),
+      client.doInvoke("getRelatedModulesInfomation", { module }, "post")
     ];
 
     Promise.all(requests).then(async res => {
-      let [data, headerMeta, meta] = res;
+      let [data, headerMeta, meta, relatedModules] = res;
 
       if (headerMeta.length) {
         headerMeta = JSON.parse(headerMeta[0].contentjson);
@@ -64,7 +96,12 @@ class Module extends Component {
       meta = this.transformMeta(meta);
       data = await this.transformData(data, meta);
 
-      this.setState({ headerMeta, data, ...meta });
+      this.setState({
+        headerMeta,
+        data,
+        ...meta,
+        relatedModules: Object.values(relatedModules)
+      });
     });
   };
 
@@ -202,17 +239,91 @@ class Module extends Component {
     );
   };
 
+  renderTableField = field => {
+    const { previewModule } = this.state;
+    const relatedModule = previewModule.relatedModule.toLowerCase();
+
+    if (!field.linkable) {
+      return (
+        <DataTableColumn
+          key={field.name}
+          property={field.name}
+          label={field.label}
+          sortable
+        />
+      );
+    }
+
+    return (
+      <DataTableColumn
+        key={field.name}
+        property={field.name}
+        label={field.label}
+        sortable
+      >
+        <LinkCell route={`/${relatedModule}`} />
+      </DataTableColumn>
+    );
+  };
+
+  previewRelatedModule = moduleInfo => {
+    const { client, module, id } = this.state;
+    const relatedModule = moduleInfo.related_module;
+
+    Promise.all([
+      client.doGetRelatedRecords(id, module, relatedModule),
+      client.doInvoke("getfilterfields", { module: relatedModule }),
+      client.doDescribe(relatedModule)
+    ]).then(res => {
+      const { fields, linkfields } = res[1];
+      const tableFields = res[2].fields
+        .filter(field => fields.indexOf(field.name) !== -1)
+        .map(field => ({ ...field, linkable: linkfields.indexOf(field.name) !== -1 }));
+
+      this.setState({
+        isPreviewOpen: true,
+        previewModule: { relatedModule, data: res[0].records, fields: tableFields }
+      });
+    });
+  };
+
+  handleSort = sortColumn => {
+    const { previewModule, client, id, module } = this.state;
+    const { property, sortDirection } = sortColumn;
+    const orderBy = `${property} ${sortDirection}`;
+
+    client
+      .doGetRelatedRecords(id, module, previewModule.relatedModule, { orderby: orderBy })
+      .then(res => {
+        this.setState({ previewModule: { ...previewModule, data: res.records } });
+      });
+  };
+
   render() {
     const {
       meta,
       expandedSections,
       groupedFields,
       sections,
-      collapseHeader
+      collapseHeader,
+      relatedModules,
+      isPreviewOpen,
+      previewModule,
+      previewTopDistance
     } = this.state;
 
     return (
       <Container>
+        <PreviewContainer
+          innerRef={preview => (this.preview = preview)}
+          top={previewTopDistance}
+          show={isPreviewOpen && previewModule.fields.length}
+        >
+          <DataTable fixedLayout items={previewModule.data} onSort={this.handleSort}>
+            {previewModule.fields.map(field => this.renderTableField(field))}
+          </DataTable>
+        </PreviewContainer>
+
         <PageHeader
           variant={collapseHeader ? "objectHome" : "recordHome"}
           iconCategory="standard"
@@ -240,7 +351,25 @@ class Module extends Component {
               ))}
             </Accordion>
           </TabsPanel>
-          <TabsPanel label="Related">Related</TabsPanel>
+
+          <TabsPanel label="Related">
+            <RelatedList>
+              {relatedModules.map(item => (
+                <RelatedModule
+                  key={item.related_tabid}
+                  onClick={e => {
+                    this.setState({
+                      previewTopDistance: e.clientY,
+                      previewModule: this.defaultPreviewModule
+                    });
+                    this.previewRelatedModule(item);
+                  }}
+                >
+                  <span>{item.labeli18n}</span>
+                </RelatedModule>
+              ))}
+            </RelatedList>
+          </TabsPanel>
         </Tabs>
       </Container>
     );

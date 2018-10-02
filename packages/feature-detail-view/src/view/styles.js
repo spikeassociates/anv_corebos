@@ -33,4 +33,39 @@ const Image = styled.img`
   height: 200px;
 `;
 
-export { Container, SectionContainer, FieldContainer, Value, Label, Separator, Image };
+const RelatedList = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-gap: 7px 0;
+`;
+
+const RelatedModule = styled.div`
+  span {
+    border-bottom: 1px dashed #ececec;
+  }
+`;
+
+const PreviewContainer = styled.div`
+  background-color: #ececec;
+  position: fixed;
+  left: 20%;
+  right: 0;
+  z-index: 1;
+  top: ${props => props.top + 12}px;
+  height: ${props => (props.show ? "auto" : 0)};
+  overflow-y: hidden;
+  overflow-x: auto;
+`;
+
+export {
+  Container,
+  SectionContainer,
+  FieldContainer,
+  Value,
+  Label,
+  Separator,
+  Image,
+  RelatedList,
+  RelatedModule,
+  PreviewContainer
+};
