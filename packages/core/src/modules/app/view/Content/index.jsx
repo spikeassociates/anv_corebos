@@ -28,7 +28,7 @@ const Content = ({ Module }) => (
             />
           ))}
 
-          <Redirect from="/" to={sidebarRoutes[0]} />
+          <Redirect from="/" to={`/${sidebarRoutes[0]}`} />
           <Page.Route title="404" path="*" component={() => <span>404</span>} />
         </Switch>
       </PageContainer>

@@ -7,12 +7,13 @@ import {
 import VisibilitySensor from "react-visibility-sensor";
 
 import { cbClient, phpSerialize, phpUnserialize } from "shared-utils";
-import { ActionCell, PageHeader, Loader, Preview, TableCell } from "./components";
+import { LinkCell } from "shared-components";
+import { ActionCell, PageHeader, Loader, Preview } from "./components";
 import { PreviewMenu, ListViewContainer, TableContainer } from "./styles";
 import "./style.css";
 
 ActionCell.displayName = DataTableCell.displayName;
-TableCell.displayName = DataTableCell.displayName;
+LinkCell.displayName = DataTableCell.displayName;
 
 class Module extends Component {
   defaultData = {
@@ -69,6 +70,15 @@ class Module extends Component {
     window.removeEventListener("click", this.handleClick);
   }
 
+  handleClick = e => {
+    const { isMenuOpen } = this.state;
+
+    if (isMenuOpen && !this.previewMenu.contains(e.target)) {
+      this.setState({ isMenuOpen: false });
+      document.body.style.overflow = "auto";
+    }
+  };
+
   loadModuleData = async () => {
     const { client, module } = this.state;
 
@@ -82,15 +92,6 @@ class Module extends Component {
     );
 
     this.setState({ ...this.defaultData, pageLimit }, () => this.loadData());
-  };
-
-  handleClick = e => {
-    const { isMenuOpen } = this.state;
-
-    if (isMenuOpen && !this.previewMenu.contains(e.target)) {
-      this.setState({ isMenuOpen: false });
-      document.body.style.overflow = "auto";
-    }
   };
 
   loadData = () => {
@@ -116,13 +117,16 @@ class Module extends Component {
       const reqData = res[0].map(row => ({ ...row, actions: "" }));
 
       if (!fields.length) {
-        fields = res[1].fields.map(field => ({ key: field, label: field }));
         linkfields = res[1].linkfields;
         moduleInfo = {
           fields: res[2].fields.reduce((acc, field) => {
             return { ...acc, [field.name]: field };
           }, {})
         };
+        fields = res[1].fields.map(field => ({
+          key: field,
+          label: moduleInfo.fields[field].label
+        }));
       }
 
       this.setState(
@@ -310,7 +314,7 @@ class Module extends Component {
 
     return (
       <DataTableColumn key={field.key} property={field.key} label={field.label} sortable>
-        <TableCell route={match.path} />
+        <LinkCell route={match.path} />
       </DataTableColumn>
     );
   };

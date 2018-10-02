@@ -62,7 +62,7 @@ export default ({ previewData, changeItem, itemUrl }) => (
       </PreviewHeader>
     </PreviewHeaderContainer>
 
-    <Link to={itemUrl}>
+    <Link to={itemUrl} onClick={() => (document.body.style.overflow = "auto")}>
       <Button variant="success" className="view-details">
         View Details
       </Button>
