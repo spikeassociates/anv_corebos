@@ -241,7 +241,11 @@ class Module extends Component {
       );
     }
     const response = await Promise.all(requests);
-    referenceValues = phpUnserialize(response[0]);
+
+    if (referenceFields.length) {
+      referenceValues = phpUnserialize(response[0]);
+    }
+
     images = response[1] || {};
 
     const previewData = {

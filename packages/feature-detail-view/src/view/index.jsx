@@ -121,21 +121,31 @@ class Module extends Component {
       return isReference && value ? { ...acc, [value]: field.name } : acc;
     }, {});
 
-    let requests = [
-      client.doInvoke(
-        "getReferenceValue",
-        { id: phpSerialize(Object.keys(referenceFields)) },
-        "post"
-      )
-    ];
+    const hasReferences = !!Object.keys(referenceFields);
+
+    let requests = [];
+    let referenceValues = [];
+
+    if (hasReferences) {
+      requests.push(
+        client.doInvoke(
+          "getReferenceValue",
+          { id: phpSerialize(Object.keys(referenceFields)) },
+          "post"
+        )
+      );
+    }
 
     if (hasImage) {
       requests.push(client.doInvoke("getRecordImages", { id: data.id }, "get"));
     }
 
     const response = await Promise.all(requests);
-    const referenceValues = phpUnserialize(response[0]);
     const images = response[1] || {};
+
+    if (hasReferences) {
+      referenceValues = phpUnserialize(response[0]);
+    }
 
     Object.keys(referenceFields).forEach(field => {
       const fieldName = referenceFields[field];
