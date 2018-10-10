@@ -41,7 +41,9 @@ class Module extends Component {
       id: match.params.id,
       data: {},
       module: moduleName,
-      meta: {},
+      meta: {
+        fields: []
+      },
       groupedFields: {},
       sections: [],
       headerMeta: {},
@@ -213,11 +215,15 @@ class Module extends Component {
   };
 
   getHeaderFields = () => {
-    const { headerMeta, data } = this.state;
+    const { headerMeta, data, meta } = this.state;
+
+    const allFields = meta.fields.reduce((acc, field) => {
+      return { ...acc, [field.name]: field.label };
+    }, {});
 
     if (headerMeta.summary) {
       const headerFields = headerMeta.summary.header.fields.field.map(field => {
-        return { ...field, content: data[field.name] };
+        return { label: allFields[field.name], content: data[field.name] };
       });
 
       return headerFields;
