@@ -9,3 +9,4 @@ npm-debug.log
 .vscode
 lerna-debug.log
 yarn.lock
+yarn-error.log
