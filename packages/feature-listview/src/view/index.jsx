@@ -148,8 +148,8 @@ class Module extends Component {
     });
   };
 
-  handleSelect = selectedRows => {
-    this.setState({ selectedRows });
+  handleSelect = (e, selectedRows) => {
+    this.setState({ selectedRows: selectedRows.selection });
   };
 
   handleSort = sortColumn => {
