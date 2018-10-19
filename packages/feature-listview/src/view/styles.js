@@ -79,6 +79,13 @@ const ListViewContainer = styled.div`
   min-width: 100%;
 `;
 
+const FormRowContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
+  grid-gap: 20px 4%;
+  padding-bottom: 15px;
+`;
+
 export {
   Header,
   LoaderContainer,
@@ -93,5 +100,6 @@ export {
   TableContainer,
   ChangePage,
   PreviewHeaderContainer,
-  ListViewContainer
+  ListViewContainer,
+  FormRowContainer
 };

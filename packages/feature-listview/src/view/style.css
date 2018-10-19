@@ -28,6 +28,17 @@ th:nth-child(2) {
   table-layout: inherit !important;
 }
 
+.form-modal {
+  width: 70% !important;
+  max-width: 840px !important;
+  min-width: 480px !important;
+}
+
+.slds-input[readonly] {
+  border-color: #dddbda !important;
+  padding-left: 0.75rem !important;
+}
+
 @media screen and (max-width: 750px) {
   .slds-page-header .slds-grid {
     display: grid;

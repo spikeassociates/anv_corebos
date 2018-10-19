@@ -8,6 +8,4 @@ const DEV = {
   COREBOS_USERNAME: "admin"
 };
 
-// COREBOS_API: "http://192.168.33.10/corebos",
-
 module.exports = JSON.stringify(DEV);

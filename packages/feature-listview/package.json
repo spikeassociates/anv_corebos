@@ -24,6 +24,8 @@
     "shared-resource": "*",
     "shared-utils": "*",
     "shared-repo": "*",
+    "shared-form": "*",
+    "shared-form-helper": "*",
     "shared-components": "*",
     "styled-components": "^2.4.0",
     "deep-object-diff": "^1.1.0"

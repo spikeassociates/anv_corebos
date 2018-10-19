@@ -8,17 +8,19 @@ import VisibilitySensor from "react-visibility-sensor";
 
 import { cbClient, phpSerialize, phpUnserialize } from "shared-utils";
 import { LinkCell } from "shared-components";
-import { ActionCell, PageHeader, Loader, Preview } from "./components";
+import { ActionCell, PageHeader, Loader, Preview, ModuleModal } from "./components";
 import { PreviewMenu, ListViewContainer, TableContainer } from "./styles";
 import "./style.css";
 
 ActionCell.displayName = DataTableCell.displayName;
 LinkCell.displayName = DataTableCell.displayName;
 
-class Module extends Component {
+class ListView extends Component {
   defaultData = {
     data: [],
-    moduleInfo: {},
+    moduleInfo: {
+      fields: {}
+    },
     fields: [],
     linkfields: [],
     selectedRows: [],
@@ -331,12 +333,17 @@ class Module extends Component {
       selectedRows,
       hasMore,
       isMenuOpen,
-      previewData
+      previewData,
+      moduleInfo
     } = this.state;
     const { match } = this.props;
 
     return (
       <ListViewContainer hasData={!!data.length}>
+        {!!data.length && (
+          <ModuleModal meta={Object.values(moduleInfo.fields)} module={module} />
+        )}
+
         <PageHeader
           module={module}
           filters={[{ label: `All ${module}`, value: "all" }]}
@@ -386,4 +393,4 @@ class Module extends Component {
   }
 }
 
-export default Module;
+export default ListView;

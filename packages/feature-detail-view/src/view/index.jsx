@@ -85,11 +85,13 @@ class Module extends Component {
         `select contentjson from cbMap where mapname='${module}_ListColumns'`
       ),
       client.doDescribe(module),
-      client.doInvoke("getRelatedModulesInfomation", { module }, "post")
+      client.doInvoke("getRelatedModulesInfomation", { module }, "post"),
+      client.doQuery(`select contentjson from cbMap where mapname='AccountsRelatedPanes'`)
     ];
 
     Promise.all(requests).then(async res => {
-      let [data, headerMeta, meta, relatedModules] = res;
+      let [data, headerMeta, meta, relatedModules, panes] = res;
+      // console.log(JSON.parse(panes[0].contentjson).panes.pane);
 
       if (headerMeta.length) {
         headerMeta = JSON.parse(headerMeta[0].contentjson);
