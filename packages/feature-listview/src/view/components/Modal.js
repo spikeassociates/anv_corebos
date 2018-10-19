@@ -6,7 +6,7 @@ import {
   AccordionPanel
 } from "@salesforce/design-system-react";
 import { Form, Field } from "shared-form";
-import { Input, Dropdown, Datepicker } from "shared-form-helper";
+import { Input, Dropdown, Datepicker, Checkbox, Textarea } from "shared-form-helper";
 
 import { FormRowContainer } from "../styles";
 
@@ -14,7 +14,7 @@ export default class ModuleModal extends Component {
   constructor(props) {
     super(props);
 
-    const { meta, ...rest } = props;
+    const { meta } = props;
     const fields = meta.filter(({ displaytype }) => ["1"].indexOf(displaytype) !== -1);
 
     const groupedFields = fields.filter(field => field.block).reduce((acc, field) => {
@@ -51,45 +51,41 @@ export default class ModuleModal extends Component {
 
   renderField(field) {
     const uitype = parseInt(field.uitype);
-    const isTextField = [1, 2, 55, 255, 4, 11, 13].indexOf(uitype) !== -1;
-    let fieldOptions = {};
+    const isTextField = [1, 2, 4, 7, 11, 13, 17, 55, 71, 255].includes(uitype);
+    let fieldOptions = {
+      key: field.name,
+      name: field.name,
+      label: field.label,
+      render: () => (
+        <div>
+          {field.label} {uitype}
+        </div>
+      )
+    };
 
-    if (isTextField) {
-      return (
-        <Field
-          key={field.name}
-          name={field.name}
-          label={field.label}
-          readOnly={uitype === 4}
-          render={Input}
-        />
-      );
-    } else if (uitype === 5) {
-      return (
-        <Field
-          key={field.name}
-          name={field.name}
-          label={field.label}
-          render={Datepicker}
-        />
-      );
-    } else if (uitype === 15) {
-      return (
-        <Field
-          key={field.name}
-          name={field.name}
-          label={field.label}
-          options={field.type.picklistValues}
-          render={Dropdown}
-        />
-      );
+    if (uitype === 71) {
+      console.log(field);
     }
 
-    return (
-      <div key={field.name}>
-        {field.name} {uitype} {[1, 55, 255, 4].indexOf(uitype)}
-      </div>
-    );
+    if (isTextField) {
+      fieldOptions = { ...fieldOptions, readOnly: uitype === 4, render: Input };
+    } else if (uitype === 5) {
+      fieldOptions = { ...fieldOptions, render: Datepicker };
+    } else if (uitype === 15) {
+      fieldOptions = {
+        ...fieldOptions,
+        options: field.type.picklistValues,
+        render: Dropdown
+      };
+    } else if (uitype === 21 || uitype === 19) {
+      fieldOptions = { ...fieldOptions, render: Textarea };
+    } else if (uitype === 53) {
+      // console.log(field);
+    } else if (uitype === 56) {
+      fieldOptions = { ...fieldOptions, render: Checkbox };
+    }
+
+    return <Field {...fieldOptions} />;
   }
 
   render() {

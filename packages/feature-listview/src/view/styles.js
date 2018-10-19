@@ -84,6 +84,7 @@ const FormRowContainer = styled.div`
   grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
   grid-gap: 20px 4%;
   padding-bottom: 15px;
+  align-items: center;
 `;
 
 export {
