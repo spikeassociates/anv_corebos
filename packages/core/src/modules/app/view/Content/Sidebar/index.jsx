@@ -26,7 +26,7 @@ const Sidebar = () => (
 
     <div className="slds-context-bar__secondary slds-grid">
       {links.map(route => (
-        <div className="slds-context-bar__item">
+        <div key={route} className="slds-context-bar__item">
           <Link to={`/${route}`} className="slds-context-bar__label-action">
             {route}
           </Link>

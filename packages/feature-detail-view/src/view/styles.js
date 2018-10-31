@@ -53,8 +53,8 @@ const PreviewContainer = styled.div`
   z-index: 1;
   top: ${props => props.top + 12}px;
   height: ${props => (props.show ? "auto" : 0)};
-  overflow-y: hidden;
-  overflow-x: auto;
+  overflow: ${props => (props.show ? "auto" : "hidden")};
+  max-heigh: 400px;
 `;
 
 export {

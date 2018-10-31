@@ -4,16 +4,17 @@ import {
   DataTableColumn,
   DataTableCell
 } from "@salesforce/design-system-react";
-import VisibilitySensor from "react-visibility-sensor";
 
 import { cbClient, phpSerialize, phpUnserialize } from "shared-utils";
-import { LinkCell } from "shared-components";
-import { ActionCell, PageHeader, Loader, Preview, ModuleModal } from "./components";
+import { LinkCell, ModalForm } from "shared-components";
+
+import { ActionCell, PageHeader, Loader, Preview, Cell } from "./components";
 import { PreviewMenu, ListViewContainer, TableContainer } from "./styles";
 import "./style.css";
 
 ActionCell.displayName = DataTableCell.displayName;
 LinkCell.displayName = DataTableCell.displayName;
+Cell.displayName = DataTableCell.displayName;
 
 class ListView extends Component {
   defaultData = {
@@ -38,7 +39,8 @@ class ListView extends Component {
       headerData: [],
       bodyData: [],
       index: ""
-    }
+    },
+    showModal: true
   };
 
   constructor(props) {
@@ -289,6 +291,12 @@ class ListView extends Component {
     this.previewRow(data[index], index);
   };
 
+  onRowClick = item => {
+    const { selectRow } = this.props;
+
+    selectRow && selectRow(item);
+  };
+
   renderField = field => {
     const { linkfields } = this.state;
     const { match } = this.props;
@@ -300,7 +308,9 @@ class ListView extends Component {
           property={field.key}
           label={field.label}
           sortable
-        />
+        >
+          <Cell handleClick={this.onRowClick} />
+        </DataTableColumn>
       );
     }
 
@@ -321,15 +331,16 @@ class ListView extends Component {
       previewData,
       page,
       loading,
+      showModal,
       moduleInfo
     } = this.state;
     const { match } = this.props;
 
     return (
       <ListViewContainer hasData={!!data.length}>
-        {/* {!!data.length && (
-          <ModuleModal meta={Object.values(moduleInfo.fields)} module={module} />
-        )} */}
+        {!!data.length && (
+          <ModalForm meta={Object.values(moduleInfo.fields)} module={module} />
+        )}
 
         <PageHeader
           page={page}

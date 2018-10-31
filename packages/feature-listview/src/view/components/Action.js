@@ -15,10 +15,8 @@ export default class ActionsCell extends Component {
   };
 
   render() {
-    const { children, rest } = this.props;
-
     return (
-      <DataTableCell {...rest}>
+      <DataTableCell>
         <Dropdown
           buttonClassName="lv-action-button"
           iconCategory="utility"
