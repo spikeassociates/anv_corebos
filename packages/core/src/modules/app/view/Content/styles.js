@@ -1,7 +1,6 @@
 import styled from "styled-components";
 
 const PageContainer = styled.div`
-  margin-left: 20%;
   height: 100%;
   box-sizing: border-box;
   position: relative;

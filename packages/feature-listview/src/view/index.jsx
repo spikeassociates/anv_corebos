@@ -147,9 +147,15 @@ class ListView extends Component {
   handleSort = sortColumn => {
     const { property, sortDirection } = sortColumn;
 
-    this.setState({ sort: { property, direction: sortDirection }, page: 0 }, () =>
+    this.setState({ sort: { property, direction: sortDirection }, page: 1 }, () =>
       this.loadData()
     );
+  };
+
+  handlePageChange = page => {
+    if (page != this.state.page) {
+      this.setState({ page, data: [] }, () => this.loadData());
+    }
   };
 
   deleteRow = id => {
@@ -276,14 +282,6 @@ class ListView extends Component {
     });
   };
 
-  onVisibilityChange = visible => {
-    // const { loading, data } = this.state;
-    // if (visible && !loading && data.length !== 0) {
-    //   this.loadData();
-    // }
-    // this.setState({ visible });
-  };
-
   changeItem = change => {
     const { data, previewData } = this.state;
     let index = previewData.index + change;
@@ -311,10 +309,6 @@ class ListView extends Component {
         <LinkCell route={match.path} />
       </DataTableColumn>
     );
-  };
-
-  handlePageChange = page => {
-    this.setState({ page, data: [] }, () => this.loadData());
   };
 
   render() {

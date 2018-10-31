@@ -8,8 +8,6 @@ import routes from "./routes";
 import { PageContainer, Container } from "./styles";
 import Sidebar from "./Sidebar";
 
-const sidebarRoutes = routes.filter(route => route.sidebar).map(route => route.name);
-
 const Content = ({ Module }) => (
   <>
     <Container>
@@ -28,7 +26,6 @@ const Content = ({ Module }) => (
             />
           ))}
 
-          <Redirect from="/" to={`/${sidebarRoutes[0]}`} />
           <Page.Route title="404" path="*" component={() => <span>404</span>} />
         </Switch>
       </PageContainer>
