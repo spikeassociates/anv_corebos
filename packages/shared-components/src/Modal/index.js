@@ -5,12 +5,13 @@ import {
   Accordion,
   AccordionPanel
 } from "@salesforce/design-system-react";
+
 import { Form, Field } from "shared-form";
 import { Input, Dropdown, Datepicker, Checkbox, Textarea } from "shared-form-helper";
 
-import { FormRowContainer } from "../styles";
+import { FormRowContainer } from "./styles";
 
-export default class ModuleModal extends Component {
+export default class FormModal extends Component {
   constructor(props) {
     super(props);
 
@@ -63,10 +64,6 @@ export default class ModuleModal extends Component {
       )
     };
 
-    if (uitype === 71) {
-      console.log(field);
-    }
-
     if (isTextField) {
       fieldOptions = { ...fieldOptions, readOnly: uitype === 4, render: Input };
     } else if (uitype === 5) {
@@ -79,7 +76,7 @@ export default class ModuleModal extends Component {
       };
     } else if (uitype === 21 || uitype === 19) {
       fieldOptions = { ...fieldOptions, render: Textarea };
-    } else if (uitype === 53) {
+    } else if (uitype === 51) {
       // console.log(field);
     } else if (uitype === 56) {
       fieldOptions = { ...fieldOptions, render: Checkbox };

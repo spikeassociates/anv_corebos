@@ -12,6 +12,8 @@
   "dependencies": {
     "shared-repo": "*",
     "shared-utils": "*",
+    "shared-form": "*",
+    "shared-form-helper": "*",
     "lodash-es": "^4.17.4",
     "moment": "^2.20.1",
     "react": "^16.3.0",
@@ -20,7 +22,7 @@
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^5.0.0-alpha.8",
     "redux": "^3.7.2",
-    "redux-modulist": "https://github.com/turningspace/redux-modulist.git#staging",
+    "modular-redux": "git+ssh://git@bitbucket.org:andi_ndrecka/modular-redux.git",
     "reselect": "^3.0.1",
     "styled-components": "^2.4.0"
   }

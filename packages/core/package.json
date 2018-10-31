@@ -25,7 +25,7 @@
     "react-router-redux": "^5.0.0-alpha.8",
     "redux": "^3.7.2",
     "redux-form": "^7.1.2",
-    "redux-modulist": "https://github.com/turningspace/redux-modulist.git#staging",
+    "modular-redux": "git+ssh://git@bitbucket.org:andi_ndrecka/modular-redux.git",
     "reselect": "^3.0.1",
     "styled-components": "^2.4.0"
   }
