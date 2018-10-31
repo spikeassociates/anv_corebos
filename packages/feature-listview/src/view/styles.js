@@ -87,6 +87,17 @@ const FormRowContainer = styled.div`
   align-items: center;
 `;
 
+const PaginationContainer = styled.div`
+  display: flex;
+  align-items: center;
+
+  .slds-input {
+    width: 40px;
+    padding: 0 5px;
+    text-align: center;
+  }
+`;
+
 export {
   Header,
   LoaderContainer,
@@ -102,5 +113,6 @@ export {
   ChangePage,
   PreviewHeaderContainer,
   ListViewContainer,
-  FormRowContainer
+  FormRowContainer,
+  PaginationContainer
 };

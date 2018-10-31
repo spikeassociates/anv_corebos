@@ -25,7 +25,7 @@ class ListView extends Component {
     linkfields: [],
     selectedRows: [],
     pageLimit: 0,
-    page: 0,
+    page: 1,
     sort: {
       property: "id",
       direction: "asc"
@@ -38,9 +38,7 @@ class ListView extends Component {
       headerData: [],
       bodyData: [],
       index: ""
-    },
-    visible: true,
-    hasMore: true
+    }
   };
 
   constructor(props) {
@@ -97,12 +95,13 @@ class ListView extends Component {
   };
 
   loadData = () => {
-    const { pageLimit, page, module, client, sort, data } = this.state;
-    let { fields, linkfields, moduleInfo } = this.state;
-    const { property, direction } = sort;
-    const offset = page * pageLimit;
-
     this.setState({ loading: true });
+
+    const { pageLimit, module, client, sort } = this.state;
+    const { property, direction } = sort;
+    const page = this.state.page - 1;
+    let { fields, linkfields, moduleInfo } = this.state;
+    const offset = page * pageLimit;
 
     const requests = [
       client.doQuery(
@@ -131,22 +130,13 @@ class ListView extends Component {
         }));
       }
 
-      this.setState(
-        {
-          data: page === 0 ? reqData : [...data, ...reqData],
-          fields,
-          linkfields,
-          moduleInfo,
-          page: page + 1,
-          loading: false,
-          hasMore: reqData.length > 0
-        },
-        () => {
-          if (this.state.visible) {
-            this.loadData();
-          }
-        }
-      );
+      this.setState({
+        data: reqData,
+        fields,
+        linkfields,
+        moduleInfo,
+        loading: false
+      });
     });
   };
 
@@ -287,13 +277,11 @@ class ListView extends Component {
   };
 
   onVisibilityChange = visible => {
-    const { loading, data } = this.state;
-
-    if (visible && !loading && data.length !== 0) {
-      this.loadData();
-    }
-
-    this.setState({ visible });
+    // const { loading, data } = this.state;
+    // if (visible && !loading && data.length !== 0) {
+    //   this.loadData();
+    // }
+    // this.setState({ visible });
   };
 
   changeItem = change => {
@@ -325,30 +313,37 @@ class ListView extends Component {
     );
   };
 
+  handlePageChange = page => {
+    this.setState({ page, data: [] }, () => this.loadData());
+  };
+
   render() {
     const {
       module,
       data = [],
       fields,
       selectedRows,
-      hasMore,
       isMenuOpen,
       previewData,
+      page,
+      loading,
       moduleInfo
     } = this.state;
     const { match } = this.props;
 
     return (
       <ListViewContainer hasData={!!data.length}>
-        {!!data.length && (
+        {/* {!!data.length && (
           <ModuleModal meta={Object.values(moduleInfo.fields)} module={module} />
-        )}
+        )} */}
 
         <PageHeader
+          page={page}
           module={module}
           filters={[{ label: `All ${module}`, value: "all" }]}
           title={`All ${module}`}
           handleDelete={this.handleMultiDelete}
+          handlePageChange={this.handlePageChange}
         />
 
         <TableContainer>
@@ -371,15 +366,7 @@ class ListView extends Component {
           </DataTable>
         </TableContainer>
 
-        {hasMore && (
-          <VisibilitySensor
-            partialVisibility
-            scrollCheck
-            onChange={this.onVisibilityChange}
-          >
-            {() => <Loader />}
-          </VisibilitySensor>
-        )}
+        {loading && <Loader />}
 
         <PreviewMenu isOpen={isMenuOpen} innerRef={menu => (this.previewMenu = menu)}>
           <Preview
