@@ -26,6 +26,8 @@ class App extends React.Component {
     };
   }
 
+  componentDidMount() {}
+
   componentDidUpdate(prevProps) {
     if (this.props.location !== prevProps.location) {
       window.scrollTo(0, 0);

@@ -7,7 +7,7 @@ import reducer from "./reducer";
 import selectors from "./selectors";
 import view from "./view";
 
-const App = (ListView, DetailView) =>
+const App = (LoginView, ListView, DetailView) =>
   Module(
     {
       name: "app",
@@ -16,16 +16,19 @@ const App = (ListView, DetailView) =>
       },
       reducers: {
         module: reducer,
+        login: LoginView.reducer,
         listview: ListView.reducer,
         detailview: DetailView.reducer
       },
       views: {
         module: view,
+        login: LoginView.view,
         listview: ListView.view,
         detailview: DetailView.view
       },
       epics: {
         module: epics,
+        login: LoginView.epic,
         listview: ListView.epic,
         detailview: DetailView.epic
       },

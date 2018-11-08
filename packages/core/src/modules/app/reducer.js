@@ -1,14 +1,16 @@
 import Modular from "modular-redux";
+import { PersistentRepo } from "shared-repo";
 
-const initialState = {};
+const initialState = {
+  data: {
+    isLoggedIn: !!PersistentRepo.get("token")
+  }
+};
 
-const reducer = (state = initialState, action, Module) => {
-  const { actions } = Module;
-
+const reducer = (state = initialState, action) => {
   switch (action.type) {
     default:
       return state;
   }
 };
-
-export default Modular.reducer(reducer);
+export default reducer;
