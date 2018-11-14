@@ -3,7 +3,7 @@ import Resources from "../resources";
 import { actions as actionsUtils } from "shared-resource";
 
 const syncTypes = [];
-const asyncTypes = ["LOGIN"];
+const asyncTypes = ["CHALLENGE", "LOGIN"];
 const types = [...syncTypes, ...actionsUtils.statefulTypes(asyncTypes)];
 
 export default Modular.actions(types, Resources.getActions);

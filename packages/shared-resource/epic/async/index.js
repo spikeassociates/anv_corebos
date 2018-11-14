@@ -27,26 +27,26 @@ const asyncAction = ({ type, api, onRequest, onFailure, onSuccess }) => {
       //.takeUntil(action$.ofType(types.cancel))
       .concatMap(action =>
         api(action.payload)
-          .map(
-            res =>
-              res.success != 0
-                ? {
-                    type: types.success,
-                    requestPayload: action.payload || {},
-                    payload: objToCamelCase(res.data)
-                  }
-                : res.status != 333
-                  ? {
-                      type: types.failure,
-                      requestPayload: action.payload || {},
-                      payload: { ...res, ...parseErr(res) }
-                    }
-                  : {
-                      type: types.retry,
-                      requestPayload: action.payload || {},
-                      payload: { ...res, ...parseErr(res) }
-                    }
-          )
+          .map(res => {
+            console.log(res.success);
+            return res.success
+              ? {
+                  type: types.success,
+                  requestPayload: action.payload || {},
+                  payload: res.data
+                }
+              : res.status != 333
+              ? {
+                  type: types.failure,
+                  requestPayload: action.payload || {},
+                  payload: { ...res, ...parseErr(res) }
+                }
+              : {
+                  type: types.retry,
+                  requestPayload: action.payload || {},
+                  payload: { ...res, ...parseErr(res) }
+                };
+          })
           .catch(err =>
             Observable.of({
               type: types.failure,
@@ -84,16 +84,15 @@ const asyncAction = ({ type, api, onRequest, onFailure, onSuccess }) => {
   };
 
   const retryEpic = action$ =>
-    action$.ofType(types.retry).map(
-      action =>
-        action.requestPayload._retry > 0
-          ? { type: types.cancel, payload: action.requestPayload }
-          : {
-              type: "REFRESH_LOGIN",
-              payload: {
-                originalRequest: { type: types.request, payload: action.requestPayload }
-              }
+    action$.ofType(types.retry).map(action =>
+      action.requestPayload._retry > 0
+        ? { type: types.cancel, payload: action.requestPayload }
+        : {
+            type: "REFRESH_LOGIN",
+            payload: {
+              originalRequest: { type: types.request, payload: action.requestPayload }
             }
+          }
     );
 
   const failureEpic = action$ =>

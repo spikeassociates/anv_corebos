@@ -12,8 +12,9 @@ class Module extends Component {
   handleLogin = () => {
     const { actions } = this.props;
 
-    actions.login({
-      username: "admin"
+    actions.challenge({
+      username: "admin",
+      accessKey: "cdYTBpiMR9RfGgO"
     });
   };
 
