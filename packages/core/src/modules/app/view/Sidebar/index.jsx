@@ -7,12 +7,9 @@ import {
 } from "@salesforce/design-system-react";
 import { range } from "utils";
 
-import routes from "../routes";
 import { Link, WaffleContainer } from "./styles";
 
-const links = routes.filter(route => route.sidebar).map(route => route.name);
-
-const Sidebar = () => (
+const Sidebar = ({ links = [] }) => (
   <div className="slds-context-bar">
     <div className="slds-context-bar__item--divider-right slds-context-bar__icon-action">
       <WaffleContainer className="slds-button slds-icon-waffle_container slds-context-bar__button">
