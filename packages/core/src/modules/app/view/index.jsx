@@ -1,10 +1,13 @@
 import React from "react";
 import { withRouter, Switch } from "react-router-dom";
-import { injectGlobal } from "styled-components";
 import PropTypes from "prop-types";
 import Modular from "modular-redux";
+import { compose } from "redux";
+import { connect } from "react-redux";
+import { injectGlobal } from "styled-components";
 
 import { Page } from "shared-components";
+import { mapToState } from "shared-utils";
 
 import Sidebar from "./Sidebar";
 import { PageContainer, Container } from "./styles";
@@ -37,8 +40,24 @@ class App extends React.Component {
     }
   }
 
-  render() {
+  renderRoute = route => {
     const { Module } = this.props;
+
+    return (
+      <Page.Route
+        title={route.corebosModule}
+        key={route.module}
+        path={`/${route.name}`}
+        render={props => {
+          const ModuleComponent = Module.view[route.module];
+          return <ModuleComponent {...props} moduleName={route.corebosModule} />;
+        }}
+      />
+    );
+  };
+
+  render() {
+    const { Module, isLoggedIn } = this.props;
     const sidebarLinks = routes.filter(route => route.sidebar).map(route => route.name);
 
     return (
@@ -46,23 +65,15 @@ class App extends React.Component {
         <Sidebar links={sidebarLinks} />
         <PageContainer>
           <Switch>
-            {routes.map(route => (
-              <Page.Route
-                title={route.corebosModule}
-                key={route.module}
-                path={`/${route.name}`}
-                render={props => {
-                  const ModuleComponent = Module.view[route.module];
-                  return <ModuleComponent {...props} moduleName={route.corebosModule} />;
-                }}
-              />
-            ))}
+            {isLoggedIn && routes.map(route => this.renderRoute(route))}
 
-            <Page.Route
-              title="login"
-              path="/login"
-              render={props => <Module.view.login {...props} />}
-            />
+            {!isLoggedIn && (
+              <Page.Route
+                title="login"
+                path="/login"
+                render={props => <Module.view.login {...props} />}
+              />
+            )}
 
             <Page.Route title="404" path="*" render={() => <span>404</span>} />
           </Switch>
@@ -76,4 +87,12 @@ App.childContextTypes = {
   assetBasePath: PropTypes.string
 };
 
-export default withRouter(Modular.view(App));
+const mapStateToProps = (state, { Module }) => {
+  return mapToState(state, Module.selectors, ["isLoggedIn"]);
+};
+
+export default compose(
+  withRouter,
+  Modular.view,
+  connect(mapStateToProps)
+)(App);

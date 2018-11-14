@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { capitalize } from "shared-utils";
+import { capitalize } from "utils";
 import { Route as ReactRouterRoute, Redirect } from "react-router-dom";
 
 class Route extends Component {
