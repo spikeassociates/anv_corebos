@@ -40,7 +40,7 @@ class ListView extends Component {
       bodyData: [],
       index: ""
     },
-    showModal: true
+    showModal: false
   };
 
   constructor(props) {
@@ -338,9 +338,7 @@ class ListView extends Component {
 
     return (
       <ListViewContainer hasData={!!data.length}>
-        {!!data.length && (
-          <ModalForm meta={Object.values(moduleInfo.fields)} module={module} />
-        )}
+        {false && <ModalForm meta={Object.values(moduleInfo.fields)} module={module} />}
 
         <PageHeader
           page={page}

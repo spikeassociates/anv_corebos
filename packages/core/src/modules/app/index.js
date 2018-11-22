@@ -6,37 +6,43 @@ import epics from "./epics";
 import reducer from "./reducer";
 import selectors from "./selectors";
 import view from "./view";
+import api from "./api";
 
-const App = (LoginView, ListView, DetailView) =>
+const App = (AuthenticationView, ListView, DetailView) =>
   Module(
     {
       name: "app",
       actions: {
-        module: actions
+        module: actions,
+        authentication: AuthenticationView.actions
       },
       reducers: {
         module: reducer,
-        login: LoginView.reducer,
+        authentication: AuthenticationView.reducer,
         listview: ListView.reducer,
         detailview: DetailView.reducer
       },
       views: {
         module: view,
-        login: LoginView.view,
+        authentication: AuthenticationView.view,
         listview: ListView.view,
         detailview: DetailView.view
       },
+      api: {
+        module: api
+      },
       epics: {
         module: epics,
-        login: LoginView.epic,
+        authentication: AuthenticationView.epic,
         listview: ListView.epic,
         detailview: DetailView.epic
       },
       selectors: {
-        module: selectors
+        module: selectors,
+        authentication: AuthenticationView.selectors
       }
     },
-    [epicUtils.modulist.feature]
+    [{ feature: "api" }, epicUtils.modulist.feature]
   );
 
 export default App;

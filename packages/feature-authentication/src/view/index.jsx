@@ -19,13 +19,14 @@ class Module extends Component {
   };
 
   render() {
+    const { authenticated } = this.props;
+
     return <span onClick={this.handleLogin}>login</span>;
   }
 }
 
-const mapStateToProps = (state, { Module }) => {
-  return mapToState(state, Module.selectors, []);
-};
+const mapStateToProps = (state, { Module }) =>
+  mapToState(state, Module.selectors, ["authenticated"]);
 
 const mapDispatchToProps = (dispatch, { Module }) => ({
   actions: mapToDispatch(dispatch, Module.actions)

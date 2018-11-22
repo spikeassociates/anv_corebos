@@ -1,4 +1,4 @@
-import { clone, setPath, getPath } from "shared-utils";
+import { clone, setPath, getPath } from "utils";
 
 let data = {};
 

@@ -1,4 +1,5 @@
 import base from "shared-api";
+import { cbMD5 } from "shared-utils";
 
 const api = {
   challenge: ({ username }) =>
@@ -11,7 +12,13 @@ const api = {
     base.post("", {
       operation: "login",
       username,
-      accessKey: cbMD5(accessToken + accesskey)
+      accessKey: cbMD5(accessToken + accessKey)
+    }),
+
+  getModules: () =>
+    base.get("", {
+      operation: "describe",
+      elementType: GLOBALS.MODULES.join(",")
     })
 };
 

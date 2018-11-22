@@ -4,7 +4,8 @@ import Resources from "../resources";
 const initialState = {
   shown: {},
   busy: {},
-  data: {}
+  data: {},
+  authenticated: !!PersistentRepo.get("token")
 };
 
 const reducer = (state = initialState, action, Module) => {
@@ -17,6 +18,12 @@ const reducer = (state = initialState, action, Module) => {
   }
 
   switch (action.type) {
+    case actions.types.AUTH:
+      return { ...state, authenticated: true };
+
+    case actions.types.UNAUTH:
+      return { ...state, authenticated: false };
+
     default:
       return state;
   }

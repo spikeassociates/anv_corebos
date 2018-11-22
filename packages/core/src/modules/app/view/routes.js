@@ -1,17 +1,4 @@
-const subitoModules = [
-  "MasterAccount",
-  "Accounts",
-  "Task",
-  "SalesOrderMaster",
-  "Cases",
-  "AccountDetails",
-  "Term",
-  "Adocmaster"
-];
-
-const modules = ["Accounts", "Contacts", "Task"];
-
-const routes = modules.reduce((acc, corebosModule) => {
+const routes = GLOBALS.MODULES.reduce((acc, corebosModule) => {
   const moduleName = corebosModule.toLowerCase();
 
   return [

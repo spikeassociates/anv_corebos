@@ -1,12 +1,12 @@
 import AppModule from "./app";
 import ListViewModule from "feature-listview";
 import DetailViewModule from "feature-detailview";
-import LoginViewModule from "feature-login";
+import AuthenticationViewModule from "feature-authentication";
 
 const ListView = ListViewModule();
 const DetailView = DetailViewModule();
-const LoginView = LoginViewModule();
+const AuthenticationView = AuthenticationViewModule();
 
-const App = AppModule(LoginView, ListView, DetailView);
+const App = AppModule(AuthenticationView, ListView, DetailView);
 
 export default App;

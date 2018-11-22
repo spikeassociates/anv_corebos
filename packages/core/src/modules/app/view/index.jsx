@@ -7,7 +7,6 @@ import { connect } from "react-redux";
 import { injectGlobal } from "styled-components";
 
 import { Page } from "shared-components";
-import { mapToState } from "shared-utils";
 
 import Sidebar from "./Sidebar";
 import { PageContainer, Container } from "./styles";
@@ -41,39 +40,57 @@ class App extends React.Component {
   }
 
   renderRoute = route => {
-    const { Module } = this.props;
+    const { Module, authenticated, modules } = this.props;
 
     return (
       <Page.Route
         title={route.corebosModule}
         key={route.module}
         path={`/${route.name}`}
+        condition={authenticated}
         render={props => {
           const ModuleComponent = Module.view[route.module];
-          return <ModuleComponent {...props} moduleName={route.corebosModule} />;
+          return (
+            <ModuleComponent
+              {...props}
+              moduleName={route.corebosModule}
+              moduleMeta={modules[route.corebosModule]}
+            />
+          );
         }}
       />
     );
   };
 
   render() {
-    const { Module, isLoggedIn } = this.props;
+    const { Module, authenticated } = this.props;
     const sidebarLinks = routes.filter(route => route.sidebar).map(route => route.name);
+    const defaultRoute = routes.find(
+      route => route.corebosModule === GLOBALS.MODULES[0] && route.module === "listview"
+    );
 
     return (
       <Container>
-        <Sidebar links={sidebarLinks} />
+        {authenticated && <Sidebar links={sidebarLinks} />}
+
         <PageContainer>
           <Switch>
-            {isLoggedIn && routes.map(route => this.renderRoute(route))}
+            {routes.map(route => this.renderRoute(route))}
 
-            {!isLoggedIn && (
-              <Page.Route
-                title="login"
-                path="/login"
-                render={props => <Module.view.login {...props} />}
-              />
-            )}
+            <Page.Route
+              title={defaultRoute.corebosModule}
+              condition={!authenticated}
+              path="/"
+              redirect={`/${defaultRoute.name}`}
+              component={Module.view.authentication}
+            />
+
+            <Page.Route
+              title="login"
+              path="/login"
+              condition={!authenticated}
+              render={Module.view.authentication}
+            />
 
             <Page.Route title="404" path="*" render={() => <span>404</span>} />
           </Switch>
@@ -87,9 +104,10 @@ App.childContextTypes = {
   assetBasePath: PropTypes.string
 };
 
-const mapStateToProps = (state, { Module }) => {
-  return mapToState(state, Module.selectors, ["isLoggedIn"]);
-};
+const mapStateToProps = (state, { Module }) => ({
+  authenticated: Module.selectors.authentication.authenticated(state),
+  modules: Module.selectors.modules(state)
+});
 
 export default compose(
   withRouter,

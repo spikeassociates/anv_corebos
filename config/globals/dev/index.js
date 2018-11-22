@@ -5,7 +5,8 @@ const DEV = {
   BASE_API: "http://test.coreboscrm.com/corebos/webservice.php",
   COREBOS_API: "http://test.coreboscrm.com/corebos",
   COREBOS_TOKEN: "cdYTBpiMR9RfGgO",
-  COREBOS_USERNAME: "admin"
+  COREBOS_USERNAME: "admin",
+  MODULES: ["Accounts", "Contacts"]
 };
 
 module.exports = JSON.stringify(DEV);

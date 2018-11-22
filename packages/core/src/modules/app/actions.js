@@ -3,7 +3,7 @@ import Resources from "./resources";
 import { actions as actionsUtils } from "shared-resource";
 
 const syncTypes = [];
-const asyncTypes = [];
+const asyncTypes = ["GET_MODULES"];
 const types = [
   ...syncTypes,
   ...actionsUtils.statefulTypes(asyncTypes),
