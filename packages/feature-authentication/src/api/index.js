@@ -13,12 +13,6 @@ const api = {
       operation: "login",
       username,
       accessKey: cbMD5(accessToken + accessKey)
-    }),
-
-  getModules: () =>
-    base.get("", {
-      operation: "describe",
-      elementType: GLOBALS.MODULES.join(",")
     })
 };
 

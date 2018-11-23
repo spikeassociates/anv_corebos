@@ -7,7 +7,7 @@ const epics = ({ actions, api }) => {
 
   const challenge = asyncAction({
     api: api.challenge,
-    type: actions.types.CHALLENGE,
+    type: types.CHALLENGE,
     onSuccess: [
       action =>
         actions.login({ ...action.requestPayload, accessToken: action.payload.token })
@@ -16,7 +16,7 @@ const epics = ({ actions, api }) => {
 
   const login = asyncAction({
     api: api.login,
-    type: actions.types.LOGIN,
+    type: types.LOGIN,
     onSuccess: [action => actions.auth({ token: action.payload.sessionName })]
   });
 
