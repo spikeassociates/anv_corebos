@@ -17,12 +17,11 @@ const PreviewValue = ({ field }) => {
   if (field.uitype == 69) {
     return (
       <div>
-        {field.images.map(image => (
-          <PreviewImage src={image.fullpath} key={image.id} />
-        ))}
+        <PreviewImage src={field.value} />
       </div>
     );
   }
+
   return <PreviewHeaderValue>{field.value}</PreviewHeaderValue>;
 };
 

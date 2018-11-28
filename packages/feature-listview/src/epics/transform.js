@@ -9,6 +9,8 @@ const transformItem = (moduleMeta, data) => {
       return data[`${field}ename`].reference;
     } else if (type === "boolean" && data[field] !== "") {
       return data[field] == 0 ? "No" : "Yes";
+    } else if (fields[field].uitype == 69) {
+      return data[`${field}imageinfo`].fullpath;
     }
 
     return data[field];
@@ -18,10 +20,12 @@ const transformItem = (moduleMeta, data) => {
     id: data.id,
     title: titleFields.map(field => data[field]).join(" "),
     headerData: headerFields.map(field => ({
+      ...fields[field],
       label: fields[field].label,
       value: formatValue(field)
     })),
     bodyData: bodyFields.map(field => ({
+      ...fields[field],
       label: fields[field].label,
       value: formatValue(field)
     }))
