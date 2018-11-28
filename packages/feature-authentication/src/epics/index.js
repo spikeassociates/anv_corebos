@@ -20,19 +20,13 @@ const epics = ({ actions, api }) => {
     onSuccess: [action => actions.auth({ token: action.payload.sessionName })]
   });
 
-  const auth = action$ =>
-    action$
-      .ofType(types.AUTH)
-      .do(action => PersistentRepo.set("token", action.payload.token))
-      .ignoreElements();
-
   const unauth = action$ =>
     action$
       .ofType(types.UNAUTH)
       .do(() => PersistentRepo.delete("token"))
       .ignoreElements();
 
-  return { auth, unauth, ...challenge, ...login };
+  return { unauth, ...challenge, ...login };
 };
 
 export default epics;

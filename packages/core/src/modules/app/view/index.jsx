@@ -7,6 +7,7 @@ import { connect } from "react-redux";
 import { injectGlobal } from "styled-components";
 
 import { Page } from "shared-components";
+import { mapToState, mapToDispatch } from "shared-utils";
 
 import Sidebar from "./Sidebar";
 import { PageContainer, Container } from "./styles";
@@ -28,9 +29,13 @@ injectGlobal`
 
 class App extends React.Component {
   getChildContext() {
-    return {
-      assetBasePath: ""
-    };
+    return { assetBasePath: "" };
+  }
+
+  componentDidMount() {
+    const { actions } = this.props;
+
+    actions.getModules();
   }
 
   componentDidUpdate(prevProps) {
@@ -39,12 +44,28 @@ class App extends React.Component {
     }
   }
 
+  getModuleMeta = moduleName => {
+    const { modules } = this.props;
+
+    const defaultModule = {
+      filterFields: {
+        fields: [],
+        linkfields: [],
+        pagesize: 0
+      },
+      fields: [],
+      label: ""
+    };
+
+    return modules[moduleName] || defaultModule;
+  };
+
   renderRoute = route => {
-    const { Module, authenticated, modules } = this.props;
+    const { Module, authenticated } = this.props;
 
     return (
       <Page.Route
-        title={route.corebosModule}
+        title={route.name}
         key={route.module}
         path={`/${route.name}`}
         condition={authenticated}
@@ -53,8 +74,7 @@ class App extends React.Component {
           return (
             <ModuleComponent
               {...props}
-              moduleName={route.corebosModule}
-              moduleMeta={modules[route.corebosModule]}
+              moduleMeta={this.getModuleMeta(route.corebosModule)}
             />
           );
         }}
@@ -63,8 +83,12 @@ class App extends React.Component {
   };
 
   render() {
-    const { Module, authenticated } = this.props;
-    const sidebarLinks = routes.filter(route => route.sidebar).map(route => route.name);
+    const { Module, authenticated, modules } = this.props;
+
+    const sidebarLinks = routes
+      .filter(route => route.sidebar)
+      .map(route => route.corebosModule);
+
     const defaultRoute = routes.find(
       route => route.corebosModule === GLOBALS.MODULES[0] && route.module === "listview"
     );
@@ -106,11 +130,18 @@ App.childContextTypes = {
 
 const mapStateToProps = (state, { Module }) => ({
   authenticated: Module.selectors.authentication.authenticated(state),
-  modules: Module.selectors.modules(state)
+  ...mapToState(state, Module.selectors, ["modules"])
+});
+
+const mapDispatchToProps = (dispatch, { Module }) => ({
+  actions: mapToDispatch(dispatch, Module.actions)
 });
 
 export default compose(
   withRouter,
   Modular.view,
-  connect(mapStateToProps)
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
 )(App);

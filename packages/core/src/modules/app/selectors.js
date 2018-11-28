@@ -5,9 +5,7 @@ import { createSelector } from "reselect";
 const modules = module =>
   createSelector(
     module,
-    ({ data }) => {
-      return data.modules;
-    }
+    ({ data }) => data.modules
   );
 
 const selectors = { modules };

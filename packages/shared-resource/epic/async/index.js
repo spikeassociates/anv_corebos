@@ -20,7 +20,7 @@ const asyncAction = ({ type, api, onRequest, onFailure, onSuccess }) => {
   const requestEpicApi = action$ =>
     action$
       .ofType(types.request)
-      .debounceTime(500)
+      // .debounceTime(500)
       //.takeUntil(action$.ofType(types.cancel))
       .concatMap(action =>
         api(action.payload)
