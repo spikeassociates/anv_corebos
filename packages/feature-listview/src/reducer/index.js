@@ -2,9 +2,19 @@ import Modular from "modular-redux";
 import Resources from "../resources";
 
 const initialState = {
-  shown: {},
+  shown: {
+    preview: false,
+    modal: false
+  },
   busy: {},
-  data: {}
+  data: {
+    preview: {
+      headerData: [],
+      bodyData: [],
+      title: ""
+    },
+    listview: []
+  }
 };
 
 const reducer = (state = initialState, action, Module) => {

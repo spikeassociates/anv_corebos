@@ -4,8 +4,11 @@ import {
   DataTableColumn,
   DataTableCell
 } from "@salesforce/design-system-react";
+import { compose } from "redux";
+import { connect } from "react-redux";
+import Modular from "modular-redux";
 
-import { cbClient, phpSerialize, phpUnserialize } from "shared-utils";
+import { mapToDispatch, mapToState } from "shared-utils";
 import { LinkCell, ModalForm } from "shared-components";
 
 import { ActionCell, PageHeader, Loader, Preview, Cell } from "./components";
@@ -17,55 +20,27 @@ LinkCell.displayName = DataTableCell.displayName;
 Cell.displayName = DataTableCell.displayName;
 
 class ListView extends Component {
-  defaultData = {
-    data: [],
-    moduleInfo: {
-      fields: {}
-    },
-    fields: [],
-    linkfields: [],
+  state = {
     selectedRows: [],
-    pageLimit: 0,
     page: 1,
     sort: {
       property: "id",
       direction: "asc"
-    },
-    loading: false,
-    isMenuOpen: false,
-    previewData: {
-      data: {},
-      title: "",
-      headerData: [],
-      bodyData: [],
-      index: ""
-    },
-    showModal: false
+    }
   };
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      ...this.defaultData,
-      module: props.moduleName
-    };
-  }
-
   componentDidUpdate(prevState) {
-    const { moduleName } = this.props;
-    const prevModuleName = prevState.moduleName;
+    const { name } = this.props.moduleMeta;
+    const prevModuleName = prevState.moduleMeta.name;
 
-    if (moduleName && prevModuleName && moduleName !== prevModuleName) {
-      this.setState({ module: moduleName }, () => this.loadModuleData());
+    if (name !== prevModuleName) {
+      this.loadData();
     }
   }
 
   async componentDidMount() {
+    this.loadData();
     window.addEventListener("click", this.handleClick);
-
-    const client = await cbClient();
-    this.setState({ client }, () => this.loadModuleData());
   }
 
   componentWillUnmount() {
@@ -73,72 +48,23 @@ class ListView extends Component {
   }
 
   handleClick = e => {
-    const { isMenuOpen } = this.state;
+    const { actions, shown } = this.props;
 
-    if (isMenuOpen && !this.previewMenu.contains(e.target)) {
-      this.setState({ isMenuOpen: false });
+    if (shown.preview && !this.previewMenu.contains(e.target)) {
+      actions.setShown("preview", false);
       document.body.style.overflow = "auto";
     }
   };
 
-  loadModuleData = async () => {
-    const { client, module } = this.state;
-
-    const pageLimit = await client.doInvoke(
-      "SearchGlobalVar",
-      {
-        gvname: "Application_ListView_PageSize",
-        gvmodule: module
-      },
-      "get"
-    );
-
-    this.setState({ ...this.defaultData, pageLimit }, () => this.loadData());
-  };
-
   loadData = () => {
-    this.setState({ loading: true });
+    const { page, sort } = this.state;
+    const { actions, moduleMeta } = this.props;
 
-    const { pageLimit, module, client, sort } = this.state;
-    const { property, direction } = sort;
-    const page = this.state.page - 1;
-    let { fields, linkfields, moduleInfo } = this.state;
-    const offset = page * pageLimit;
-
-    const requests = [
-      client.doQuery(
-        `select * from ${module} order by ${property} ${direction} limit ${offset}, ${pageLimit}`
-      )
-    ];
-
-    if (!fields.length) {
-      requests.push(client.doInvoke("getfilterfields", { module }));
-      requests.push(client.doDescribe(module));
-    }
-
-    Promise.all(requests).then(res => {
-      const reqData = res[0].map(row => ({ ...row, actions: "" }));
-
-      if (!fields.length) {
-        linkfields = res[1].linkfields;
-        moduleInfo = {
-          fields: res[2].fields.reduce((acc, field) => {
-            return { ...acc, [field.name]: field };
-          }, {})
-        };
-        fields = res[1].fields.map(field => ({
-          key: field,
-          label: moduleInfo.fields[field].label
-        }));
-      }
-
-      this.setState({
-        data: reqData,
-        fields,
-        linkfields,
-        moduleInfo,
-        loading: false
-      });
+    actions.doQuery({
+      moduleName: moduleMeta.name,
+      pageLimit: moduleMeta.filterFields.pagesize,
+      page,
+      sort
     });
   };
 
@@ -156,139 +82,34 @@ class ListView extends Component {
 
   handlePageChange = page => {
     if (page != this.state.page) {
-      this.setState({ page, data: [] }, () => this.loadData());
+      this.setState({ page }, () => this.loadData());
     }
   };
 
-  deleteRow = id => {
-    const { data, client } = this.state;
+  previewRow = async data => {
+    const { actions, moduleMeta } = this.props;
 
-    return new Promise((resolve, reject) => {
-      client
-        .doDelete(id)
-        .then(res => {
-          if (res.status === "successful") {
-            resolve(data.findIndex(row => row.id === id));
-          } else {
-            reject();
-          }
-        })
-        .catch(() => reject());
-    });
-  };
-
-  formatValue = (field, data, referenceValues) => {
-    const { moduleInfo } = this.state;
-    const type = moduleInfo.fields[field].type.name;
-    const isReference = type === "reference" || type === "owner";
-
-    if (isReference && data[field]) {
-      const id = data[field];
-      return referenceValues[id].reference;
-    } else if (type === "boolean" && data[field] !== "") {
-      return data[field] == 0 ? "No" : "Yes";
-    }
-
-    return data[field];
-  };
-
-  previewRow = async (data, index) => {
-    const { linkfields, fields, moduleInfo, client, module } = this.state;
-
-    let meta = await client.doQuery(
-      `select contentjson from cbMap where mapname='${module}_ListColumns'`
-    );
-
-    meta = JSON.parse(meta[0].contentjson);
-
-    const headerFields = meta.summary.header.fields.field.map(field => field.name);
-    const bodyFields = meta.summary.body.fields.field.map(field => field.name);
-    const avaiableFields = Object.values(moduleInfo.fields).filter(field => {
-      const isHeader = headerFields.some(hField => hField === field.name);
-      const isBody = bodyFields.some(bField => bField === field.name);
-
-      return isHeader || isBody;
-    });
-
-    const referenceFields = avaiableFields
-      .filter(field => {
-        const type = field.type.name;
-        const hasValue = data[field.name];
-        const isReference = type === "reference" || type === "owner";
-
-        return isReference && hasValue;
-      })
-      .map(field => data[field.name]);
-    const hasImage = avaiableFields.some(field => field.uitype == 69 && data[field.name]);
-
-    let requests = [];
-    let images = [];
-    let referenceValues = [];
-
-    if (hasImage) {
-      requests.push(client.doInvoke("getRecordImages", { id: data.id }, "get"));
-    }
-
-    if (referenceFields.length) {
-      requests.push(
-        client.doInvoke(
-          "getReferenceValue",
-          {
-            id: phpSerialize(referenceFields)
-          },
-          "post"
-        )
-      );
-    }
-    const response = await Promise.all(requests);
-
-    if (referenceFields.length) {
-      referenceValues = phpUnserialize(response[0]);
-    }
-
-    images = response[1] || {};
-
-    const previewData = {
-      data,
-      index,
-      title: linkfields.map(field => data[field]).join(" "),
-      headerData: headerFields.map(field => ({
-        label: moduleInfo.fields[field].label,
-        value: this.formatValue(field, data, referenceValues)
-      })),
-      bodyData: bodyFields.map(field => ({
-        ...moduleInfo.fields[field],
-        images,
-        label: moduleInfo.fields[field].label,
-        value: this.formatValue(field, data, referenceValues)
-      }))
-    };
-
-    document.body.style.overflow = "hidden";
-    this.setState({ isMenuOpen: true, previewData });
+    actions.doRetrieve({ id: data.id, moduleMeta });
   };
 
   handleSingleDelete = id => {
-    const { data } = this.state;
+    const { actions } = this.props;
 
-    this.deleteRow(id).then(res => {
-      this.setState({ data: data.filter(row => row.id !== id) });
-    });
+    actions.doDelete(id);
   };
 
   handleMultiDelete = () => {
-    const { selectedRows, data } = this.state;
+    const { selectedRows } = this.state;
 
-    Promise.all(selectedRows.map(row => this.deleteRow(row.id))).then(res => {
-      this.setState({ data: data.filter((row, index) => !res.includes(index)) });
-    });
+    selectedRows.forEach(row => this.handleSingleDelete(row.id));
   };
 
   changeItem = change => {
-    const { data, previewData } = this.state;
-    let index = previewData.index + change;
-    index = Math.min(Math.max(index, 0), data.length - 1);
-    this.previewRow(data[index], index);
+    const { listviewData, preview, moduleMeta, actions } = this.props;
+    let index = listviewData.findIndex(item => item.id == preview.id);
+    index = Math.min(Math.max(index + change, 0), listviewData.length - 1);
+
+    actions.doRetrieve({ id: listviewData[index].id, moduleMeta });
   };
 
   onRowClick = item => {
@@ -298,8 +119,8 @@ class ListView extends Component {
   };
 
   renderField = field => {
-    const { linkfields } = this.state;
-    const { match } = this.props;
+    const { match, moduleMeta } = this.props;
+    const { linkfields } = moduleMeta.filterFields;
 
     if (linkfields.indexOf(field.key) === -1) {
       return (
@@ -322,38 +143,32 @@ class ListView extends Component {
   };
 
   render() {
-    const {
-      module,
-      data = [],
-      fields,
-      selectedRows,
-      isMenuOpen,
-      previewData,
-      page,
-      loading,
-      showModal,
-      moduleInfo
-    } = this.state;
-    const { match } = this.props;
+    const { selectedRows, page } = this.state;
+    const { match, listviewData, busy, shown, moduleMeta, preview, actions } = this.props;
 
     return (
-      <ListViewContainer hasData={!!data.length}>
-        {false && <ModalForm meta={Object.values(moduleInfo.fields)} module={module} />}
+      <ListViewContainer hasData={!!listviewData.length}>
+        <ModalForm
+          isOpen={shown.modal}
+          moduleMeta={moduleMeta}
+          close={() => actions.setShown("modal", false)}
+        />
 
         <PageHeader
           page={page}
-          module={module}
-          filters={[{ label: `All ${module}`, value: "all" }]}
-          title={`All ${module}`}
+          moduleName={moduleMeta.label}
+          filters={[{ label: `All ${moduleMeta.label}`, value: "all" }]}
+          title={`All ${moduleMeta.label}`}
           handleDelete={this.handleMultiDelete}
           handlePageChange={this.handlePageChange}
+          showModal={() => actions.setShown("modal")}
         />
 
         <TableContainer>
           <DataTable
             selectRows
             fixedLayout
-            items={data}
+            items={busy.listview ? [] : listviewData}
             selection={selectedRows}
             onRowChange={this.handleSelect}
             onSort={this.handleSort}
@@ -365,16 +180,16 @@ class ListView extends Component {
               />
             </DataTableColumn>
 
-            {fields.map(field => this.renderField(field))}
+            {moduleMeta.filterFields.fields.map(field => this.renderField(field))}
           </DataTable>
         </TableContainer>
 
-        {loading && <Loader />}
+        {busy.listview && <Loader />}
 
-        <PreviewMenu isOpen={isMenuOpen} innerRef={menu => (this.previewMenu = menu)}>
+        <PreviewMenu isOpen={shown.preview} innerRef={menu => (this.previewMenu = menu)}>
           <Preview
-            itemUrl={`${match.url}/${previewData.data.id}`}
-            previewData={previewData}
+            itemUrl={`${match.url}/${preview.id}`}
+            previewData={preview}
             changeItem={this.changeItem}
           />
         </PreviewMenu>
@@ -383,4 +198,17 @@ class ListView extends Component {
   }
 }
 
-export default ListView;
+const mapStateToProps = (state, { Module }) =>
+  mapToState(state, Module.selectors, ["busy", "shown", "listviewData", "preview"]);
+
+const mapDispatchToProps = (dispatch, { Module }) => ({
+  actions: mapToDispatch(dispatch, Module.actions)
+});
+
+export default compose(
+  Modular.view,
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(ListView);

@@ -41,7 +41,7 @@ export default class PageHeaderContainer extends Component {
   };
 
   render() {
-    const { filters, title, module } = this.props;
+    const { filters, title, moduleName, showModal } = this.props;
     const { page } = this.state;
 
     return (
@@ -49,7 +49,7 @@ export default class PageHeaderContainer extends Component {
         variant="objectHome"
         iconCategory="standard"
         iconName="account"
-        label={module}
+        label={moduleName}
         title={
           <h1 className="slds-page-header__title">
             <Dropdown value="all" options={filters}>
@@ -117,6 +117,7 @@ export default class PageHeaderContainer extends Component {
                 iconPosition="right"
                 responsive
                 label="Add Record"
+                onClick={showModal}
               />
             </HeaderActionRow>
           </>

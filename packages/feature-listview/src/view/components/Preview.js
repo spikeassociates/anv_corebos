@@ -26,56 +26,60 @@ const PreviewValue = ({ field }) => {
   return <PreviewHeaderValue>{field.value}</PreviewHeaderValue>;
 };
 
-export default ({ previewData, changeItem, itemUrl }) => (
-  <>
-    <PreviewHeaderContainer>
-      <Icon
-        category="standard"
-        name="account"
-        size="large"
-        containerClassName={["preview-icon"]}
-      />
-      <PreviewHeader>
-        <PreviewTitle>{previewData.title}</PreviewTitle>
-        {previewData.headerData.map((field, index) => (
+export default ({ previewData, changeItem, itemUrl }) => {
+  const { title, headerData, bodyData } = previewData;
+
+  return (
+    <>
+      <PreviewHeaderContainer>
+        <Icon
+          category="standard"
+          name="account"
+          size="large"
+          containerClassName={["preview-icon"]}
+        />
+        <PreviewHeader>
+          <PreviewTitle>{title}</PreviewTitle>
+          {headerData.map((field, index) => (
+            <PreviewHeaderRow key={index}>
+              <PreviewHeaderLabel>{field.label}:</PreviewHeaderLabel>
+              <PreviewHeaderValue>{field.value}</PreviewHeaderValue>
+            </PreviewHeaderRow>
+          ))}
+          <ChangePage>
+            <Button
+              iconCategory="utility"
+              iconName="left"
+              iconVariant="border"
+              variant="icon"
+              onClick={() => changeItem(-1)}
+            />
+            <Button
+              iconCategory="utility"
+              iconName="right"
+              iconVariant="border"
+              variant="icon"
+              onClick={() => changeItem(1)}
+            />
+          </ChangePage>
+        </PreviewHeader>
+      </PreviewHeaderContainer>
+
+      <Link to={itemUrl} onClick={() => (document.body.style.overflow = "auto")}>
+        <Button variant="success" className="view-details">
+          View Details
+        </Button>
+      </Link>
+
+      <div>
+        <PreviewTitle>Details</PreviewTitle>
+        {bodyData.map((field, index) => (
           <PreviewHeaderRow key={index}>
             <PreviewHeaderLabel>{field.label}:</PreviewHeaderLabel>
-            <PreviewHeaderValue>{field.value}</PreviewHeaderValue>
+            <PreviewValue field={field} />
           </PreviewHeaderRow>
         ))}
-        <ChangePage>
-          <Button
-            iconCategory="utility"
-            iconName="left"
-            iconVariant="border"
-            variant="icon"
-            onClick={() => changeItem(-1)}
-          />
-          <Button
-            iconCategory="utility"
-            iconName="right"
-            iconVariant="border"
-            variant="icon"
-            onClick={() => changeItem(1)}
-          />
-        </ChangePage>
-      </PreviewHeader>
-    </PreviewHeaderContainer>
-
-    <Link to={itemUrl} onClick={() => (document.body.style.overflow = "auto")}>
-      <Button variant="success" className="view-details">
-        View Details
-      </Button>
-    </Link>
-
-    <div>
-      <PreviewTitle>Details</PreviewTitle>
-      {previewData.bodyData.map((field, index) => (
-        <PreviewHeaderRow key={index}>
-          <PreviewHeaderLabel>{field.label}:</PreviewHeaderLabel>
-          <PreviewValue field={field} />
-        </PreviewHeaderRow>
-      ))}
-    </div>
-  </>
-);
+      </div>
+    </>
+  );
+};
