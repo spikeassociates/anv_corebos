@@ -1,7 +1,6 @@
 import { epics as epicsUtils } from "shared-resource";
 import { Repo } from "shared-repo";
-
-import { transformItem } from "./transform";
+import { transformItem } from "shared-utils";
 
 const epics = ({ actions, api }) => {
   const { asyncAction } = epicsUtils.async;

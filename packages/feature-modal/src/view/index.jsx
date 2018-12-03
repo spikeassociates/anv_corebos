@@ -17,7 +17,12 @@ import {
   InputModal,
   MultiSelect
 } from "shared-form-helper";
-import { normalize } from "shared-utils";
+import {
+  normalize,
+  getExpandedSections,
+  getSections,
+  getFieldsGroupedBySection
+} from "shared-utils";
 
 import { FormRowContainer } from "./styles";
 
@@ -30,24 +35,11 @@ class FormModal extends Component {
       ({ displaytype }) => ["1"].indexOf(displaytype) !== -1
     );
 
-    const groupedFields = fields
-      .filter(field => field.block)
-      .reduce((acc, field) => {
-        const blockId = field.block.blockid;
-        const blockFields = acc[blockId] || [];
-        return { ...acc, [blockId]: [...blockFields, field] };
-      }, {});
-
-    const sections = Object.values(groupedFields)
-      .map(items => items[0].block)
-      .sort((a, b) => (a.blocksequence > b.blocksequence ? 1 : -1));
-
-    const expandedSections = Object.keys(groupedFields).reduce(
-      (acc, id) => ({ ...acc, [id]: true }),
-      {}
-    );
-
-    this.state = { sections, groupedFields, expandedSections };
+    this.state = {
+      sections: getSections(fields),
+      groupedFields: getFieldsGroupedBySection(fields),
+      expandedSections: getExpandedSections(fields)
+    };
   }
 
   uitypeToNormalize = {
