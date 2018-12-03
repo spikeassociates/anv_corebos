@@ -3,14 +3,15 @@ import { DataTableCell, Dropdown } from "@salesforce/design-system-react";
 
 export default class ActionsCell extends Component {
   onSelect = selected => {
-    const { handleDelete, handlePreview, item, items } = this.props;
+    const { handleDelete, handlePreview, handleEdit, item, items } = this.props;
 
     if (selected.value === "delete") {
       handleDelete(item.id);
     } else if (selected.value === "preview") {
       const index = items.findIndex(row => row === item);
-
       handlePreview(item, index);
+    } else if (selected.value === "edit") {
+      handleEdit(item);
     }
   };
 

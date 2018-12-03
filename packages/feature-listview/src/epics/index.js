@@ -48,7 +48,30 @@ const epics = ({ actions, api }) => {
     ]
   });
 
-  return { ...doQuery, ...doDelete, ...doRetrieve };
+  const saveItem = asyncAction({
+    api: api.saveItem,
+    type: types.SAVE_ITEM,
+    onSuccess: [
+      action => {
+        const { operation } = action.requestPayload;
+        const item = action.payload;
+        const state = Repo.get("store").getState();
+        let data = [...state.app.listview._module.data.listview];
+
+        if (operation === "create") {
+          data.unshift(item);
+        } else {
+          const index = data.findIndex(row => row.id === item.id);
+          data[index] = item;
+        }
+
+        return actions.setData("listview", data);
+      },
+      action => actions.setShown("modal", false)
+    ]
+  });
+
+  return { ...doQuery, ...doDelete, ...doRetrieve, ...saveItem };
 };
 
 export default epics;

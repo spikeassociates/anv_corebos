@@ -24,7 +24,10 @@ class Authentication extends Component {
     return (
       <LoginFormContainer>
         <Form
-          initialValues={{ username: "admin", accessKey: "cdYTBpiMR9RfGgO" }}
+          initialValues={{
+            username: GLOBALS.COREBOS_USERNAME,
+            accessKey: GLOBALS.COREBOS_TOKEN
+          }}
           formApi={formApi => (this.formApi = formApi)}
         >
           <Field name="username" render={Input} placeholder="My placeholder" />

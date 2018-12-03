@@ -35,6 +35,8 @@ const epics = ({ actions, api }) => {
   const onAuth = action$ =>
     action$.ofType(authentication.types.AUTH).mergeMap(action => {
       PersistentRepo.set("token", action.payload.token);
+      PersistentRepo.set("userId", action.payload.userId);
+
       return Observable.of(actions.getModules());
     });
 

@@ -41,7 +41,7 @@ export default class PageHeaderContainer extends Component {
   };
 
   render() {
-    const { filters, title, moduleName, showModal } = this.props;
+    const { filters, title, moduleName, showModal, isPrimary } = this.props;
     const { page } = this.state;
 
     return (
@@ -97,28 +97,32 @@ export default class PageHeaderContainer extends Component {
                 />
               </PaginationContainer>
 
-              <Dropdown options={this.actions} onSelect={this.onSelect}>
-                <DropdownTrigger>
-                  <Button
-                    className="action-button"
-                    iconCategory="utility"
-                    iconName="down"
-                    iconPosition="right"
-                    responsive
-                    label="Actions"
-                  />
-                </DropdownTrigger>
-              </Dropdown>
+              {isPrimary && (
+                <Dropdown options={this.actions} onSelect={this.onSelect}>
+                  <DropdownTrigger>
+                    <Button
+                      className="action-button"
+                      iconCategory="utility"
+                      iconName="down"
+                      iconPosition="right"
+                      responsive
+                      label="Actions"
+                    />
+                  </DropdownTrigger>
+                </Dropdown>
+              )}
 
-              <Button
-                className="new-record"
-                iconCategory="utility"
-                iconName="add"
-                iconPosition="right"
-                responsive
-                label="Add Record"
-                onClick={showModal}
-              />
+              {isPrimary && (
+                <Button
+                  className="new-record"
+                  iconCategory="utility"
+                  iconName="add"
+                  iconPosition="right"
+                  responsive
+                  label="Add Record"
+                  onClick={showModal}
+                />
+              )}
             </HeaderActionRow>
           </>
         }

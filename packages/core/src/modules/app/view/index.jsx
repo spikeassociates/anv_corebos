@@ -74,6 +74,7 @@ class App extends React.Component {
           return (
             <ModuleComponent
               {...props}
+              isPrimary
               moduleMeta={this.getModuleMeta(route.corebosModule)}
             />
           );
@@ -83,7 +84,7 @@ class App extends React.Component {
   };
 
   render() {
-    const { Module, authenticated, modules } = this.props;
+    const { Module, authenticated } = this.props;
 
     const sidebarLinks = routes
       .filter(route => route.sidebar)
@@ -102,6 +103,7 @@ class App extends React.Component {
             {routes.map(route => this.renderRoute(route))}
 
             <Page.Route
+              isPrimary
               title={defaultRoute.corebosModule}
               condition={!authenticated}
               path="/"

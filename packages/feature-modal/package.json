@@ -1,5 +1,5 @@
 {
-  "name": "feature-listview",
+  "name": "feature-modal",
   "version": "0.0.1",
   "description": "",
   "main": "src/index.js",
@@ -28,7 +28,6 @@
     "shared-form-helper": "*",
     "shared-components": "*",
     "styled-components": "^2.4.0",
-    "deep-object-diff": "^1.1.0",
-    "feature-modal": "*"
+    "deep-object-diff": "^1.1.0"
   }
 }

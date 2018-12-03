@@ -1,4 +1,5 @@
 import base from "shared-api";
+import { PersistentRepo } from "shared-repo";
 
 const api = {
   doQuery: ({ moduleName, page = 1, pageLimit = 0, sort }) => {
@@ -15,7 +16,19 @@ const api = {
 
   doDelete: id => base.post("", { operation: "delete", id }),
 
-  doRetrieve: ({ id }) => base.get("", { operation: "retrieve", id })
+  doRetrieve: ({ id }) => base.get("", { operation: "retrieve", id }),
+
+  saveItem: ({ values, name, operation = "create" }) => {
+    if (!values["assigned_user_id"]) {
+      values["assigned_user_id"] = PersistentRepo.get("userId");
+    }
+
+    return base.post("", {
+      operation,
+      elementType: name,
+      element: JSON.stringify(values)
+    });
+  }
 };
 
 export default api;

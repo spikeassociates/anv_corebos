@@ -9,7 +9,7 @@ const transformItem = (moduleMeta, data) => {
       return data[`${field}ename`].reference;
     } else if (type === "boolean" && data[field] !== "") {
       return data[field] == 0 ? "No" : "Yes";
-    } else if (fields[field].uitype == 69) {
+    } else if (fields[field].uitype == 69 && data[field]) {
       return data[`${field}imageinfo`].fullpath;
     }
 

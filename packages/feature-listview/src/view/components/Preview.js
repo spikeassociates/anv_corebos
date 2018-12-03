@@ -14,7 +14,7 @@ import {
 } from "../styles";
 
 const PreviewValue = ({ field }) => {
-  if (field.uitype == 69) {
+  if (field.uitype == 69 && field.value) {
     return (
       <div>
         <PreviewImage src={field.value} />

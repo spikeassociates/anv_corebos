@@ -9,7 +9,7 @@ import { connect } from "react-redux";
 import Modular from "modular-redux";
 
 import { mapToDispatch, mapToState } from "shared-utils";
-import { LinkCell, ModalForm } from "shared-components";
+import { LinkCell } from "shared-components";
 
 import { ActionCell, PageHeader, Loader, Preview, Cell } from "./components";
 import { PreviewMenu, ListViewContainer, TableContainer } from "./styles";
@@ -26,7 +26,8 @@ class ListView extends Component {
     sort: {
       property: "id",
       direction: "asc"
-    }
+    },
+    modalInitialValues: {}
   };
 
   componentDidUpdate(prevState) {
@@ -104,6 +105,11 @@ class ListView extends Component {
     selectedRows.forEach(row => this.handleSingleDelete(row.id));
   };
 
+  handleEdit = item => {
+    const { actions } = this.props;
+    this.setState({ modalInitialValues: item }, () => actions.setShown("modal"));
+  };
+
   changeItem = change => {
     const { listviewData, preview, moduleMeta, actions } = this.props;
     let index = listviewData.findIndex(item => item.id == preview.id);
@@ -119,10 +125,10 @@ class ListView extends Component {
   };
 
   renderField = field => {
-    const { match, moduleMeta } = this.props;
+    const { match, moduleMeta, isPrimary } = this.props;
     const { linkfields } = moduleMeta.filterFields;
 
-    if (linkfields.indexOf(field.key) === -1) {
+    if (linkfields.indexOf(field.key) === -1 || !isPrimary) {
       return (
         <DataTableColumn
           key={field.key}
@@ -142,43 +148,65 @@ class ListView extends Component {
     );
   };
 
+  showCreateModal = () => {
+    const { actions } = this.props;
+    this.setState({ modalInitialValues: {} }, () => actions.setShown("modal"));
+  };
+
   render() {
-    const { selectedRows, page } = this.state;
-    const { match, listviewData, busy, shown, moduleMeta, preview, actions } = this.props;
+    const { selectedRows, page, modalInitialValues } = this.state;
+    const {
+      match,
+      listviewData,
+      busy,
+      shown,
+      moduleMeta,
+      preview,
+      actions,
+      isPrimary,
+      Module
+    } = this.props;
 
     return (
       <ListViewContainer hasData={!!listviewData.length}>
-        <ModalForm
-          isOpen={shown.modal}
-          moduleMeta={moduleMeta}
-          close={() => actions.setShown("modal", false)}
-        />
+        {isPrimary && shown.modal && (
+          <Module.view.modal
+            initialValues={modalInitialValues}
+            moduleMeta={moduleMeta}
+            saveItem={actions.saveItem}
+            close={() => actions.setShown("modal", false)}
+          />
+        )}
 
         <PageHeader
+          isPrimary={isPrimary}
           page={page}
           moduleName={moduleMeta.label}
           filters={[{ label: `All ${moduleMeta.label}`, value: "all" }]}
           title={`All ${moduleMeta.label}`}
           handleDelete={this.handleMultiDelete}
           handlePageChange={this.handlePageChange}
-          showModal={() => actions.setShown("modal")}
+          showModal={this.showCreateModal}
         />
 
         <TableContainer>
           <DataTable
-            selectRows
+            selectRows={isPrimary}
             fixedLayout
             items={busy.listview ? [] : listviewData}
             selection={selectedRows}
             onRowChange={this.handleSelect}
             onSort={this.handleSort}
           >
-            <DataTableColumn key="actions" property="actions" width="200px">
-              <ActionCell
-                handleDelete={this.handleSingleDelete}
-                handlePreview={this.previewRow}
-              />
-            </DataTableColumn>
+            {isPrimary && (
+              <DataTableColumn key="actions" property="actions" width="40px">
+                <ActionCell
+                  handleDelete={this.handleSingleDelete}
+                  handlePreview={this.previewRow}
+                  handleEdit={this.handleEdit}
+                />
+              </DataTableColumn>
+            )}
 
             {moduleMeta.filterFields.fields.map(field => this.renderField(field))}
           </DataTable>
@@ -186,13 +214,18 @@ class ListView extends Component {
 
         {busy.listview && <Loader />}
 
-        <PreviewMenu isOpen={shown.preview} innerRef={menu => (this.previewMenu = menu)}>
-          <Preview
-            itemUrl={`${match.url}/${preview.id}`}
-            previewData={preview}
-            changeItem={this.changeItem}
-          />
-        </PreviewMenu>
+        {isPrimary && (
+          <PreviewMenu
+            isOpen={shown.preview}
+            innerRef={menu => (this.previewMenu = menu)}
+          >
+            <Preview
+              itemUrl={`${match.url}/${preview.id}`}
+              previewData={preview}
+              changeItem={this.changeItem}
+            />
+          </PreviewMenu>
+        )}
       </ListViewContainer>
     );
   }

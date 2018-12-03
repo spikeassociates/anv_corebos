@@ -1,15 +1,21 @@
 import React from "react";
 import { Datepicker } from "@salesforce/design-system-react";
+import moment from "moment";
 
 const FormDatepicker = ({ value, onChange, label, ...rest }) => {
-  if (value) {
-    value = new Date(value.date);
-  }
+  value = value ? new Date(value) : new Date();
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div className="slds-form-element__label">{label}</div>
-      <Datepicker {...rest} value={value} onChange={(e, data) => onChange(data)} />
+      <Datepicker
+        {...rest}
+        value={value}
+        onChange={(e, data) => {
+          const date = moment(data.date).format("YYYY-MM-DD");
+          onChange(date);
+        }}
+      />
     </div>
   );
 };

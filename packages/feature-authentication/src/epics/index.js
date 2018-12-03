@@ -17,7 +17,12 @@ const epics = ({ actions, api }) => {
   const login = asyncAction({
     api: api.login,
     type: types.LOGIN,
-    onSuccess: [action => actions.auth({ token: action.payload.sessionName })]
+    onSuccess: [
+      action => {
+        const { sessionName, userId } = action.payload;
+        return actions.auth({ token: sessionName, userId });
+      }
+    ]
   });
 
   const unauth = action$ =>

@@ -8,10 +8,10 @@ import selectors from "./selectors";
 import epics from "./epics";
 import view from "./view";
 
-const Main = () =>
+const PlainListView = () =>
   Module(
     {
-      name: "main",
+      name: "modal",
       actions: {
         module: actions
       },
@@ -34,4 +34,37 @@ const Main = () =>
     [{ feature: "api" }, epicsUtils.modulist.feature]
   );
 
+const Main = ModalView =>
+  Module(
+    {
+      name: "main",
+      actions: {
+        module: actions,
+        modal: ModalView.actions
+      },
+      reducers: {
+        module: reducer,
+        modal: ModalView.reducer
+      },
+      selectors: {
+        module: selectors,
+        modal: ModalView.selectors
+      },
+      views: {
+        module: view,
+        modal: ModalView.view
+      },
+      api: {
+        module: api,
+        modal: ModalView.api
+      },
+      epics: {
+        module: epics,
+        modal: ModalView.epic
+      }
+    },
+    [{ feature: "api" }, epicsUtils.modulist.feature]
+  );
+
+export { Main, PlainListView };
 export default Main;

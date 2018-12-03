@@ -1,9 +1,11 @@
 import AppModule from "./app";
-import ListViewModule from "feature-listview";
+import ListViewModule, { PlainListView } from "feature-listview";
 import DetailViewModule from "feature-detailview";
 import AuthenticationViewModule from "feature-authentication";
+import ModalViewModule from "feature-modal";
 
-const ListView = ListViewModule();
+const ModalView = ModalViewModule(PlainListView());
+const ListView = ListViewModule(ModalView);
 const DetailView = DetailViewModule();
 const AuthenticationView = AuthenticationViewModule();
 
