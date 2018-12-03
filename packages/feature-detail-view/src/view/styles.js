@@ -48,8 +48,9 @@ const RelatedModule = styled.div`
 const PreviewContainer = styled.div`
   background-color: #ececec;
   position: fixed;
-  left: 20%;
+  left: 0;
   right: 0;
+  bottom: 0;
   z-index: 1;
   top: ${props => props.top + 12}px;
   height: ${props => (props.show ? "auto" : 0)};

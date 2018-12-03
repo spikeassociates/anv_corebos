@@ -8,9 +8,18 @@ import {
   DataTable,
   DataTableColumn
 } from "@salesforce/design-system-react";
+import { compose } from "redux";
+import { connect } from "react-redux";
+import Modular from "modular-redux";
 
+import { mapToDispatch, mapToState } from "shared-utils";
 import { LinkCell } from "shared-components";
-import { cbClient, phpSerialize, phpUnserialize } from "shared-utils";
+import {
+  getFieldsGroupedBySection,
+  getSections,
+  getExpandedSections
+} from "shared-utils";
+
 import {
   Container,
   SectionContainer,
@@ -25,43 +34,27 @@ import {
 } from "./styles";
 import "./styles.css";
 
-class Module extends Component {
-  defaultPreviewModule = {
-    relatedModule: "",
-    data: [],
-    fields: []
-  };
-
+class DetailView extends Component {
   constructor(props) {
     super(props);
 
-    const { moduleName, match } = this.props;
+    const { moduleMeta, match } = this.props;
 
     this.state = {
       id: match.params.id,
-      data: {},
-      module: moduleName,
-      meta: {
-        fields: []
-      },
-      groupedFields: {},
-      sections: [],
-      headerMeta: {},
-      expandedSections: {},
-      collapseHeader: false,
-      relatedModules: [],
-      isPreviewOpen: false,
-      previewModule: this.defaultPreviewModule,
-      previewTopDistance: 0,
-      orderBy: {}
+      expandedSections: getExpandedSections(moduleMeta.fields),
+      collapseHeader: moduleMeta.headerFields.length === 0,
+      previewModule: { relatedModule: "", fields: [] },
+      previewTopDistance: 0
     };
   }
 
   async componentDidMount() {
-    window.addEventListener("click", this.handleClick);
+    const { id } = this.state;
+    const { actions, moduleMeta } = this.props;
 
-    const client = await cbClient();
-    this.setState({ client }, () => this.loadData());
+    actions.doRetrieve({ id, moduleMeta });
+    window.addEventListener("click", this.handleClick);
   }
 
   componentWillUnmount() {
@@ -69,131 +62,12 @@ class Module extends Component {
   }
 
   handleClick = e => {
+    const { actions, shown } = this.props;
     const clickedInsidePreview = this.preview.contains(e.target);
 
-    if (!clickedInsidePreview) {
-      this.setState({ isPreviewOpen: false });
+    if (!clickedInsidePreview && shown.relatedRecords) {
+      actions.setShown("relatedRecords", false);
     }
-  };
-
-  loadData = () => {
-    const { client, module, id } = this.state;
-
-    const requests = [
-      client.doRetrieve(id),
-      client.doQuery(
-        `select contentjson from cbMap where mapname='${module}_ListColumns'`
-      ),
-      client.doDescribe(module),
-      client.doInvoke("getRelatedModulesInfomation", { module }, "post"),
-      client.doQuery(`select contentjson from cbMap where mapname='AccountsRelatedPanes'`)
-    ];
-
-    Promise.all(requests).then(async res => {
-      let [data, headerMeta, meta, relatedModules, panes] = res;
-      // console.log(JSON.parse(panes[0].contentjson).panes.pane);
-
-      if (headerMeta.length) {
-        headerMeta = JSON.parse(headerMeta[0].contentjson);
-      }
-
-      meta = this.transformMeta(meta);
-      data = await this.transformData(data, meta);
-
-      this.setState({
-        headerMeta,
-        data,
-        ...meta,
-        relatedModules: Object.values(relatedModules)
-      });
-    });
-  };
-
-  transformData = async (data, meta) => {
-    const { client } = this.state;
-    const transformedData = { ...data };
-
-    const hasImage = Object.values(meta.meta.fields).some(
-      field => field.uitype == 69 && data[field.name]
-    );
-
-    const referenceFields = meta.meta.fields.reduce((acc, field) => {
-      const value = data[field.name];
-      const type = field.type.name;
-      const isReference = type === "reference" || type === "owner";
-
-      return isReference && value ? { ...acc, [value]: field.name } : acc;
-    }, {});
-
-    const hasReferences = !!Object.keys(referenceFields);
-
-    let requests = [];
-    let referenceValues = [];
-
-    if (hasReferences) {
-      requests.push(
-        client.doInvoke(
-          "getReferenceValue",
-          { id: phpSerialize(Object.keys(referenceFields)) },
-          "post"
-        )
-      );
-    }
-
-    if (hasImage) {
-      requests.push(client.doInvoke("getRecordImages", { id: data.id }, "get"));
-    }
-
-    const response = await Promise.all(requests);
-    const images = response[1] || {};
-
-    if (hasReferences) {
-      referenceValues = phpUnserialize(response[0]);
-    }
-
-    Object.keys(referenceFields).forEach(field => {
-      const fieldName = referenceFields[field];
-      const fieldValue = referenceValues[field].reference;
-      transformedData[fieldName] = fieldValue;
-    });
-
-    transformedData.images = images.images || [];
-
-    meta.meta.fields
-      .filter(field => field.type.name === "boolean")
-      .map(field => field.name)
-      .forEach(name => {
-        transformedData[name] = transformedData[name] == 0 ? "No" : "Yes";
-      });
-
-    return transformedData;
-  };
-
-  transformMeta = meta => {
-    let { fields, ...rest } = meta;
-    fields = fields.filter(
-      ({ displaytype }) => ["1", "2", "4"].indexOf(displaytype) !== -1
-    );
-
-    const groupedFields = fields.filter(field => field.block).reduce((acc, field) => {
-      const blockId = field.block.blockid;
-      const blockFields = acc[blockId] || [];
-      return { ...acc, [blockId]: [...blockFields, field] };
-    }, {});
-
-    const sections = Object.values(groupedFields)
-      .map(items => items[0].block)
-      .sort((a, b) => (a.blocksequence > b.blocksequence ? 1 : -1));
-
-    const expandedSections = Object.keys(groupedFields).reduce(
-      (acc, id) => ({
-        ...acc,
-        [id]: true
-      }),
-      {}
-    );
-
-    return { meta: { fields, ...rest }, sections, groupedFields, expandedSections };
   };
 
   toggleSection = blockId => {
@@ -203,47 +77,21 @@ class Module extends Component {
     this.setState({ expandedSections });
   };
 
-  getTitle = () => {
-    const { headerMeta, data } = this.state;
-
-    if (headerMeta.summary) {
-      return headerMeta.summary.title
-        .split(",")
-        .map(field => data[field])
-        .join(" ");
-    }
-
-    return "";
-  };
-
   getHeaderFields = () => {
-    const { headerMeta, data, meta } = this.state;
+    const { item } = this.props;
 
-    const allFields = meta.fields.reduce((acc, field) => {
-      return { ...acc, [field.name]: field.label };
-    }, {});
-
-    if (headerMeta.summary) {
-      const headerFields = headerMeta.summary.header.fields.field.map(field => {
-        return { label: allFields[field.name], content: data[field.name] };
-      });
-
-      return headerFields;
-    }
-
-    return [];
+    return item.headerData.map(({ label, value }) => ({ label, content: value }));
   };
 
   renderField = field => {
-    const { data } = this.state;
+    const { item } = this.props;
     const { name, label, uitype } = field;
+    const value = item.data[name];
 
-    if (uitype == 69) {
+    if (uitype == 69 && value) {
       return (
         <div key={name}>
-          {data.images.map(image => (
-            <Image src={image.fullpath} key={image.id} />
-          ))}
+          <Image src={value} />
         </div>
       );
     }
@@ -251,7 +99,7 @@ class Module extends Component {
     return (
       <FieldContainer key={name}>
         <Label>{label}</Label>
-        <Value>{data[name]}</Value>
+        <Value>{value}</Value>
         <Separator />
       </FieldContainer>
     );
@@ -259,85 +107,66 @@ class Module extends Component {
 
   renderTableField = field => {
     const { previewModule } = this.state;
-    const relatedModule = previewModule.relatedModule.toLowerCase();
+    const { linkfields, relatedModule } = previewModule;
 
-    if (!field.linkable) {
-      return (
-        <DataTableColumn
-          key={field.name}
-          property={field.name}
-          label={field.label}
-          sortable
-        />
-      );
+    if (linkfields.indexOf(field) === -1) {
+      return <DataTableColumn key={field} property={field} label={field} sortable />;
     }
 
     return (
-      <DataTableColumn
-        key={field.name}
-        property={field.name}
-        label={field.label}
-        sortable
-      >
-        <LinkCell route={`/${relatedModule}`} />
+      <DataTableColumn key={field} property={field} label={field} sortable>
+        <LinkCell route={`/${relatedModule.toLowerCase()}`} />
       </DataTableColumn>
     );
   };
 
-  previewRelatedModule = moduleInfo => {
-    const { client, module, id } = this.state;
+  previewRelatedModule = (e, moduleInfo) => {
+    const { id } = this.state;
+    const { actions, moduleMeta } = this.props;
     const relatedModule = moduleInfo.related_module;
 
-    Promise.all([
-      client.doGetRelatedRecords(id, module, relatedModule),
-      client.doInvoke("getfilterfields", { module: relatedModule }),
-      client.doDescribe(relatedModule)
-    ]).then(res => {
-      const { fields, linkfields } = res[1];
-      const tableFields = res[2].fields
-        .filter(field => fields.indexOf(field.name) !== -1)
-        .map(field => ({ ...field, linkable: linkfields.indexOf(field.name) !== -1 }));
+    actions.getRelatedRecords({ id, module: moduleMeta.name, relatedModule });
 
-      this.setState({
-        isPreviewOpen: true,
-        previewModule: { relatedModule, data: res[0].records, fields: tableFields }
-      });
+    this.setState({
+      previewModule: { ...moduleInfo.filterFields, relatedModule },
+      previewTopDistance: e.clientY
     });
   };
 
   handleSort = sortColumn => {
-    const { previewModule, client, id, module } = this.state;
-    const { property, sortDirection } = sortColumn;
-    const orderBy = `${property} ${sortDirection}`;
+    const { id, previewModule } = this.state;
+    const { actions, moduleMeta } = this.props;
+    const orderBy = `${sortColumn.property} ${sortColumn.sortDirection}`;
 
-    client
-      .doGetRelatedRecords(id, module, previewModule.relatedModule, { orderby: orderBy })
-      .then(res => {
-        this.setState({ previewModule: { ...previewModule, data: res.records } });
-      });
+    actions.getRelatedRecords({
+      id,
+      module: moduleMeta.name,
+      relatedModule: previewModule.relatedModule,
+      queryParameters: { orderby: orderBy }
+    });
   };
 
   render() {
     const {
-      meta,
       expandedSections,
-      groupedFields,
-      sections,
       collapseHeader,
-      relatedModules,
-      isPreviewOpen,
       previewModule,
       previewTopDistance
     } = this.state;
+    const { item, moduleMeta, relatedRecords, shown } = this.props;
+    const { fields } = moduleMeta;
+    const sections = getSections(fields);
+    const groupedFields = getFieldsGroupedBySection(fields);
+    const relatedModules = Object.values(moduleMeta.relatedModules);
 
     return (
       <Container>
         <PreviewContainer
           innerRef={preview => (this.preview = preview)}
           top={previewTopDistance}
-          show={isPreviewOpen && previewModule.fields.length}
+          show={shown.relatedRecords}
         >
-          <DataTable fixedLayout items={previewModule.data} onSort={this.handleSort}>
+          <DataTable fixedLayout items={relatedRecords} onSort={this.handleSort}>
             {previewModule.fields.map(field => this.renderTableField(field))}
           </DataTable>
         </PreviewContainer>
@@ -346,8 +175,8 @@ class Module extends Component {
           variant={collapseHeader ? "objectHome" : "recordHome"}
           iconCategory="standard"
           iconName="account"
-          label={meta.label}
-          title={this.getTitle()}
+          label={moduleMeta.label}
+          title={item.title}
           details={this.getHeaderFields()}
         />
 
@@ -375,15 +204,9 @@ class Module extends Component {
               {relatedModules.map(item => (
                 <RelatedModule
                   key={item.related_tabid}
-                  onClick={e => {
-                    this.setState({
-                      previewTopDistance: e.clientY,
-                      previewModule: this.defaultPreviewModule
-                    });
-                    this.previewRelatedModule(item);
-                  }}
+                  onClick={e => this.previewRelatedModule(e, item)}
                 >
-                  <span>{item.labeli18n}</span>
+                  <span>{item.label}</span>
                 </RelatedModule>
               ))}
             </RelatedList>
@@ -394,4 +217,17 @@ class Module extends Component {
   }
 }
 
-export default Module;
+const mapStateToProps = (state, { Module }) =>
+  mapToState(state, Module.selectors, ["item", "relatedRecords", "shown"]);
+
+const mapDispatchToProps = (dispatch, { Module }) => ({
+  actions: mapToDispatch(dispatch, Module.actions)
+});
+
+export default compose(
+  Modular.view,
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(DetailView);
