@@ -1,5 +1,6 @@
 import Modular from "modular-redux";
 import Resources from "../resources";
+import { PersistentRepo } from "shared-repo";
 
 const initialState = {
   shown: {},
