@@ -1,7 +1,6 @@
 import { Observable } from "rxjs";
 import { PersistentRepo } from "shared-repo";
-
-import { getQs, getUrl } from "./utils";
+import { getQs, getUrl } from "shared-utils";
 
 const { ajax } = Observable;
 

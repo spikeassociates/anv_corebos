@@ -24,7 +24,7 @@ th:nth-child(2) {
   margin: 10px 0;
 }
 
-.slds-table--fixed-layout {
+.slds-table_fixed-layout {
   table-layout: inherit !important;
 }
 

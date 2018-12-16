@@ -8,7 +8,7 @@ import { compose } from "redux";
 import { connect } from "react-redux";
 import Modular from "modular-redux";
 
-import { mapToDispatch, mapToState } from "shared-utils";
+import { mapToDispatch, mapToState, getQs } from "shared-utils";
 import { LinkCell } from "shared-components";
 
 import { ActionCell, PageHeader, Loader, Preview, Cell } from "./components";
@@ -125,7 +125,7 @@ class ListView extends Component {
   };
 
   renderField = field => {
-    const { match, moduleMeta, isPrimary } = this.props;
+    const { moduleMeta, isPrimary } = this.props;
     const { linkfields } = moduleMeta.filterFields;
 
     if (linkfields.indexOf(field.key) === -1 || !isPrimary) {
@@ -143,7 +143,7 @@ class ListView extends Component {
 
     return (
       <DataTableColumn key={field.key} property={field.key} label={field.label} sortable>
-        <LinkCell route={match.path} />
+        <LinkCell moduleName={moduleMeta.name} />
       </DataTableColumn>
     );
   };
@@ -156,7 +156,6 @@ class ListView extends Component {
   render() {
     const { selectedRows, page, modalInitialValues } = this.state;
     const {
-      match,
       listviewData,
       busy,
       shown,
@@ -220,7 +219,13 @@ class ListView extends Component {
             innerRef={menu => (this.previewMenu = menu)}
           >
             <Preview
-              itemUrl={`${match.url}/${preview.id}`}
+              itemUrl={{
+                search: getQs({
+                  view: "detail",
+                  moduleName: moduleMeta.name,
+                  id: preview.id
+                })
+              }}
               previewData={preview}
               changeItem={this.changeItem}
             />

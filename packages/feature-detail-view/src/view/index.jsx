@@ -38,10 +38,10 @@ class DetailView extends Component {
   constructor(props) {
     super(props);
 
-    const { moduleMeta, match } = this.props;
+    const { moduleMeta, id } = this.props;
 
     this.state = {
-      id: match.params.id,
+      id,
       expandedSections: getExpandedSections(moduleMeta.fields),
       collapseHeader: moduleMeta.headerFields.length === 0,
       previewModule: { relatedModule: "", fields: [] },

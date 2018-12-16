@@ -31,4 +31,35 @@ const snakeToCamelCase = key => {
 const camelToSnakeCase = key =>
   key.replace(/(\B[A-Z])/g, (match, group) => `_${group.toLowerCase()}`);
 
-export { mapToDispatch, mapToState, debounce, snakeToCamelCase, camelToSnakeCase };
+const decodeQs = (searchUrl = "") =>
+  searchUrl
+    .slice(1)
+    .split("&")
+    .reduce((acc, item) => {
+      const [key, value] = item.split("=");
+      return { ...acc, [key]: decodeURIComponent(value) };
+    }, {});
+
+const getQs = obj =>
+  obj
+    ? "?" +
+      Object.entries(obj)
+        .map(([key, val]) => {
+          const value = typeof val === "object" ? btoa(JSON.stringify(val)) : val;
+          return `${key}=${encodeURIComponent(value)}`;
+        })
+        .join("&")
+    : "";
+
+const getUrl = url => (/^(f|ht)tps?:\/\//i.test(url) ? url : GLOBALS.BASE_API + url);
+
+export {
+  mapToDispatch,
+  mapToState,
+  debounce,
+  snakeToCamelCase,
+  camelToSnakeCase,
+  decodeQs,
+  getQs,
+  getUrl
+};

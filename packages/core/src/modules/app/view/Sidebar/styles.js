@@ -1,31 +1,17 @@
 import styled from "styled-components";
-import { NavLink } from "react-router-dom";
 
-const Logo = styled.img`
-  margin: 2.5rem 2.5rem 1.5rem 2.5rem;
-  display: block;
-  width: 95px;
-  object-fit: cover;
+const Link = styled.div`
+  color: rgba(255, 255, 255, 0.6);
+  padding: 7px 15px;
+  cursor: pointer;
 
-  @media (max-width: 750px) {
-    margin: 1rem auto;
+  &:hover {
+    background-color: rgb(69, 120, 191);
   }
 `;
 
-const Link = styled(NavLink)`
-  text-transform: uppercase;
-
-  &:hover,
-  &:focus,
-  &:active {
-    text-decoration: none !important;
-  }
+const Container = styled.div`
+  margin-top: 15px;
 `;
 
-const WaffleContainer = styled.div`
-  height: 100% !important;
-  display: flex !important;
-  align-items: center;
-`;
-
-export { Logo, Link, WaffleContainer };
+export { Link, Container };
