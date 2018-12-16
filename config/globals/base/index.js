@@ -1,5 +1,3 @@
-const globalVariables = require("./variables");
-
 const CDN = "";
 const now = new Date();
 
@@ -15,7 +13,7 @@ const BASE = {
     }
   },
 
-  ...globalVariables
+  MATTERMOST_PLUGIN: "com.mattermost.test"
 };
 
 module.exports = BASE;

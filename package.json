@@ -8,7 +8,9 @@
     "bootstrap": "lerna bootstrap --hoist",
     "start": "yarn bootstrap && webpack-dev-server --config ./webpack/dev.config.js",
     "build": "yarn clean && yarn bootstrap && webpack --config ./webpack/prod.config.js",
-    "analyze": "yarn clean && yarn bootstrap && webpack --config ./webpack/analyze.config.js"
+    "analyze": "yarn clean && yarn bootstrap && webpack --config ./webpack/analyze.config.js",
+    "mattermost": "rm -rf mattermost.tar.gz && rm -rf dist_mattermost && mkdir dist_mattermost && cp plugin.json dist_mattermost/ && cp dist/* dist_mattermost/ && cp -r node_modules/@salesforce-ux/design-system/assets/icons dist_mattermost/  && tar -czvf mattermost.tar.gz dist_mattermost",
+    "bundle": "yarn build && yarn mattermost"
   },
   "keywords": [],
   "author": "coreBOS",
@@ -31,7 +33,7 @@
   },
   "dependencies": {
     "@salesforce-ux/design-system": "^2.6.2",
-    "@salesforce/design-system-react": "^0.8.20",
+    "@salesforce/design-system-react": "^0.9.1",
     "axios": "^0.18.0",
     "css-loader": "^1.0.0",
     "deep-object-diff": "^1.1.0",

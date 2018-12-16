@@ -28,6 +28,6 @@ module.exports = {
   output: {
     path: dest,
     publicPath: "/",
-    filename: "[name].js"
+    filename: "main.js"
   }
 };

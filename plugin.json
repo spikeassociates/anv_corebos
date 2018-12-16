@@ -1,0 +1,8 @@
+{
+  "id": "com.mattermost.test",
+  "name": "test",
+  "description": "",
+  "webapp": {
+    "bundle_path": "main.js"
+  }
+}

@@ -12,6 +12,13 @@ module.exports = {
       GLOBALS
     })
   ],
+  externals: {
+    react: "React",
+    "react-dom": "ReactDOM"
+  },
+  entry: {
+    app: ["./packages/core/src/index.jsx"]
+  },
   output: {
     ...base.output,
     publicPath: process.env.PUBLIC_PATH
