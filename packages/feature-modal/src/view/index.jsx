@@ -79,11 +79,7 @@ class FormModal extends Component {
       key: field.name,
       name: field.name,
       label: field.label,
-      render: () => (
-        <div>
-          {field.label} {uitype}
-        </div>
-      ),
+      render: () => null,
       normalize: this.normalizeField(uitype)
     };
 
@@ -123,13 +119,12 @@ class FormModal extends Component {
   saveData = () => {
     const { saveItem, moduleMeta } = this.props;
     const values = this.formApi.values();
-    console.log(values);
 
-    // saveItem({
-    //   values,
-    //   name: moduleMeta.name,
-    //   operation: values.id ? "update" : "create"
-    // });
+    saveItem({
+      values,
+      name: moduleMeta.name,
+      operation: values.id ? "update" : "create"
+    });
   };
 
   render() {

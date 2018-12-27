@@ -21,7 +21,6 @@ const App = () => {
   return (
     <Provider store={corebosStore}>
       <IconSettings {...(GLOBALS.MODE === "PROD" ? iconSettingsProd : iconSettingsDev)}>
-        <span style={{ color: "red" }}>test</span>
         <Router />
       </IconSettings>
     </Provider>

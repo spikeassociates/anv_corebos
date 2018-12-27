@@ -4,7 +4,7 @@ import { PersistentRepo } from "shared-repo";
 
 const initialState = {
   data: {
-    modules: PersistentRepo.get("modules") || []
+    modules: PersistentRepo.get("modules") || {}
   }
 };
 

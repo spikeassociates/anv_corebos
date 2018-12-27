@@ -12,7 +12,7 @@ export default () => {
       {GLOBALS.MODULES.map(moduleName => (
         <Link
           onClick={() => {
-            const path = url + getQs({ view: "listview", moduleName });
+            const path = url + getQs({ view: "list", moduleName });
             window.history.pushState({ path }, "", path);
           }}
           key={moduleName}
