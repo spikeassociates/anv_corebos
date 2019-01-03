@@ -53,6 +53,21 @@ const getQs = obj =>
 
 const getUrl = url => (/^(f|ht)tps?:\/\//i.test(url) ? url : GLOBALS.BASE_API + url);
 
+const getElemStyle = (selector, attribute) => {
+  const elem = document.querySelector(selector);
+
+  return elem ? window.getComputedStyle(elem)[attribute] : "0px";
+};
+
+const changeRoute = (params, overwrite = false) => {
+  const { origin, pathname, search } = window.location;
+  const url = `${origin}${pathname}`;
+  const newParams = overwrite ? params : { ...decodeQs(search), ...params };
+  const path = url + getQs(newParams);
+
+  window.history.pushState({ path }, "", path);
+};
+
 export {
   mapToDispatch,
   mapToState,
@@ -61,5 +76,7 @@ export {
   camelToSnakeCase,
   decodeQs,
   getQs,
-  getUrl
+  getUrl,
+  getElemStyle,
+  changeRoute
 };

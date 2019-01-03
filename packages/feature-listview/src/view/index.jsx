@@ -172,7 +172,6 @@ class ListView extends Component {
           <Module.view.modal
             initialValues={modalInitialValues}
             moduleMeta={moduleMeta}
-            saveItem={actions.saveItem}
             close={() => actions.setShown("modal", false)}
           />
         )}

@@ -21,7 +21,7 @@ class App extends React.Component {
   }
 
   getView = () => {
-    const { Module, modules, route, authenticated } = this.props;
+    const { Module, modules, route } = this.props;
     const { view, moduleName, id } = decodeQs(route);
     const moduleMeta = modules[moduleName];
 
@@ -31,10 +31,9 @@ class App extends React.Component {
       return <Module.view.listview {...props} />;
     } else if (view === "detail" && id) {
       return <Module.view.detailview {...props} id={id} />;
+    } else if (view === "create") {
+      return <Module.view.modal moduleMeta={moduleMeta} />;
     }
-    // else if (view === "create") {
-    //   return <Module.view.modal moduleMeta={moduleMeta} />;
-    // }
   };
 
   render() {

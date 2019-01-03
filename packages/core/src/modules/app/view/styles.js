@@ -1,10 +1,5 @@
 import styled from "styled-components";
-
-const getElemStyle = (selector, attribute) => {
-  const elem = document.querySelector(selector);
-
-  return elem ? window.getComputedStyle(elem)[attribute] : "0px";
-};
+import { getElemStyle } from "shared-utils";
 
 const PageContainer = styled.div`
   height: 100%;

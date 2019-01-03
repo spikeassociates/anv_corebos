@@ -2,9 +2,9 @@ import { epics as epicsUtils } from "shared-resource";
 import { Repo } from "shared-repo";
 import { transformItem } from "shared-utils";
 
-const epics = ({ actions, api }) => {
+const epics = ({ actions, api, name }) => {
   const { asyncAction } = epicsUtils.async;
-  const { types } = actions;
+  const { types, modal } = actions;
 
   const doQuery = asyncAction({
     api: api.doQuery,
@@ -15,6 +15,10 @@ const epics = ({ actions, api }) => {
       action => actions.setBusy("listview", false)
     ]
   });
+
+  if (name === "modal") {
+    return { ...doQuery };
+  }
 
   const doRetrieve = asyncAction({
     api: api.doRetrieve,
@@ -47,30 +51,27 @@ const epics = ({ actions, api }) => {
     ]
   });
 
-  const saveItem = asyncAction({
-    api: api.saveItem,
-    type: types.SAVE_ITEM,
-    onSuccess: [
-      action => {
-        const { operation } = action.requestPayload;
-        const item = action.payload;
-        const state = Repo.get("store").getState();
-        let data = [...state.app.listview._module.data.listview];
+  const onItemSaved = action$ =>
+    action$.ofType(modal.types.SAVE_ITEM_SUCCESS).mergeMap(action => {
+      const { operation } = action.requestPayload;
+      const item = action.payload;
+      const state = Repo.get("store").getState();
+      let data = [...state.app.listview._module.data.listview];
 
-        if (operation === "create") {
-          data.unshift(item);
-        } else {
-          const index = data.findIndex(row => row.id === item.id);
-          data[index] = item;
-        }
+      if (operation === "create") {
+        data.unshift(item);
+      } else {
+        const index = data.findIndex(row => row.id === item.id);
+        data[index] = item;
+      }
 
-        return actions.setData("listview", data);
-      },
-      action => actions.setShown("modal", false)
-    ]
-  });
+      return Observable.of(
+        actions.setData("listview", data),
+        actions.setShown("modal", false)
+      );
+    });
 
-  return { ...doQuery, ...doDelete, ...doRetrieve, ...saveItem };
+  return { ...doQuery, ...doDelete, ...doRetrieve, onItemSaved };
 };
 
 export default epics;

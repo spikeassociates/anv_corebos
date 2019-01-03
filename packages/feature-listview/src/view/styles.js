@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { getElemStyle } from "shared-utils";
 
 const Header = styled.header`
   font-size: 1.75rem;
@@ -21,6 +22,7 @@ const PreviewMenu = styled.div`
   top: 0;
   bottom: 0;
   right: 0;
+  left: ${getElemStyle("#app-content", "marginLeft")};
   background-color: #fff;
   width: ${props => (props.isOpen ? "550px" : "0")};
   transition: all 0.2s ease-in-out;

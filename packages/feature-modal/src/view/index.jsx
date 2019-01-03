@@ -6,7 +6,10 @@ import {
   AccordionPanel
 } from "@salesforce/design-system-react";
 import Modular from "modular-redux";
+import { compose } from "redux";
+import { connect } from "react-redux";
 
+import { mapToDispatch, mapToState } from "shared-utils";
 import { Form, Field } from "shared-form";
 import {
   Input,
@@ -117,10 +120,10 @@ class FormModal extends Component {
   }
 
   saveData = () => {
-    const { saveItem, moduleMeta } = this.props;
+    const { actions, moduleMeta } = this.props;
     const values = this.formApi.values();
 
-    saveItem({
+    actions.saveItem({
       values,
       name: moduleMeta.name,
       operation: values.id ? "update" : "create"
@@ -171,4 +174,17 @@ class FormModal extends Component {
   }
 }
 
-export default Modular.view(FormModal);
+const mapStateToProps = (state, { Module }) =>
+  mapToState(state, Module.selectors, ["busy"]);
+
+const mapDispatchToProps = (dispatch, { Module }) => ({
+  actions: mapToDispatch(dispatch, Module.actions)
+});
+
+export default compose(
+  Modular.view,
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(FormModal);

@@ -1,6 +1,6 @@
 import { epics as epicsUtils } from "shared-resource";
 import { PersistentRepo } from "shared-repo";
-
+import { changeRoute } from "shared-utils";
 const transformModules = modules => {
   return Object.entries(modules).reduce((acc, [moduleName, data]) => {
     data.titleFields = data.fields
@@ -29,7 +29,7 @@ const transformModules = modules => {
 };
 
 const epics = ({ actions, api }) => {
-  const { authentication } = actions;
+  const { authentication, modal } = actions;
   const { asyncAction } = epicsUtils.async;
 
   const onAuth = action$ =>
@@ -53,7 +53,15 @@ const epics = ({ actions, api }) => {
     ]
   });
 
-  return { onAuth, ...getModules };
+  const onItemSaved = action$ => {
+    return action$.ofType(modal.types.SAVE_ITEM_SUCCESS).mergeMap(action => {
+      changeRoute({ view: "list" });
+
+      return action$.ignoreElements();
+    });
+  };
+
+  return { onAuth, onItemSaved, ...getModules };
 };
 
 export default epics;
