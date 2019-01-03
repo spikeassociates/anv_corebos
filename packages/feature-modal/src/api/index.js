@@ -12,7 +12,9 @@ const api = {
       elementType: name,
       element: JSON.stringify(values)
     });
-  }
+  },
+
+  doRetrieve: ({ id }) => base.get("", { operation: "retrieve", id })
 };
 
 export default api;

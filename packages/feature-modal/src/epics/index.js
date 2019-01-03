@@ -1,4 +1,5 @@
 import { epics as epicsUtils } from "shared-resource";
+import { formatValue } from "shared-utils";
 
 const epics = ({ actions, api }) => {
   const { asyncAction } = epicsUtils.async;
@@ -7,14 +8,19 @@ const epics = ({ actions, api }) => {
   const saveItem = asyncAction({
     api: api.saveItem,
     type: types.SAVE_ITEM,
-    onRequest: [
-      action => {
-        return actions.setBusy("form");
-      }
+    onRequest: [action => actions.setBusy("form")]
+  });
+
+  const doRetrieve = asyncAction({
+    api: api.doRetrieve,
+    type: types.DO_RETRIEVE,
+    onSuccess: [
+      action => actions.setData("initial", action.payload),
+      action => actions.setShown("form")
     ]
   });
 
-  return { ...saveItem };
+  return { ...saveItem, ...doRetrieve };
 };
 
 export default epics;

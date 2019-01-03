@@ -170,7 +170,7 @@ class ListView extends Component {
       <ListViewContainer hasData={!!listviewData.length}>
         {isPrimary && shown.modal && (
           <Module.view.modal
-            initialValues={modalInitialValues}
+            id={modalInitialValues.id}
             moduleMeta={moduleMeta}
             close={() => actions.setShown("modal", false)}
           />

@@ -33,7 +33,7 @@ class FormModal extends Component {
   constructor(props) {
     super(props);
 
-    const { moduleMeta } = props;
+    const { moduleMeta, id, actions } = props;
     const fields = Object.values(moduleMeta.fields).filter(
       ({ displaytype }) => ["1"].indexOf(displaytype) !== -1
     );
@@ -43,6 +43,15 @@ class FormModal extends Component {
       groupedFields: getFieldsGroupedBySection(fields),
       expandedSections: getExpandedSections(fields)
     };
+
+    id ? actions.doRetrieve({ id, moduleMeta }) : actions.setShown("form");
+  }
+
+  componentWillUnmount() {
+    const { actions } = this.props;
+
+    actions.setShown("form", false);
+    actions.setData("initial", {});
   }
 
   normalizeField(uitype) {
@@ -119,20 +128,50 @@ class FormModal extends Component {
     return <Field {...fieldOptions} />;
   }
 
+  renderForm() {
+    const { sections, groupedFields, expandedSections } = this.state;
+    const { initialValues, shown } = this.props;
+
+    if (!shown.form) {
+      return null;
+    }
+
+    return (
+      <Form formApi={formApi => (this.formApi = formApi)} initialValues={initialValues}>
+        <Accordion>
+          {sections.map(({ blockid, blockname }) => (
+            <AccordionPanel
+              id={blockid}
+              key={blockid}
+              expanded={!!expandedSections[blockid]}
+              onTogglePanel={() => this.toggleSection(blockid)}
+              summary={blockname}
+              className="slds-p-around--large"
+            >
+              <FormRowContainer>
+                {groupedFields[blockid].map(field => this.renderField(field))}
+              </FormRowContainer>
+            </AccordionPanel>
+          ))}
+        </Accordion>
+      </Form>
+    );
+  }
+
   saveData = () => {
-    const { actions, moduleMeta } = this.props;
-    const values = this.formApi.values();
+    const { actions, moduleMeta, id } = this.props;
+    const formValues = this.formApi.values();
+    const values = id ? { id, ...formValues } : formValues;
 
     actions.saveItem({
       values,
       name: moduleMeta.name,
-      operation: values.id ? "update" : "create"
+      operation: id ? "update" : "create"
     });
   };
 
   render() {
-    const { sections, groupedFields, expandedSections } = this.state;
-    const { moduleMeta, close, initialValues } = this.props;
+    const { moduleMeta, close } = this.props;
 
     return (
       <div>
@@ -147,27 +186,7 @@ class FormModal extends Component {
             <Button key="save" label="Save" variant="brand" onClick={this.saveData} />
           ]}
         >
-          <Form
-            formApi={formApi => (this.formApi = formApi)}
-            initialValues={initialValues}
-          >
-            <Accordion>
-              {sections.map(({ blockid, blockname }) => (
-                <AccordionPanel
-                  id={blockid}
-                  key={blockid}
-                  expanded={!!expandedSections[blockid]}
-                  onTogglePanel={() => this.toggleSection(blockid)}
-                  summary={blockname}
-                  className="slds-p-around--large"
-                >
-                  <FormRowContainer>
-                    {groupedFields[blockid].map(field => this.renderField(field))}
-                  </FormRowContainer>
-                </AccordionPanel>
-              ))}
-            </Accordion>
-          </Form>
+          {this.renderForm()}
         </Modal>
       </div>
     );
@@ -175,7 +194,7 @@ class FormModal extends Component {
 }
 
 const mapStateToProps = (state, { Module }) =>
-  mapToState(state, Module.selectors, ["busy"]);
+  mapToState(state, Module.selectors, ["busy", "shown", "initialValues"]);
 
 const mapDispatchToProps = (dispatch, { Module }) => ({
   actions: mapToDispatch(dispatch, Module.actions)

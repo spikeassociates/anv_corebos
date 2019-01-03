@@ -33,6 +33,8 @@ class App extends React.Component {
       return <Module.view.detailview {...props} id={id} />;
     } else if (view === "create") {
       return <Module.view.modal moduleMeta={moduleMeta} />;
+    } else if (view === "edit") {
+      return <Module.view.modal moduleMeta={moduleMeta} id={id} />;
     }
   };
 
