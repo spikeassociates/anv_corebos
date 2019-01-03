@@ -1,4 +1,10 @@
-import styled from "styled-components";
+import styled, { injectGlobal } from "styled-components";
+
+injectGlobal`
+.slds-modal__content {
+  height: 100%
+}
+`;
 
 const FormRowContainer = styled.div`
   display: grid;
