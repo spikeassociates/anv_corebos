@@ -45,6 +45,13 @@ class FormInputModal extends Component {
     this.toggleModal(false);
   };
 
+  handleModuleChange = item => {
+    const { onChange } = this.props;
+
+    this.setState({ selectedModule: item, label: "" });
+    onChange("");
+  };
+
   render() {
     const { value = "", onChange, Module, ...rest } = this.props;
     const { isModalOpen, modules, label, referModules, selectedModule } = this.state;
@@ -72,7 +79,7 @@ class FormInputModal extends Component {
             align="right"
             options={referModules}
             value={selectedModule.value}
-            onSelect={item => this.setState({ selectedModule: item })}
+            onSelect={this.handleModuleChange}
           >
             <DropdownTrigger>
               <Button

@@ -12,6 +12,15 @@ const Container = styled.div`
   .slds-icon_container {
     cursor: pointer;
   }
+
+  .slds-dropdown-trigger {
+    width: 100%;
+    margin-right: 5px;
+
+    button {
+      width: 100%;
+    }
+  }
 `;
 
 export { Container };

@@ -33,35 +33,38 @@ class FormInput extends Component {
     const selectedValue = dropdownOptions.find(opt => opt.value === value);
 
     return (
-      <Container>
-        <RadioGroup onChange={this.onRadioChange}>
-          {Object.entries(options).map(([key, opt]) => (
-            <Radio
-              key={key}
-              label={opt.label_raw}
-              value={key}
-              checked={checked === key}
-              variant="base"
-            />
-          ))}
-        </RadioGroup>
+      <div>
+        <div>{label}</div>
+        <Container>
+          <RadioGroup onChange={this.onRadioChange}>
+            {Object.entries(options).map(([key, opt]) => (
+              <Radio
+                key={key}
+                label={opt.label_raw}
+                value={key}
+                checked={checked === key}
+                variant="base"
+              />
+            ))}
+          </RadioGroup>
 
-        <Dropdown
-          tabIndex="-1"
-          align="right"
-          options={dropdownOptions}
-          onSelect={item => onChange(item.value)}
-        >
-          <DropdownTrigger>
-            <Button
-              iconCategory="utility"
-              iconName="down"
-              iconPosition="right"
-              label={selectedValue ? selectedValue.label : label}
-            />
-          </DropdownTrigger>
-        </Dropdown>
-      </Container>
+          <Dropdown
+            tabIndex="-1"
+            align="right"
+            options={dropdownOptions}
+            onSelect={item => onChange(item.value)}
+          >
+            <DropdownTrigger>
+              <Button
+                iconCategory="utility"
+                iconName="down"
+                iconPosition="right"
+                label={selectedValue ? selectedValue.label : label}
+              />
+            </DropdownTrigger>
+          </Dropdown>
+        </Container>
+      </div>
     );
   }
 }

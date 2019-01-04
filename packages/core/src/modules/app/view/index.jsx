@@ -4,7 +4,7 @@ import Modular from "modular-redux";
 import { compose } from "redux";
 import { connect } from "react-redux";
 
-import { mapToState, mapToDispatch, decodeQs } from "shared-utils";
+import { mapToState, mapToDispatch, decodeQs, changeRoute } from "shared-utils";
 import { PageContainer, Container } from "./styles";
 
 class App extends React.Component {
@@ -32,9 +32,20 @@ class App extends React.Component {
     } else if (view === "detail" && id) {
       return <Module.view.detailview {...props} id={id} />;
     } else if (view === "create") {
-      return <Module.view.modal moduleMeta={moduleMeta} />;
+      return (
+        <Module.view.modal
+          moduleMeta={moduleMeta}
+          close={() => changeRoute({ view: "list" })}
+        />
+      );
     } else if (view === "edit") {
-      return <Module.view.modal moduleMeta={moduleMeta} id={id} />;
+      return (
+        <Module.view.modal
+          moduleMeta={moduleMeta}
+          id={id}
+          close={() => changeRoute({ view: "list" })}
+        />
+      );
     }
   };
 

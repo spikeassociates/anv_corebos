@@ -11,6 +11,8 @@ const FormDatepicker = ({ value, onChange, label, ...rest }) => {
       <Datepicker
         {...rest}
         value={value}
+        relativeYearFrom={-100}
+        relativeYearTo={100}
         onChange={(e, data) => {
           const date = moment(data.date).format("YYYY-MM-DD");
           onChange(date);
