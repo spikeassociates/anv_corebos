@@ -18,7 +18,8 @@ import {
   Checkbox,
   Textarea,
   InputModal,
-  MultiSelect
+  MultiSelect,
+  RadioDropdown
 } from "shared-form-helper";
 import {
   normalize,
@@ -75,9 +76,8 @@ class FormModal extends Component {
   //uitype 50 - to be implemented datetime
   //uitype 69 - to be implemented image picker
   //uitype 117 - to be checked
-  //uitype 53 - assigned user api ready
   //uitype 77 is a picklist - to be reviewed
-  //uitype 101 is a reference - to be revieweds
+  //uitype 101 is a reference - to be reviewed
   renderField(field) {
     const uitype = parseInt(field.uitype);
     const isTextField = [1, 2, 4, 7, 9, 11, 13, 14, 17, 55, 71, 72, 85, 255].includes(
@@ -120,7 +120,11 @@ class FormModal extends Component {
         render: MultiSelect
       };
     } else if (uitype === 53) {
-      // console.log(field);
+      fieldOptions = {
+        ...fieldOptions,
+        options: field.type.assignto,
+        render: RadioDropdown
+      };
     } else if (uitype === 56) {
       fieldOptions = { ...fieldOptions, render: Checkbox };
     }
@@ -133,7 +137,7 @@ class FormModal extends Component {
     const { initialValues, shown } = this.props;
 
     if (!shown.form) {
-      return null;
+      return <div />;
     }
 
     return (
