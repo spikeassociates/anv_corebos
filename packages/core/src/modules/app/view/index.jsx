@@ -21,11 +21,15 @@ class App extends React.Component {
   }
 
   getView = () => {
-    const { Module, modules, route } = this.props;
+    const { Module, modules, route, authenticated } = this.props;
     const { view, moduleName, id } = decodeQs(route);
     const moduleMeta = modules[moduleName];
 
     const props = { moduleMeta, isPrimary: true };
+
+    if (!(authenticated && Object.keys(modules).length)) {
+      return <Module.view.authentication />;
+    }
 
     if (view === "list") {
       return <Module.view.listview {...props} />;

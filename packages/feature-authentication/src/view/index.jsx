@@ -30,9 +30,10 @@ class Authentication extends Component {
           }}
           formApi={formApi => (this.formApi = formApi)}
         >
-          <Field name="username" render={Input} placeholder="My placeholder" />
-          <Field name="accessKey" render={Input} placeholder="My placeholder" />
-          <Button onClick={this.handleLogin}>submit</Button>
+          <div>Log In to coreBOS</div>
+          <Field name="username" render={Input} placeholder="Username" />
+          <Field name="accessKey" render={Input} placeholder="Access Key" />
+          <Button onClick={this.handleLogin}>Submit</Button>
         </Form>
       </LoginFormContainer>
     );
