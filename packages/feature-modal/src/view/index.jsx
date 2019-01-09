@@ -19,7 +19,8 @@ import {
   Textarea,
   InputModal,
   MultiSelect,
-  RadioDropdown
+  RadioDropdown,
+  ImagePicker
 } from "shared-form-helper";
 import {
   normalize,
@@ -78,7 +79,8 @@ class FormModal extends Component {
   //uitype 117 - to be checked
   //uitype 77 is a picklist - to be reviewed
   //uitype 101 is a reference - to be reviewed
-  renderField(field) {
+  renderField = field => {
+    const { initialValues } = this.props;
     const uitype = parseInt(field.uitype);
     const isTextField = [1, 2, 4, 7, 9, 11, 13, 14, 17, 55, 71, 72, 85, 255].includes(
       uitype
@@ -108,10 +110,12 @@ class FormModal extends Component {
     } else if (isTextArea) {
       fieldOptions = { ...fieldOptions, render: Textarea };
     } else if (isReference) {
+      const fieldRef = initialValues[`${field.name}ename`];
       fieldOptions = {
         ...fieldOptions,
         refersTo: field.type.refersTo,
-        render: InputModal
+        render: InputModal,
+        valueLabel: fieldRef ? fieldRef.reference : ""
       };
     } else if (uitype === 33) {
       fieldOptions = {
@@ -127,10 +131,19 @@ class FormModal extends Component {
       };
     } else if (uitype === 56) {
       fieldOptions = { ...fieldOptions, render: Checkbox };
+    } else if (uitype === 69) {
+      const imageInfo = initialValues[`${field.name}imageinfo`];
+      fieldOptions = {
+        ...fieldOptions,
+        fieldName: field.name,
+        name: "attachments",
+        imageInfo,
+        render: ImagePicker
+      };
     }
 
     return <Field {...fieldOptions} />;
-  }
+  };
 
   renderForm() {
     const { sections, groupedFields, expandedSections } = this.state;
@@ -153,7 +166,7 @@ class FormModal extends Component {
               className="slds-p-around--large"
             >
               <FormRowContainer>
-                {groupedFields[blockid].map(field => this.renderField(field))}
+                {groupedFields[blockid].map(this.renderField)}
               </FormRowContainer>
             </AccordionPanel>
           ))}
