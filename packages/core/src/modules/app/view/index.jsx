@@ -29,6 +29,8 @@ class App extends React.Component {
 
     if (!(authenticated && Object.keys(modules).length)) {
       return <Module.view.authentication />;
+    } else if (!moduleName) {
+      return null;
     }
 
     if (view === "list") {
