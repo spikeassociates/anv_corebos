@@ -10,6 +10,7 @@ import { compose } from "redux";
 import { connect } from "react-redux";
 
 import { mapToDispatch, mapToState } from "shared-utils";
+import { Loader } from "shared-components";
 import { Form, Field } from "shared-form";
 import {
   Input,
@@ -29,7 +30,7 @@ import {
   getFieldsGroupedBySection
 } from "shared-utils";
 
-import { FormRowContainer } from "./styles";
+import { FormRowContainer, Overlay } from "./styles";
 
 class FormModal extends Component {
   constructor(props) {
@@ -75,7 +76,6 @@ class FormModal extends Component {
 
   //uitype 27- 28 - to be implemented / reviewed
   //uitype 50 - to be implemented datetime
-  //uitype 69 - to be implemented image picker
   //uitype 117 - to be checked
   //uitype 77 is a picklist - to be reviewed
   //uitype 101 is a reference - to be reviewed
@@ -147,7 +147,7 @@ class FormModal extends Component {
 
   renderForm() {
     const { sections, groupedFields, expandedSections } = this.state;
-    const { initialValues, shown } = this.props;
+    const { initialValues, shown, busy } = this.props;
 
     if (!shown.form) {
       return <div />;
@@ -155,6 +155,12 @@ class FormModal extends Component {
 
     return (
       <Form formApi={formApi => (this.formApi = formApi)} initialValues={initialValues}>
+        {busy.form && (
+          <Overlay>
+            <Loader variant="inverse" />
+          </Overlay>
+        )}
+
         <Accordion>
           {sections.map(({ blockid, blockname }) => (
             <AccordionPanel

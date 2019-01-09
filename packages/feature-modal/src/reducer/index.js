@@ -5,7 +5,9 @@ const initialState = {
   shown: {
     form: false
   },
-  busy: {},
+  busy: {
+    form: true
+  },
   data: {
     initial: {}
   }

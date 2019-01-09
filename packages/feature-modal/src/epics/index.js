@@ -8,7 +8,8 @@ const epics = ({ actions, api }) => {
   const saveItem = asyncAction({
     api: api.saveItem,
     type: types.SAVE_ITEM,
-    onRequest: [action => actions.setBusy("form")]
+    onRequest: [action => actions.setBusy("form")],
+    onSuccess: [action => actions.setBusy("form", false)]
   });
 
   const doRetrieve = asyncAction({

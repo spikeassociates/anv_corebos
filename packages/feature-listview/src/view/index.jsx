@@ -9,9 +9,9 @@ import { connect } from "react-redux";
 import Modular from "modular-redux";
 
 import { mapToDispatch, mapToState, getQs } from "shared-utils";
-import { LinkCell } from "shared-components";
+import { LinkCell, Loader } from "shared-components";
 
-import { ActionCell, PageHeader, Loader, Preview, Cell } from "./components";
+import { ActionCell, PageHeader, Preview, Cell } from "./components";
 import { PreviewMenu, ListViewContainer, TableContainer } from "./styles";
 import "./style.css";
 

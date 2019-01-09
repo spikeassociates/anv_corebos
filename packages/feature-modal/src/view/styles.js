@@ -14,4 +14,18 @@ const FormRowContainer = styled.div`
   align-items: center;
 `;
 
-export { FormRowContainer };
+const Overlay = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 3rem;
+  bottom: 3rem;
+  background-color: rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+`;
+
+export { FormRowContainer, Overlay };

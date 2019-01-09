@@ -6,11 +6,6 @@ const Header = styled.header`
   margin: 1.5rem 0;
 `;
 
-const LoaderContainer = styled.div`
-  position: relative;
-  padding: 40px 0;
-`;
-
 const HeaderActionRow = styled.div`
   display: grid;
   grid-auto-flow: column;
@@ -102,7 +97,6 @@ const PaginationContainer = styled.div`
 
 export {
   Header,
-  LoaderContainer,
   HeaderActionRow,
   PreviewMenu,
   PreviewHeader,
