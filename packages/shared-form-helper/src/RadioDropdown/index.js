@@ -13,7 +13,30 @@ class FormInput extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { checked: Object.keys(props.options)[0] };
+    const { options, value } = this.props;
+    const optionKeys = Object.keys(options);
+
+    this.state = {
+      checked: optionKeys.reduce((acc, key) => {
+        const valueExist = options[key].options
+          .map(opt => opt.userid || opt.groupid)
+          .find(item => item === value);
+
+        return valueExist ? key : acc;
+      }, optionKeys[0])
+    };
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const { options } = nextProps;
+    const { checked } = prevState;
+
+    const dropdownOptions = options[checked].options.map(opt => ({
+      value: opt.userid || opt.groupid,
+      label: opt.username || opt.groupname
+    }));
+
+    return { ...prevState, dropdownOptions };
   }
 
   onRadioChange = e => {
@@ -25,11 +48,7 @@ class FormInput extends Component {
 
   render() {
     const { value = "", onChange, options, label } = this.props;
-    const { checked } = this.state;
-    const dropdownOptions = options[checked].options.map(opt => ({
-      value: opt.userid || opt.groupid,
-      label: opt.username || opt.groupname
-    }));
+    const { checked, dropdownOptions } = this.state;
     const selectedValue = dropdownOptions.find(opt => opt.value === value);
 
     return (

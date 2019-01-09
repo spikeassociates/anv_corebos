@@ -22,7 +22,7 @@ class FormInputModal extends Component {
     this.state = {
       isModalOpen: false,
       modules: Repo.get("store").getState().app._module.data.modules,
-      label: "",
+      label: props.valueLabel || "",
       referModules: refersTo,
       selectedModule: refersTo[0]
     };
