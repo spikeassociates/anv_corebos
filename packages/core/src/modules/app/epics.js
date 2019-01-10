@@ -19,7 +19,7 @@ const transformModules = modules => {
       return { ...acc, [field.name]: field };
     }, {});
 
-    data.filterFields.fields = data.filterFields.fields.map(field => ({
+    data.filterFields.fields = (data.filterFields.fields || []).map(field => ({
       key: field,
       label: data.fields[field].label
     }));

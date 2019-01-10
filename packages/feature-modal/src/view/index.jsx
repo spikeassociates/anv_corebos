@@ -74,11 +74,7 @@ class FormModal extends Component {
     this.setState({ expandedSections });
   };
 
-  //uitype 27- 28 - to be implemented / reviewed
-  //uitype 50 - to be implemented datetime
-  //uitype 117 - to be checked
-  //uitype 77 is a picklist - to be reviewed
-  //uitype 101 is a reference - to be reviewed
+  //uitype 27- 28 - to be implemented / reviewed - Documents module
   renderField = field => {
     const { initialValues } = this.props;
     const uitype = parseInt(field.uitype);
@@ -86,8 +82,8 @@ class FormModal extends Component {
       uitype
     );
     const isTextArea = [19, 21, 22, 24].includes(uitype);
-    const isPicklist = [15, 16, 26].includes(uitype);
-    const isReference = [10, 51, 57, 73, 76, 78, 80].includes(uitype);
+    const isPicklist = [15, 16, 26, 77, 117].includes(uitype);
+    const isReference = [10, 51, 57, 73, 76, 78, 80, 101].includes(uitype);
 
     let fieldOptions = {
       key: field.name,
@@ -140,6 +136,8 @@ class FormModal extends Component {
         imageInfo,
         render: ImagePicker
       };
+    } else {
+      fieldOptions = { ...fieldOptions, render: () => <span>{uitype}</span> };
     }
 
     return <Field {...fieldOptions} />;
@@ -189,7 +187,7 @@ class FormModal extends Component {
     actions.saveItem({
       values,
       name: moduleMeta.name,
-      operation: id ? "update" : "create"
+      operation: id ? "UpdateWithValidation" : "CreateWithValidation"
     });
   };
 

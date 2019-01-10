@@ -7,7 +7,15 @@ const DEV = {
   COREBOS_API: "http://test.coreboscrm.com/corebos",
   COREBOS_TOKEN: "cdYTBpiMR9RfGgO",
   COREBOS_USERNAME: "admin",
-  MODULES: ["Accounts", "Contacts", "Potentials"]
+  MODULES: [
+    "Accounts",
+    "Contacts",
+    "Potentials",
+    "Documents",
+    "Quotes",
+    "CobroPago",
+    "Users"
+  ]
 };
 
 module.exports = JSON.stringify(DEV);
