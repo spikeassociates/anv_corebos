@@ -62,7 +62,15 @@ const epics = ({ actions, api }) => {
     });
   };
 
-  return { onAuth, onItemSaved, ...getModules };
+  const onSessionExpire = action$ => {
+    return action$.ofType("REFRESH_LOGIN").mergeMap(action => {
+      PersistentRepo.clear();
+
+      return Observable.of(actions.setData("modules", {}));
+    });
+  };
+
+  return { onAuth, onItemSaved, onSessionExpire, ...getModules };
 };
 
 export default epics;

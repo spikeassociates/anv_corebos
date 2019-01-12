@@ -31,7 +31,7 @@ const asyncAction = ({ type, api, onRequest, onFailure, onSuccess }) => {
                   requestPayload: action.payload || {},
                   payload: res.result
                 }
-              : res.status != 333
+              : res.error.code != "INVALID_SESSIONID"
               ? {
                   type: types.failure,
                   requestPayload: action.payload || {},
