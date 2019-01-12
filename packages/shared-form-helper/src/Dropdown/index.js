@@ -4,7 +4,8 @@ import { Dropdown, DropdownTrigger, Button } from "@salesforce/design-system-rea
 import { DropdownContainer } from "./styles";
 
 const FormDropdown = ({ value = "", onChange, label, options = [], ...rest }) => {
-  const fallbackLabel = options.length ? options[0].value : "";
+  const selectedOption = options.find(opt => opt.value === value);
+  const fallbackLabel = options.length ? options[0].label : "";
 
   return (
     <DropdownContainer>
@@ -21,7 +22,7 @@ const FormDropdown = ({ value = "", onChange, label, options = [], ...rest }) =>
             iconCategory="utility"
             iconName="down"
             iconPosition="right"
-            label={value || fallbackLabel}
+            label={selectedOption ? selectedOption.label : fallbackLabel}
           />
         </DropdownTrigger>
       </Dropdown>
