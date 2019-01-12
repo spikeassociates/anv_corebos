@@ -1,6 +1,7 @@
 import { epics as epicsUtils } from "shared-resource";
 import { PersistentRepo } from "shared-repo";
 import { changeRoute } from "shared-utils";
+
 const transformModules = modules => {
   return Object.entries(modules).reduce((acc, [moduleName, data]) => {
     data.titleFields = data.fields

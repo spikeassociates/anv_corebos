@@ -12,14 +12,14 @@ class ImagePicker extends Component {
 
     reader.onload = () => {
       const content = reader.result;
-      const imageData = {
+      const fileData = {
         name: file.name,
         size: file.size,
         type: file.type,
         content: content.split(",")[1]
       };
 
-      onChange({ ...value, [fieldName]: imageData });
+      onChange({ ...value, [fieldName]: fileData });
     };
   };
 

@@ -21,7 +21,7 @@ import {
   InputModal,
   MultiSelect,
   RadioDropdown,
-  ImagePicker
+  FilePicker
 } from "shared-form-helper";
 import {
   normalize,
@@ -95,8 +95,6 @@ class FormModal extends Component {
 
     if (isTextField) {
       fieldOptions = { ...fieldOptions, readOnly: uitype === 4, render: Input };
-    } else if (uitype === 5) {
-      fieldOptions = { ...fieldOptions, render: Datepicker };
     } else if (isPicklist) {
       fieldOptions = {
         ...fieldOptions,
@@ -112,6 +110,27 @@ class FormModal extends Component {
         refersTo: field.type.refersTo,
         render: InputModal,
         valueLabel: fieldRef ? fieldRef.reference : ""
+      };
+    } else if (uitype === 5) {
+      fieldOptions = { ...fieldOptions, render: Datepicker };
+    } else if (uitype === 27) {
+      fieldOptions = {
+        ...fieldOptions,
+        options: [{ value: "I", label: "Internal" }, { value: "E", label: "External" }],
+        render: Dropdown,
+        onChange: () => {
+          this.formApi.setField("filename");
+        }
+      };
+    } else if (uitype === 28) {
+      fieldOptions = {
+        ...fieldOptions,
+        render: props => {
+          const { Form } = props;
+          const fileLocation = Form.getField("filelocationtype");
+
+          return fileLocation === "I" ? <FilePicker {...props} /> : <Input {...props} />;
+        }
       };
     } else if (uitype === 33) {
       fieldOptions = {
@@ -134,7 +153,7 @@ class FormModal extends Component {
         fieldName: field.name,
         name: "attachments",
         imageInfo,
-        render: ImagePicker
+        render: FilePicker
       };
     } else {
       fieldOptions = { ...fieldOptions, render: () => <span>{uitype}</span> };
