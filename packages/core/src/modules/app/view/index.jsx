@@ -3,8 +3,9 @@ import { withRouter } from "react-router-dom";
 import Modular from "modular-redux";
 import { compose } from "redux";
 import { connect } from "react-redux";
+import { decodeQs, changeRoute } from "utils";
 
-import { mapToState, mapToDispatch, decodeQs, changeRoute } from "shared-utils";
+import { mapToState, mapToDispatch } from "shared-utils";
 import { PageContainer, Container } from "./styles";
 
 class App extends React.Component {
@@ -41,7 +42,7 @@ class App extends React.Component {
       return (
         <Module.view.modal
           moduleMeta={moduleMeta}
-          close={() => changeRoute({ view: "list" })}
+          close={() => changeRoute({ view: "list", moduleName: moduleMeta.name })}
         />
       );
     } else if (view === "edit") {
@@ -49,7 +50,7 @@ class App extends React.Component {
         <Module.view.modal
           moduleMeta={moduleMeta}
           id={id}
-          close={() => changeRoute({ view: "list" })}
+          close={() => changeRoute({ view: "list", moduleName: moduleMeta.name })}
         />
       );
     }

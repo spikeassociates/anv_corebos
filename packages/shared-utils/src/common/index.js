@@ -31,26 +31,6 @@ const snakeToCamelCase = key => {
 const camelToSnakeCase = key =>
   key.replace(/(\B[A-Z])/g, (match, group) => `_${group.toLowerCase()}`);
 
-const decodeQs = (searchUrl = "") =>
-  searchUrl
-    .slice(1)
-    .split("&")
-    .reduce((acc, item) => {
-      const [key, value] = item.split("=");
-      return { ...acc, [key]: decodeURIComponent(value) };
-    }, {});
-
-const getQs = obj =>
-  obj
-    ? "?" +
-      Object.entries(obj)
-        .map(([key, val]) => {
-          const value = typeof val === "object" ? btoa(JSON.stringify(val)) : val;
-          return `${key}=${encodeURIComponent(value)}`;
-        })
-        .join("&")
-    : "";
-
 const getUrl = url => (/^(f|ht)tps?:\/\//i.test(url) ? url : GLOBALS.BASE_API + url);
 
 const getElemStyle = (selector, attribute) => {
@@ -59,24 +39,12 @@ const getElemStyle = (selector, attribute) => {
   return elem ? window.getComputedStyle(elem)[attribute] : "0px";
 };
 
-const changeRoute = (params, overwrite = false) => {
-  const { origin, pathname, search } = window.location;
-  const url = `${origin}${pathname}`;
-  const newParams = overwrite ? params : { ...decodeQs(search), ...params };
-  const path = url + getQs(newParams);
-
-  window.history.pushState({ path }, "", path);
-};
-
 export {
   mapToDispatch,
   mapToState,
   debounce,
   snakeToCamelCase,
   camelToSnakeCase,
-  decodeQs,
-  getQs,
   getUrl,
-  getElemStyle,
-  changeRoute
+  getElemStyle
 };

@@ -1,6 +1,6 @@
+import { changeRoute, decodeQs } from "utils";
 import { epics as epicsUtils } from "shared-resource";
 import { PersistentRepo } from "shared-repo";
-import { changeRoute } from "shared-utils";
 
 const transformModules = modules => {
   return Object.entries(modules).reduce((acc, [moduleName, data]) => {
@@ -56,7 +56,8 @@ const epics = ({ actions, api }) => {
 
   const onItemSaved = action$ => {
     return action$.ofType(modal.types.SAVE_ITEM_SUCCESS).mergeMap(action => {
-      changeRoute({ view: "list" });
+      const { moduleName } = decodeQs(window.location.search);
+      changeRoute({ view: "list", moduleName });
 
       return action$.ignoreElements();
     });

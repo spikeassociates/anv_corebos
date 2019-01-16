@@ -1,5 +1,5 @@
 import React from "react";
-import { getQs, changeRoute } from "shared-utils";
+import { changeRoute } from "utils";
 
 import { Link, Container } from "./styles";
 
