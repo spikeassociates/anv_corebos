@@ -14,7 +14,6 @@
     "shared-utils": "*",
     "shared-form": "*",
     "shared-form-helper": "*",
-    "lodash-es": "^4.17.4",
     "moment": "^2.20.1",
     "react": "^16.3.0",
     "react-dom": "^16.3.0",

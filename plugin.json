@@ -1,6 +1,6 @@
 {
-  "id": "com.mattermost.test",
-  "name": "test",
+  "id": "com.corebos.app",
+  "name": "coreBOS",
   "description": "",
   "webapp": {
     "bundle_path": "main.js"

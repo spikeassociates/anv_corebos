@@ -13,7 +13,7 @@ const BASE = {
     }
   },
 
-  MATTERMOST_PLUGIN: "com.mattermost.test"
+  MATTERMOST_PLUGIN: "com.corebos.app"
 };
 
 module.exports = BASE;
