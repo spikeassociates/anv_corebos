@@ -41,7 +41,7 @@ class DetailView extends Component {
     const { moduleMeta, id } = this.props;
 
     this.state = {
-      id,
+      id: `${moduleMeta.idPrefix}x${id}`,
       expandedSections: getExpandedSections(moduleMeta.fields),
       collapseHeader: moduleMeta.headerFields.length === 0,
       previewModule: { relatedModule: "", fields: [] },

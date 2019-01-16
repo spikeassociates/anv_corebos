@@ -47,7 +47,11 @@ class FormModal extends Component {
       expandedSections: getExpandedSections(fields)
     };
 
-    id ? actions.doRetrieve({ id, moduleMeta }) : actions.setShown("form");
+    if (id) {
+      actions.doRetrieve({ id: `${moduleMeta.idPrefix}x${id}`, moduleMeta });
+    } else {
+      actions.setShown("form");
+    }
   }
 
   componentWillUnmount() {

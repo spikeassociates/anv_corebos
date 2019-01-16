@@ -219,13 +219,7 @@ class ListView extends Component {
             innerRef={menu => (this.previewMenu = menu)}
           >
             <Preview
-              itemUrl={{
-                search: getQs({
-                  view: "detail",
-                  moduleName: moduleMeta.name,
-                  id: preview.id
-                })
-              }}
+              moduleName={moduleMeta.name}
               previewData={preview}
               changeItem={this.changeItem}
             />

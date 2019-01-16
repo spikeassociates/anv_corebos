@@ -1,6 +1,7 @@
 import React from "react";
 import { Icon, Button } from "@salesforce/design-system-react";
 import { Link } from "react-router-dom";
+import { getQs } from "utils";
 
 import {
   PreviewHeader,
@@ -25,8 +26,9 @@ const PreviewValue = ({ field }) => {
   return <PreviewHeaderValue>{field.value}</PreviewHeaderValue>;
 };
 
-export default ({ previewData, changeItem, itemUrl }) => {
-  const { title, headerData, bodyData } = previewData;
+export default ({ previewData, changeItem, moduleName }) => {
+  const { title, headerData, bodyData, id } = previewData;
+  const itemId = id ? id.split("x")[1] : undefined;
 
   return (
     <>
@@ -64,7 +66,16 @@ export default ({ previewData, changeItem, itemUrl }) => {
         </PreviewHeader>
       </PreviewHeaderContainer>
 
-      <Link to={itemUrl} onClick={() => (document.body.style.overflow = "auto")}>
+      <Link
+        to={{
+          search: getQs({
+            view: "detail",
+            moduleName,
+            id: itemId
+          })
+        }}
+        onClick={() => (document.body.style.overflow = "auto")}
+      >
         <Button variant="success" className="view-details">
           View Details
         </Button>

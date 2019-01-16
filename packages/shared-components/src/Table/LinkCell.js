@@ -5,6 +5,7 @@ import { getQs } from "utils";
 
 export default props => {
   const { moduleName, item, children } = props;
+  const id = item.id ? item.id.split("x")[1] : undefined;
 
   return (
     <DataTableCell>
@@ -13,7 +14,7 @@ export default props => {
           search: getQs({
             view: "detail",
             moduleName,
-            id: item.id
+            id
           })
         }}
       >
