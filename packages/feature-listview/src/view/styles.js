@@ -14,7 +14,7 @@ const HeaderActionRow = styled.div`
 
 const PreviewMenu = styled.div`
   position: fixed;
-  top: 0;
+  top: ${getElemStyle("#channel-header", "height")};
   bottom: 0;
   right: 0;
   background-color: #fff;
