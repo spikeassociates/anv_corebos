@@ -1,5 +1,7 @@
 import { epics as epicsUtils } from "shared-resource";
 
+import { transformDependencies } from "./transform";
+
 const epics = ({ actions, api }) => {
   const { asyncAction } = epicsUtils.async;
   const { types } = actions;
@@ -7,9 +9,9 @@ const epics = ({ actions, api }) => {
   const saveItem = asyncAction({
     api: api.saveItem,
     type: types.SAVE_ITEM,
-    onRequest: [action => actions.setBusy("form")],
-    onSuccess: [action => actions.setBusy("form", false)],
-    onFailure: [action => actions.setBusy("form", false)]
+    onRequest: [() => actions.setBusy("form")],
+    onSuccess: [() => actions.setBusy("form", false)],
+    onFailure: [() => actions.setBusy("form", false)]
   });
 
   const doRetrieve = asyncAction({
@@ -21,7 +23,20 @@ const epics = ({ actions, api }) => {
     ]
   });
 
-  return { ...saveItem, ...doRetrieve };
+  const getFieldDependencies = asyncAction({
+    api: api.getFieldDependencies,
+    type: types.GET_FIELD_DEPENDENCIES,
+    onSuccess: [
+      action => {
+        let { dependencies } = JSON.parse(action.payload[0].contentjson);
+        dependencies = transformDependencies(dependencies);
+
+        return actions.setData("fieldDependencies", dependencies);
+      }
+    ]
+  });
+
+  return { ...saveItem, ...doRetrieve, ...getFieldDependencies };
 };
 
 export default epics;

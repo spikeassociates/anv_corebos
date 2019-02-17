@@ -8,7 +8,13 @@ const initialValues = module =>
     ({ data }) => data.initial
   );
 
-const selectors = { initialValues };
+const fieldDependencies = module =>
+  createSelector(
+    module,
+    ({ data }) => data.fieldDependencies
+  );
+
+const selectors = { initialValues, fieldDependencies };
 
 export default Modular.selectors(moduleState =>
   selectorUtils.getSelectors(moduleState, selectors)

@@ -44,7 +44,9 @@ class FormModal extends Component {
     this.state = {
       sections: getSections(fields),
       groupedFields: getFieldsGroupedBySection(fields),
-      expandedSections: getExpandedSections(fields)
+      expandedSections: getExpandedSections(fields),
+      hidden: [],
+      readOnly: []
     };
 
     if (id) {
@@ -52,6 +54,11 @@ class FormModal extends Component {
     } else {
       actions.setShown("form");
     }
+  }
+
+  componentDidMount() {
+    const { actions } = this.props;
+    actions.getFieldDependencies();
   }
 
   componentWillUnmount() {
@@ -65,10 +72,6 @@ class FormModal extends Component {
     if (uitype === 7) {
       return normalize.number;
     }
-
-    // 9 - percentage
-    // 14 - time
-    // 71, 72 - currency
   }
 
   toggleSection = blockId => {
@@ -78,9 +81,10 @@ class FormModal extends Component {
     this.setState({ expandedSections });
   };
 
-  //uitype 27- 28 - to be implemented / reviewed - Documents module
   renderField = field => {
-    const { initialValues } = this.props;
+    const { hidden, readOnly } = this.state;
+    const { initialValues, fieldDependencies = {} } = this.props;
+
     const uitype = parseInt(field.uitype);
     const isTextField = [1, 2, 4, 7, 9, 11, 13, 14, 17, 55, 71, 72, 85, 255].includes(
       uitype
@@ -163,7 +167,97 @@ class FormModal extends Component {
       fieldOptions = { ...fieldOptions, render: () => <span>{uitype}</span> };
     }
 
+    if (hidden.includes(field.name)) {
+      fieldOptions.render = () => null;
+    }
+
+    if (readOnly.includes(field.name)) {
+      fieldOptions.readOnly = true;
+    }
+
+    const dependencies = fieldDependencies[field.name];
+
+    if (dependencies) {
+      const { actions, conditions } = dependencies;
+
+      fieldOptions.onChange = () => {
+        const isValid = this.evaluateConditions(conditions);
+        Object.entries(actions).forEach(action => this.excecuteAction(isValid, action));
+      };
+    }
+
     return <Field {...fieldOptions} />;
+  };
+
+  excecuteAction = (isValid, [type, target]) => {
+    const { hidden, sections, expandedSections, readOnly } = this.state;
+    const targetField = target.field;
+
+    if (type === "collapse" && isValid) {
+      const section = sections.find(({ blocklabel }) => blocklabel === targetField);
+
+      this.setState({
+        expandedSections: { ...expandedSections, [section.blockid]: false }
+      });
+    }
+
+    if (type === "hide") {
+      if (isValid) {
+        this.setState({ hidden: [...hidden, targetField] });
+      } else {
+        this.setState({ hidden: hidden.filter(field => field !== targetField) });
+      }
+    }
+
+    if (type === "change" && isValid) {
+      this.formApi.setField(targetField, target.value);
+    }
+
+    if (type === "readonly") {
+      if (isValid) {
+        this.setState({ readOnly: [...readOnly, targetField] });
+      } else {
+        this.setState({ readOnly: readOnly.filter(field => field !== targetField) });
+      }
+    }
+  };
+
+  evaluateConditions = conditions => {
+    const comparatorToSymbol = {
+      l: "<",
+      g: ">",
+      e: "=="
+    };
+
+    const result = conditions.reduce(
+      (acc, condition) => {
+        const { name, value, operator, comparator } = condition;
+        const fieldValue = this.formApi.getField(name);
+        let comparision = `"${fieldValue}" # "${value}"`;
+        comparision = comparision.replace("#", comparatorToSymbol[comparator]);
+
+        if (acc.operator === "or" && acc.value) {
+          return acc;
+        }
+
+        if (comparator === "l" || comparator === "g") {
+          comparision = comparision.replace(/undefined/g, "");
+          comparision = comparision.replace(/""/g, 0);
+          comparision = comparision.replace(/"/g, "");
+        }
+
+        comparision = eval(comparision);
+
+        if (acc.operator === "and") {
+          comparision = comparision && acc.value;
+        }
+
+        return { value: comparision, operator };
+      },
+      { value: false, operator: "or" }
+    );
+
+    return result.value;
   };
 
   renderForm() {
@@ -238,7 +332,12 @@ class FormModal extends Component {
 }
 
 const mapStateToProps = (state, { Module }) =>
-  mapToState(state, Module.selectors, ["busy", "shown", "initialValues"]);
+  mapToState(state, Module.selectors, [
+    "busy",
+    "shown",
+    "initialValues",
+    "fieldDependencies"
+  ]);
 
 const mapDispatchToProps = (dispatch, { Module }) => ({
   actions: mapToDispatch(dispatch, Module.actions)
