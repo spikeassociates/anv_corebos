@@ -1,7 +1,15 @@
 import { Observable } from "rxjs";
 
 const handlersToObservable = (handlers = []) => action =>
-  Observable.concat(...handlers.map(handler => Observable.of(handler(action))));
+  Observable.concat(
+    ...handlers.reduce((acc, handler) => {
+      let nextActions = handler(action);
+      nextActions = Array.isArray(nextActions) ? nextActions : [nextActions];
+      nextActions = nextActions.map(next => Observable.of(next));
+
+      return [...acc, ...nextActions];
+    }, [])
+  );
 
 const getTypes = type => ({
   request: type,

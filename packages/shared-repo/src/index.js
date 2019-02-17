@@ -1,3 +1,18 @@
+const b64DecodeUnicode = str =>
+  decodeURIComponent(
+    atob(str)
+      .split("")
+      .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+      .join("")
+  );
+
+const b64EncodeUnicode = str =>
+  btoa(
+    encodeURIComponent(str).replace(/%([0-9A-F]{2})/g, (_, p1) =>
+      String.fromCharCode("0x" + p1)
+    )
+  );
+
 const createRepo = () => {
   let state = {};
 
@@ -26,8 +41,8 @@ const createPersistentRepo = () => {
 
   const globalState = localStorage;
 
-  const encrypt = string => "=" + btoa(string);
-  const decrypt = string => atob(string.substring(1));
+  const encrypt = string => "=" + b64EncodeUnicode(string);
+  const decrypt = string => b64DecodeUnicode(string.substring(1));
 
   const resetState = () => {
     const timestamp = new Date().toISOString();

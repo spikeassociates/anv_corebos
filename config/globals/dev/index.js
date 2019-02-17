@@ -16,6 +16,18 @@ const DEV = {
     "CobroPago",
     "Users"
   ]
+  // MODULES: [
+  //   "MasterAccount",
+  //   "Accounts",
+  //   "SalesOrderMaster",
+  //   "Cases",
+  //   "AccountDetails",
+  //   "Task"
+  // ],
+  // BASE_API: "http://63.251.233.101/subitoclient/webservice.php",
+  // COREBOS_API: "http://63.251.233.101/subitoclient",
+  // COREBOS_TOKEN: "yFEo0SYIN2wO1UJt",
+  // COREBOS_USERNAME: "admin"
 };
 
 module.exports = JSON.stringify(DEV);

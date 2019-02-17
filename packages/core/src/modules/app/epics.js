@@ -20,10 +20,13 @@ const transformModules = modules => {
       return { ...acc, [field.name]: field };
     }, {});
 
-    data.filterFields.fields = (data.filterFields.fields || []).map(field => ({
-      key: field,
-      label: data.fields[field].label
-    }));
+    data.filterFields.fields = (data.filterFields.fields || []).map(field => {
+      const fieldMeta = data.fields[field];
+      return {
+        key: field,
+        label: fieldMeta ? fieldMeta.label : field
+      };
+    });
 
     return { ...acc, [moduleName]: data };
   }, {});

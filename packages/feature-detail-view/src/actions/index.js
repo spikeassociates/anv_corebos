@@ -3,7 +3,12 @@ import Resources from "../resources";
 import { actions as actionsUtils } from "shared-resource";
 
 const syncTypes = [];
-const asyncTypes = ["DO_RETRIEVE", "GET_RELATED_RECORDS"];
+const asyncTypes = [
+  "DO_RETRIEVE",
+  "GET_RELATED_RECORDS",
+  "GET_WIDGETS",
+  "EXCECUTE_BUSINESS_ACTION"
+];
 const types = [
   ...syncTypes,
   ...actionsUtils.statefulTypes(asyncTypes),

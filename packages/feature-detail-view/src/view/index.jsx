@@ -20,6 +20,7 @@ import {
   getExpandedSections
 } from "shared-utils";
 
+import { Widget } from "./components";
 import {
   Container,
   SectionContainer,
@@ -54,6 +55,7 @@ class DetailView extends Component {
     const { actions, moduleMeta } = this.props;
 
     actions.doRetrieve({ id, moduleMeta });
+    actions.getWidgets({ module: moduleMeta.name });
     window.addEventListener("click", this.handleClick);
   }
 
@@ -153,7 +155,7 @@ class DetailView extends Component {
       previewModule,
       previewTopDistance
     } = this.state;
-    const { item, moduleMeta, relatedRecords, shown } = this.props;
+    const { item, moduleMeta, relatedRecords, shown, widgets } = this.props;
     const { fields } = moduleMeta;
     const sections = getSections(fields);
     const groupedFields = getFieldsGroupedBySection(fields);
@@ -197,6 +199,10 @@ class DetailView extends Component {
                 </AccordionPanel>
               ))}
             </Accordion>
+
+            {Object.values(widgets).map((html, index) => (
+              <Widget key={index} html={html} />
+            ))}
           </TabsPanel>
 
           <TabsPanel label="Related">
@@ -218,7 +224,7 @@ class DetailView extends Component {
 }
 
 const mapStateToProps = (state, { Module }) =>
-  mapToState(state, Module.selectors, ["item", "relatedRecords", "shown"]);
+  mapToState(state, Module.selectors, ["item", "relatedRecords", "shown", "widgets"]);
 
 const mapDispatchToProps = (dispatch, { Module }) => ({
   actions: mapToDispatch(dispatch, Module.actions)

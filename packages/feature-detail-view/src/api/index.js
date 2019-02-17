@@ -10,6 +10,20 @@ const api = {
       module,
       relatedModule,
       queryParameters: JSON.stringify(queryParameters)
+    }),
+
+  getWidgets: ({ module }) =>
+    base.get("", {
+      operation: "getBusinessActions",
+      view: "DetailView",
+      module,
+      linktype: "DETAILVIEWWIDGET"
+    }),
+
+  excecuteBusinessAction: id =>
+    base.get("", {
+      operation: "executeBusinessAction",
+      businessactionid: id
     })
 };
 
