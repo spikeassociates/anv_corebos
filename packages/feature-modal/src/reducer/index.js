@@ -9,7 +9,7 @@ const initialState = {
     form: false
   },
   data: {
-    initial: { bill_country: "Albania" }
+    initial: {}
   }
 };
 

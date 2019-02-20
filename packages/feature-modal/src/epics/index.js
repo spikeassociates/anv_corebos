@@ -28,8 +28,13 @@ const epics = ({ actions, api }) => {
     type: types.GET_FIELD_DEPENDENCIES,
     onSuccess: [
       action => {
-        let { dependencies } = JSON.parse(action.payload[0].contentjson);
-        dependencies = transformDependencies(dependencies);
+        let dependencies;
+        const data = action.payload;
+
+        if (data.length) {
+          dependencies = JSON.parse(data[0].contentjson);
+          dependencies = transformDependencies(dependencies);
+        }
 
         return actions.setData("fieldDependencies", dependencies);
       }

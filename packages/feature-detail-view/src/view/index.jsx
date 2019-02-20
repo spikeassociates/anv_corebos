@@ -209,7 +209,7 @@ class DetailView extends Component {
             <RelatedList>
               {relatedModules.map(item => (
                 <RelatedModule
-                  key={item.related_tabid}
+                  key={item.relationId}
                   onClick={e => this.previewRelatedModule(e, item)}
                 >
                   <span>{item.label}</span>
