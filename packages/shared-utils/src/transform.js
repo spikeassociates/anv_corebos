@@ -1,3 +1,5 @@
+import { PersistentRepo } from "shared-repo";
+
 const formatValue = (field, moduleMeta, data) => {
   const { fields } = moduleMeta;
 
@@ -66,10 +68,30 @@ const getExpandedSections = fields =>
     {}
   );
 
+const getModuleReferenceFields = moduleName => {
+  const modules = PersistentRepo.get("modules");
+  const moduleMeta = modules[moduleName];
+  const referenceTypes = [10, 51, 57, 73, 76, 78, 80, 101];
+
+  return moduleMeta.filterFields.fields
+    .filter(({ key }) => {
+      const uitype = parseInt(moduleMeta.fields[key].uitype);
+      return referenceTypes.includes(uitype);
+    })
+    .reduce((acc, { key }) => {
+      const { type } = moduleMeta.fields[key];
+      const targetModule = type.name === "owner" ? "Users" : type.refersTo[0];
+      const targetFields = modules[targetModule].titleFields;
+
+      return { ...acc, [key]: { targetModule, targetFields } };
+    }, {});
+};
+
 export {
   transformItem,
   getFieldsGroupedBySection,
   getSections,
   getExpandedSections,
-  formatValue
+  formatValue,
+  getModuleReferenceFields
 };

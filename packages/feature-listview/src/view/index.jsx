@@ -166,12 +166,13 @@ class ListView extends Component {
       isPrimary,
       Module
     } = this.props;
+    const { id } = modalInitialValues;
 
     return (
       <ListViewContainer hasData={!!listviewData.length}>
         {isPrimary && shown.modal && (
           <Module.view.modal
-            id={modalInitialValues.id}
+            id={id ? id.split("x")[1] : id}
             moduleMeta={moduleMeta}
             close={() => actions.setShown("modal", false)}
           />

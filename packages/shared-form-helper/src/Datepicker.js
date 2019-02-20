@@ -2,8 +2,8 @@ import React from "react";
 import { Datepicker } from "@salesforce/design-system-react";
 import moment from "moment";
 
-const FormDatepicker = ({ value, onChange, label, ...rest }) => {
-  value = value ? new Date(value) : new Date();
+const FormDatepicker = ({ value, onChange, label, defaultValue, ...rest }) => {
+  value = value ? new Date(value) : defaultValue ? new Date() : null;
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>

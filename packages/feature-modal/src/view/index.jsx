@@ -92,6 +92,7 @@ class FormModal extends Component {
     const isTextArea = [19, 21, 22, 24].includes(uitype);
     const isPicklist = [15, 16, 26, 77, 117].includes(uitype);
     const isReference = [10, 51, 57, 73, 76, 78, 80, 101].includes(uitype);
+    const isDate = [5, 23].includes(uitype);
 
     let fieldOptions = {
       key: field.name,
@@ -119,8 +120,8 @@ class FormModal extends Component {
         render: InputModal,
         valueLabel: fieldRef ? fieldRef.reference : ""
       };
-    } else if (uitype === 5) {
-      fieldOptions = { ...fieldOptions, render: Datepicker };
+    } else if (isDate) {
+      fieldOptions = { ...fieldOptions, defaultValue: field.default, render: Datepicker };
     } else if (uitype === 27) {
       fieldOptions = {
         ...fieldOptions,

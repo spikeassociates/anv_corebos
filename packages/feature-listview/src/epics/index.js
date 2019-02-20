@@ -2,6 +2,8 @@ import { epics as epicsUtils } from "shared-resource";
 import { Repo } from "shared-repo";
 import { transformItem } from "shared-utils";
 
+import { transformQueryResult } from "./transform";
+
 const epics = ({ actions, api, name }) => {
   const { asyncAction } = epicsUtils.async;
   const { types, modal } = actions;
@@ -9,10 +11,15 @@ const epics = ({ actions, api, name }) => {
   const doQuery = asyncAction({
     api: api.doQuery,
     type: types.DO_QUERY,
-    onRequest: [action => actions.setBusy("listview")],
+    onRequest: [() => actions.setBusy("listview")],
     onSuccess: [
-      action => actions.setData("listview", action.payload),
-      action => actions.setBusy("listview", false)
+      action => {
+        const { moduleName } = action.requestPayload;
+        const data = transformQueryResult(action.payload, moduleName);
+
+        return actions.setData("listview", data);
+      },
+      () => actions.setBusy("listview", false)
     ]
   });
 

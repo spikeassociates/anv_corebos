@@ -10,7 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "redux-observable": "^0.18.0",
-    "deep-object-diff": "^1.1.0"
+    "shared-repo": "*"
   }
 }
