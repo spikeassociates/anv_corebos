@@ -1,6 +1,8 @@
 import Modular from "modular-redux";
 import Resources from "../resources";
 
+import formdata from "../data";
+
 const initialState = {
   shown: {
     form: false

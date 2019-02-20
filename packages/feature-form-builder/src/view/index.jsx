@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Modular from "modular-redux";
 import { compose } from "redux";
 import { connect } from "react-redux";
+import Form from "./components/FormBuilder";
 
 import { mapToDispatch, mapToState } from "shared-utils";
 
@@ -11,8 +12,11 @@ class FormBuilder extends Component {
 
     return (
       <div>
-        <div>Form Builder {name}</div>
-        <div onClick={() => actions.rename("wow")}>Change Name</div>
+        <div>
+          <Form />
+        </div>
+        {/* <div>{name}</div>
+        <div onClick={() => actions.rename("wow")}>Change Name</div> */}
       </div>
     );
   }
