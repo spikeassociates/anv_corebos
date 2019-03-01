@@ -6,19 +6,22 @@ import {
   Tabs,
   TabsPanel,
   DataTable,
-  DataTableColumn
+  DataTableColumn,
+  Button
 } from "@salesforce/design-system-react";
 import { compose } from "redux";
 import { connect } from "react-redux";
 import Modular from "modular-redux";
 
-import { mapToDispatch, mapToState } from "shared-utils";
 import { LinkCell } from "shared-components";
 import {
   getFieldsGroupedBySection,
   getSections,
-  getExpandedSections
+  getExpandedSections,
+  mapToDispatch,
+  mapToState
 } from "shared-utils";
+import { changeRoute } from "utils";
 
 import { Widget } from "./components";
 import {
@@ -155,7 +158,7 @@ class DetailView extends Component {
       previewModule,
       previewTopDistance
     } = this.state;
-    const { item, moduleMeta, relatedRecords, shown, widgets } = this.props;
+    const { item, moduleMeta, id, relatedRecords, shown, widgets } = this.props;
     const { fields } = moduleMeta;
     const sections = getSections(fields);
     const groupedFields = getFieldsGroupedBySection(fields);
@@ -180,6 +183,20 @@ class DetailView extends Component {
           label={moduleMeta.label}
           title={item.title}
           details={this.getHeaderFields()}
+          navRight={
+            <>
+              <Button
+                label="Edit record"
+                onClick={() =>
+                  changeRoute({ view: "edit", id, moduleName: moduleMeta.name })
+                }
+                iconCategory="utility"
+                iconName="edit"
+                iconPosition="right"
+                responsive
+              />
+            </>
+          }
         />
 
         <Tabs className="tabs-container">

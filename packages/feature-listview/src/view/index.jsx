@@ -7,7 +7,6 @@ import {
 import { compose } from "redux";
 import { connect } from "react-redux";
 import Modular from "modular-redux";
-import { getQs } from "utils";
 
 import { mapToDispatch, mapToState } from "shared-utils";
 import { LinkCell, Loader } from "shared-components";
