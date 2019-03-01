@@ -49,6 +49,7 @@ class FormModal extends Component {
       readOnly: []
     };
 
+    actions.setData("currentModule", moduleMeta.name);
     if (id) {
       actions.doRetrieve({ id: `${moduleMeta.idPrefix}x${id}`, moduleMeta });
     } else {
@@ -270,7 +271,7 @@ class FormModal extends Component {
     const { sections, groupedFields, expandedSections } = this.state;
     const { initialValues, shown, busy } = this.props;
 
-    if (!shown.form) {
+    if (!shown.form || !initialValues) {
       return <div />;
     }
 
