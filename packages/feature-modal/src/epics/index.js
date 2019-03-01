@@ -32,7 +32,7 @@ const epics = ({ actions, api }) => {
         const data = action.payload;
 
         if (data.length) {
-          dependencies = JSON.parse(data[0].contentjson);
+          dependencies = JSON.parse(data[0].contentjson).dependencies;
           dependencies = transformDependencies(dependencies);
         }
 

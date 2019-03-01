@@ -16,11 +16,11 @@ const api = {
 
   doRetrieve: ({ id }) => base.get("", { operation: "retrieve", id }),
 
-  getFieldDependencies: () =>
+  getFieldDependencies: moduleName =>
     base.get("", {
       operation: "query",
       elementType: "",
-      query: `select contentjson from cbMap where maptype = 'FieldDependency' and targetname = 'Accounts';`
+      query: `select contentjson from cbMap where maptype = 'FieldDependency' and targetname = '${moduleName}';`
     })
 };
 

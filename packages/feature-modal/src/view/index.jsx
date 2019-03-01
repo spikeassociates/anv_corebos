@@ -57,8 +57,8 @@ class FormModal extends Component {
   }
 
   componentDidMount() {
-    const { actions } = this.props;
-    actions.getFieldDependencies();
+    const { actions, moduleMeta } = this.props;
+    actions.getFieldDependencies(moduleMeta.name);
   }
 
   componentWillUnmount() {
@@ -194,11 +194,11 @@ class FormModal extends Component {
     const { hidden, sections, expandedSections, readOnly } = this.state;
     const targetField = target.field;
 
-    if (type === "collapse" && isValid) {
+    if ((type === "collapse" || type === "open") && isValid) {
       const section = sections.find(({ blocklabel }) => blocklabel === targetField);
 
       this.setState({
-        expandedSections: { ...expandedSections, [section.blockid]: false }
+        expandedSections: { ...expandedSections, [section.blockid]: type === "open" }
       });
     }
 
@@ -227,7 +227,12 @@ class FormModal extends Component {
     const comparatorToSymbol = {
       l: "<",
       g: ">",
-      e: "=="
+      b: "<",
+      a: ">",
+      e: "==",
+      n: "!=",
+      m: "<=",
+      h: ">="
     };
 
     const result = conditions.reduce(
