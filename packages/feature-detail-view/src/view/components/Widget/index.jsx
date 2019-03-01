@@ -10,16 +10,19 @@ class Widget extends Component {
     const scripts = html.match(reg);
     html = html.replace(reg, "");
 
-    const scriptsToExcecute = [];
+    let scriptsToExcecute = [];
 
     scripts.forEach(script => {
       if (script.includes("src")) {
         const url = /src="(.+)"/.exec(script)[1];
-        let scriptTag = document.createElement("script");
+        const exists = !!document.querySelector(`script[src="${url}"]`);
 
-        scriptTag.src = url;
-        scriptTag.onload = this.onloadHandler;
-        document.body.appendChild(scriptTag);
+        if (!exists) {
+          let scriptTag = document.createElement("script");
+          scriptTag.src = url;
+          scriptTag.onload = this.onloadHandler;
+          document.body.appendChild(scriptTag);
+        }
       } else {
         script = script.replace(/<[^>]*>/g, "");
         scriptsToExcecute.push(script);
