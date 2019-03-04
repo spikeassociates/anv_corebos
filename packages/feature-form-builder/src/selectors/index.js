@@ -2,13 +2,19 @@ import { createSelector } from "reselect";
 import Modular from "modular-redux";
 import { selectors as selectorUtils } from "shared-resource";
 
-const name = module =>
+const initialValues = module =>
   createSelector(
     module,
-    ({ data }) => data.name
+    ({ data }) => data.initial
   );
 
-const selectors = { name };
+const fieldDependencies = module =>
+  createSelector(
+    module,
+    ({ data }) => data.fieldDependencies
+  );
+
+const selectors = { initialValues, fieldDependencies };
 
 export default Modular.selectors(moduleState =>
   selectorUtils.getSelectors(moduleState, selectors)

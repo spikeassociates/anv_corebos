@@ -5,7 +5,12 @@ import customSprite from "@salesforce-ux/design-system/assets/icons/custom-sprit
 import utilitySprite from "@salesforce-ux/design-system/assets/icons/utility-sprite/svg/symbols.svg";
 import standardSprite from "@salesforce-ux/design-system/assets/icons/standard-sprite/svg/symbols.svg";
 import doctypeSprite from "@salesforce-ux/design-system/assets/icons/doctype-sprite/svg/symbols.svg";
-import { IconSettings, Accordion, AccordionPanel } from "@salesforce/design-system-react";
+import {
+  IconSettings,
+  Accordion,
+  AccordionPanel,
+  Button
+} from "@salesforce/design-system-react";
 import Block from "./Block";
 
 class Blocks extends Component {
@@ -13,9 +18,7 @@ class Blocks extends Component {
     super(props);
 
     this.state = {
-      expandedPanels: {
-        block01: true
-      }
+      expandedPanels: {}
     };
     const blockid = this.props.blockid;
   }

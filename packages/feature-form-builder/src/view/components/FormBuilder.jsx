@@ -7,7 +7,13 @@ import standardSprite from "@salesforce-ux/design-system/assets/icons/standard-s
 import doctypeSprite from "@salesforce-ux/design-system/assets/icons/doctype-sprite/svg/symbols.svg";
 // import FormInfo from "./FormInfo";
 import Tabs from "./Steps/Tabs";
-import { IconSettings, Accordion, AccordionPanel } from "@salesforce/design-system-react";
+
+import {
+  IconSettings,
+  Accordion,
+  AccordionPanel,
+  Button
+} from "@salesforce/design-system-react";
 import data from "../../data";
 import update from "immutability-helper";
 const id = 1;

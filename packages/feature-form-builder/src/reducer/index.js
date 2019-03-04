@@ -1,8 +1,6 @@
 import Modular from "modular-redux";
 import Resources from "../resources";
 
-import formdata from "../data";
-
 const initialState = {
   shown: {
     form: false
@@ -11,7 +9,7 @@ const initialState = {
     form: false
   },
   data: {
-    name: "test"
+    initial: { bill_country: "Albania" }
   }
 };
 

@@ -51,13 +51,13 @@ class RowEdit extends Component {
                 )
               }
             />
-            {/* <Button
+            <Button
               assistiveText={{ icon: "Icon Border-filled medium" }}
               iconCategory="utility"
               iconName="add"
               iconVariant="border-filled"
               variant="icon"
-            /> */}
+            />
           </div>
         </div>
       </IconSettings>

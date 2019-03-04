@@ -5,7 +5,7 @@ import utilitySprite from "@salesforce-ux/design-system/assets/icons/utility-spr
 import standardSprite from "@salesforce-ux/design-system/assets/icons/standard-sprite/svg/symbols.svg";
 import doctypeSprite from "@salesforce-ux/design-system/assets/icons/doctype-sprite/svg/symbols.svg";
 
-import { IconSettings, Tabs, TabsPanel } from "@salesforce/design-system-react";
+import { IconSettings, Tabs, TabsPanel, Button } from "@salesforce/design-system-react";
 import Blocks from "./Blocks/Blocks";
 
 class TabsSteps extends React.Component {
@@ -68,12 +68,9 @@ class TabsSteps extends React.Component {
             </TabsPanel>
           ))}
         </Tabs>
+        <Button label="Save Fields on this step" onClick={this.addStep} variant="brand" />
+
         {/* <ActionButtons /> */}
-        {/* <Button
-          label="Add another step"
-          onClick={this.addStep}
-          variant="brand"
-        /> */}
       </IconSettings>
     );
   }

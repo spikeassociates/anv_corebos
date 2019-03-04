@@ -300,6 +300,9 @@ class FormModal extends Component {
     const { actions, moduleMeta, id } = this.props;
     const formValues = this.formApi.values();
     const values = id ? { id, ...formValues } : formValues;
+    console.log(JSON.stringify(values));
+
+    console.log(moduleMeta.name);
 
     actions.saveItem({
       values,

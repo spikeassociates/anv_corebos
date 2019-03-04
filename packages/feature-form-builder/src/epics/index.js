@@ -1,15 +1,42 @@
 import { epics as epicsUtils } from "shared-resource";
 
+import { transformDependencies } from "./transform";
+
 const epics = ({ actions, api }) => {
   const { asyncAction } = epicsUtils.async;
   const { types } = actions;
 
-  const rename = action$ =>
-    action$.ofType(types.RENAME).mergeMap(action => {
-      return Observable.of(actions.setData(`name`, action.payload));
-    });
+  const saveItem = asyncAction({
+    api: api.saveItem,
+    type: types.SAVE_ITEM,
+    onRequest: [() => actions.setBusy("form")],
+    onSuccess: [() => actions.setBusy("form", false)],
+    onFailure: [() => actions.setBusy("form", false)]
+  });
 
-  return { rename };
+  const doRetrieve = asyncAction({
+    api: api.doRetrieve,
+    type: types.DO_RETRIEVE,
+    onSuccess: [
+      action => actions.setData("initial", action.payload),
+      action => actions.setShown("form")
+    ]
+  });
+
+  const getFieldDependencies = asyncAction({
+    api: api.getFieldDependencies,
+    type: types.GET_FIELD_DEPENDENCIES,
+    onSuccess: [
+      action => {
+        let { dependencies } = JSON.parse(action.payload[0].contentjson);
+        dependencies = transformDependencies(dependencies);
+
+        return actions.setData("fieldDependencies", dependencies);
+      }
+    ]
+  });
+
+  return { ...saveItem, ...doRetrieve, ...getFieldDependencies };
 };
 
 export default epics;

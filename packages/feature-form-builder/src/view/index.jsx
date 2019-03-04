@@ -22,17 +22,18 @@ class FormBuilder extends Component {
   }
 }
 
-const mapStateToProps = (state, { Module }) =>
-  mapToState(state, Module.selectors, ["name"]);
+// const mapStateToProps = (state, { Module }) =>
+//   mapToState(state, Module.selectors, ["name"]);
 
-const mapDispatchToProps = (dispatch, { Module }) => ({
-  actions: mapToDispatch(dispatch, Module.actions)
-});
+// const mapDispatchToProps = (dispatch, { Module }) => ({
+//   actions: mapToDispatch(dispatch, Module.actions)
+// });
 
-export default compose(
-  Modular.view,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps
-  )
-)(FormBuilder);
+// export default compose(
+//   Modular.view,
+//   connect(
+//     mapStateToProps,
+//     mapDispatchToProps
+//   )
+// )(FormBuilder);
+export default FormBuilder;

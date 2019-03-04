@@ -1,0 +1,166 @@
+<link rel="stylesheet" href="bower_components/bootstrap-css/css/bootstrap.css" />
+<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css" />
+<link type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet" />
+<div id="topHeader" ng-controller="navtop" ng-include="'partials/navtop.html'"></div>
+<div id="leftNavigation" ng-controller="navigationCtrl" ng-include="'partials/navside.html'"></div>
+<!-- leftNavigation -->
+<div id="pageWrapper">
+  <div class="pageLeft">
+    <div id="pageHeader">
+      <h2 class="alert alert-warning">{{ moduleLabel | i18next }}</h2>
+      <div class="button-add">
+        <a href="#/portal_createview/{{ module }}" ng-show="createable">{{
+          "Add" | i18next
+          }}</a>
+      </div>
+      <div ng-show="module=='Cases'" class="filter-select-option">
+        <select ng-model="filter_fld">
+          <option value="cf_902">{{ "Type" | i18next }}</option>
+          <option value="cf_987">{{ "Status" | i18next }}</option>
+        </select>
+        <select ng-model="searchText">
+          <option ng-repeat="fld in opt[filter_fld]" value="{{ fld }}">{{
+            fld | i18next
+            }}</option>
+        </select>
+      </div>
+      <div ng-show="moduleTemp=='KnowledgeBase2'" class="filter-select-option" style="display: flex;flex-direction: row;">
+        <md-fab-actions>
+          <input type="text" ng-model="searchText_vinkb.vinkb" placeholder="{{ 'Click to filter' | i18next }} {{ 'VIN' | i18next }}"
+            style="margin-top:15px;" />
+        </md-fab-actions>
+        <md-button class="md-primary" data-content="{{ 'Select' | i18next }}" data-placement="bottom" data-template-url="popupListViewRef.tpl.html"
+          data-animation="am-flip-x" data-auto-close="1" bs-popover="popover" style="margin-top:5px;"><b>Search</b></md-button>
+        <div ng-if="myItemsTotalCount2 != 0" style="display: flex;flex-direction: column;">
+          <span>
+            &nbsp;&nbsp;&nbsp;<b ng-if="selectedVinName!='' && selectedVinName!=undefined">{{ "Searched Vin Name" |
+              i18next }}:&nbsp;</b>
+            {{ selectedVinName }}&nbsp;&nbsp;&nbsp;</span>
+          <span>
+            &nbsp;&nbsp;&nbsp;<b ng-if="selectedVinName!='' && selectedVinName!=undefined">{{ "Product Name" | i18next
+              }}:&nbsp;</b>
+            {{ selectedProductName }}</span>
+        </div>
+      </div>
+    </div>
+    <div ng-show="moduleTemp=='survey'" ng-controller="mySurvey">
+      <div class="form-group">
+        <label>Insert Vin to check for survey</label>
+        <input type="text" class="form-control" ng-model="myNumber" />
+      </div>
+      <div ng-show="isEven(myNumber)">
+        <h2>There is no Survey.</h2>
+      </div>
+
+      <!-- show if our function evaluates to false -->
+      <div ng-show="!isEven(myNumber)">
+        <h2>The number is odd.</h2>
+        <div><a href="{{ surveylink }}" target="_blank">Survey2</a></div>
+      </div>
+    </div>
+
+    <div ng-show="labels && !labels_archived">
+      <table ng-table-dynamic="tableParams with cols" show-filter="true" class="table table-bordered table-striped">
+        <tr style="cursor: pointer;" ng-repeat="row in $data | filter: { 'cf_987' :'!Archived'} 
+                track by row.id">
+          <td ng-repeat="col in $columns">
+            <span ng-if="col.field=='action'" ng-repeat="act in relatedactions">
+              <md-tooltip md-direction="top" md-visible="false">{{
+                act.reference | i18next
+                }}</md-tooltip>
+              <img width="20" height="20" src="{{ corebosPath }}/themes/images/pdf-file.jpg" alt="{{ act.reference | i18next }}"
+                ng-click="runAction(act.actionid,row.id)" />
+            </span>
+            <div ng-if="col.field=='action' && row['selected_edocs_display']!='' && module==='InvoiceDetail'">
+              <button type="button" class="btn btn-primary" ng-click="visitSSO(row,'selected_edocs')" style="width:160px;background-color: #ea8211;border-color:#ea8211;">
+                {{ "Visit eDocs" | i18next }}
+              </button>
+            </div>
+            <br />
+            <div ng-if="col.field=='action' && row['selected_eparts_display']!='' && module==='InvoiceDetail'">
+              <button type="button" class="btn btn-primary" ng-click="visitSSO(row,'selected_eparts')" style="width:160px;background-color: #ea8211;border-color:#ea8211;">
+                {{ "Visit eParts" | i18next }}
+              </button>
+            </div>
+            <br />
+            <div ng-if="col.field=='action' && (row['invoice_academy_display']===1 || row['invoice_academy_display']==='1') && module==='InvoiceDetail'">
+              <button type="button" class="btn btn-primary" ng-click="visitSSO(row,'invoice_academy')" style="width:160px;background-color: #ea8211;border-color:#ea8211;">
+                {{ "Visit Academy" | i18next }}
+              </button>
+            </div>
+            <span ng-if="col.field!='action'" ng-bind-html="::row[col.field] | i18next | sanitize " ng-click="followRecord(row)">
+            </span>
+          </td>
+        </tr>
+      </table>
+
+      <!-- <table ng-table-dynamic="tableParams with cols" show-filter="true" class="table table-bordered table-striped">
+                <tr ng-repeat="row in $data track by row.id">
+                    <td height="10" data-title="labels[0]" header-class="'text-left'" sortable='fields[0]' filter="custom_filter()">
+                        <span class="name">
+                            <a href="#/portal_moduleview/{{module}}/{{row.id}}" ng-bind-html="row[fields[0]]"></a>
+                        </span>
+                    </td>
+                    <td height="10" data-title="labels[1]" header-class="'text-right'" ng-bind-html="row[fields[1]]"></td>
+                    <td height="10" data-title="labels[2]" header-class="'text-right'" ng-bind-html="row[fields[2]]"></td>
+                    <td height="10" data-title="labels[3]" header-class="'text-right'" ng-bind-html="row[fields[3]]"></td>
+                    <td height="10" data-title="labels[4]" header-class="'text-right'" ng-bind-html="row[fields[4]]"></td>
+                    <td height="10" data-title="labels[5]" header-class="'text-right'" ng-bind-html="row[fields[5]]"></td>
+                    <td height="10" data-title="labels[6]" header-class="'text-right'" ng-bind-html="row[fields[6]]">
+                        <span class="name" ng-if="module=='Documents1'">
+                            <a ng-click="runAction(11298532, row['fileid'] + ',' + row['entityid'], checkboxes.items);">Ristampa</a>
+                        </span>
+                    </td>
+                </tr>
+            </table> -->
+    </div>
+
+    <!-- Only when Type is selected as Archived -->
+    <div ng-show="labels_archived">
+      <table ng-table-dynamic="tableParams with cols" show-filter="true" class="table table-bordered table-striped">
+        <tr style="cursor: pointer;" ng-repeat="row in $data 
+                track by row.id">
+          <td ng-repeat="col in $columns">
+            <span ng-if="col.field=='action'" ng-repeat="act in relatedactions">
+              <md-tooltip md-direction="top" md-visible="false">{{
+                act.reference | i18next
+                }}</md-tooltip>
+              <img width="20" height="20" src="{{ corebosPath }}/themes/images/pdf-file.jpg" alt="{{ act.reference | i18next }}"
+                ng-click="runAction(act.actionid,row.id)" />
+            </span>
+            <div ng-if="col.field=='action' && row['selected_edocs_display']!='' && module==='InvoiceDetail'">
+              <button type="button" class="btn btn-primary" ng-click="visitSSO(row,'selected_edocs')" style="width:160px;background-color: #ea8211;border-color:#ea8211;">
+                {{ "Visit eDocs" | i18next }}
+              </button>
+            </div>
+            <br />
+            <div ng-if="col.field=='action' && row['selected_eparts_display']!='' && module==='InvoiceDetail'">
+              <button type="button" class="btn btn-primary" ng-click="visitSSO(row,'selected_eparts')" style="width:160px;background-color: #ea8211;border-color:#ea8211;">
+                {{ "Visit eParts" | i18next }}
+              </button>
+            </div>
+            <br />
+            <div ng-if="col.field=='action' && (row['invoice_academy_display']===1 || row['invoice_academy_display']==='1') && module==='InvoiceDetail'">
+              <button type="button" class="btn btn-primary" ng-click="visitSSO(row,'invoice_academy')" style="width:160px;background-color: #ea8211;border-color:#ea8211;">
+                {{ "Visit Academy" | i18next }}
+              </button>
+            </div>
+            <span ng-if="col.field!='action'" ng-bind-html="::row[col.field] | i18next | sanitize " ng-click="followRecord(row)">
+            </span>
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="new-list" ng-show="labels">
+      <div id="viewResult">
+        {{ (moduleList | filter: searchText:strict).length }} {{ "of" | i18next }}
+        {{ myPageItemsCount }} {{ "Records" | i18next }} {{ "Found" | i18next }}
+      </div>
+    </div>
+  </div>
+  <div style="clear:left;">
+    <input ng-if="moduleTemp=='ServiceVehicle' || moduleTemp=='Cases' ||  moduleTemp=='ServiceContracts'" type="button"
+      ng-click="exportModule()" class="savebutt btn btn-orange" value="{{ 'Export' | i18next }}" />
+  </div>
+  <div ng-include="'partials/portal_list_actions.html'" ng-show="false"></div>
+</div>

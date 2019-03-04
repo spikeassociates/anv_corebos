@@ -70,39 +70,43 @@ const data = {
           label: "Main Data2",
           sequence: "2",
           blocktype: "RowEdit",
-
-          fields: [
+          blockfields: [
             {
-              uitype: 1,
-              fieldid: 1,
-              blockid: "ba2",
-              cbfield: "Input #1",
-              sequence: "1",
-              label: "Input #1"
-            },
-            {
-              uitype: 1,
-              fieldid: 2,
-              blockid: "ba",
-              cbfield: "Input #2",
-              sequence: "2",
-              label: "Input #2"
-            },
-            {
-              uitype: 1,
-              fieldid: 3,
-              blockid: "ba",
-              cbfield: "Input #1",
-              sequence: "1",
-              label: "Input #3"
-            },
-            {
-              uitype: 1,
-              fieldid: 4,
-              blockid: "ba",
-              cbfield: "Input #2",
-              sequence: "2",
-              label: "Input #4"
+              blockfieldid: 1,
+              fields: [
+                {
+                  uitype: 1,
+                  fieldid: 1,
+                  blockid: "ba2",
+                  cbfield: "Input #1",
+                  sequence: "1",
+                  label: "Input #1"
+                },
+                {
+                  uitype: 1,
+                  fieldid: 2,
+                  blockid: "ba",
+                  cbfield: "Input #2",
+                  sequence: "2",
+                  label: "Input #2"
+                },
+                {
+                  uitype: 1,
+                  fieldid: 3,
+                  blockid: "ba",
+                  cbfield: "Input #1",
+                  sequence: "1",
+                  label: "Input #3"
+                },
+                {
+                  uitype: 1,
+                  fieldid: 4,
+                  blockid: "ba",
+                  cbfield: "Input #2",
+                  sequence: "2",
+                  label: "Input #4"
+                }
+              ]
             }
           ]
         }

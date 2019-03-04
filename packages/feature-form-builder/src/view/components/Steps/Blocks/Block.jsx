@@ -21,7 +21,25 @@ import Tabs from "../Tabs";
 class Block extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      fieldsGot: false,
+      fields: []
+    };
+  }
+
+  componentDidMount() {
+    this.getRowEditFields();
+  }
+
+  //Get Fields only once from Row Edit Block
+  getRowEditFields() {
+    if (this.state.fieldsGot == false) {
+      const fieldss = this.props.fields;
+      this.setState({
+        fieldsGot: true,
+        fields: fieldss
+      });
+    }
   }
   render() {
     return (
@@ -31,9 +49,10 @@ class Block extends Component {
             {this.props.fields.map((field, i) => (
               <div className="slds-col slds-size_1-of-2" style={{ marginTop: "10px" }}>
                 <Inputs
-                  fieldid={field.fieldid}
-                  cbfield={field.label}
-                  value={field.value}
+                  // fieldid={field.fieldid}
+                  // cbfield={field.label}
+                  // value={field.value}
+                  field={field}
                 />
               </div>
             ))}
@@ -43,6 +62,8 @@ class Block extends Component {
             <Tabs steps={this.props.fields} stepids={this.props.stepid} />
           </div>
         ) : (
+          //TODO
+          // TODO can be simplified and faster
           <div>
             <div className="slds-grid slds-wrap">
               {this.props.fields.map((field, i) => (
@@ -57,17 +78,24 @@ class Block extends Component {
                   />
                 </div>
               ))}
+              <Button
+                assistiveText={{ icon: "Icon Border-filled medium" }}
+                iconCategory="utility"
+                iconName="add"
+                iconVariant="border-filled"
+                variant="icon"
+              />
             </div>
             <div>
               <Button
                 style={{ marginTop: "20px" }}
-                label="Add Field"
+                label="Add Block of Fields"
                 variant="brand"
                 onClick={() => {
                   this.props.addRow(
                     this.props.stepids,
                     this.props.blockid,
-                    this.props.fields
+                    this.state.fields
                   );
                 }}
               />
