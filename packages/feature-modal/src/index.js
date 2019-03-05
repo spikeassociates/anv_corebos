@@ -8,16 +8,25 @@ import selectors from "./selectors";
 import epics from "./epics";
 import view from "./view";
 
-const Main = ListView =>
+const Main = FormView =>
   Module(
     {
       name: "main",
-      actions: { module: actions, listview: ListView.actions },
-      reducers: { module: reducer, listview: ListView.reducer },
-      selectors: { module: selectors, listview: ListView.selectors },
-      views: { module: view, listview: ListView.view },
-      api: { module: api, listview: ListView.api },
-      epics: { module: epics, listview: ListView.epic }
+      actions: {
+        module: actions,
+        formview: FormView.actions
+      },
+      reducers: {
+        module: reducer,
+        formview: FormView.reducer
+      },
+      selectors: {
+        module: selectors,
+        formview: FormView.reducer
+      },
+      views: { module: view, formview: FormView.view },
+      api: { module: api, formview: FormView.api },
+      epics: { module: epics, formview: FormView.epic }
     },
     [{ feature: "api" }, epicsUtils.modulist.feature]
   );

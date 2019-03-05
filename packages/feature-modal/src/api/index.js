@@ -12,16 +12,7 @@ const api = {
       elementType: name,
       element: JSON.stringify(values)
     });
-  },
-
-  doRetrieve: ({ id }) => base.get("", { operation: "retrieve", id }),
-
-  getFieldDependencies: () =>
-    base.get("", {
-      operation: "query",
-      elementType: "",
-      query: `select contentjson from cbMap where maptype = 'FieldDependency' and targetname = 'Accounts';`
-    })
+  }
 };
 
 export default api;
