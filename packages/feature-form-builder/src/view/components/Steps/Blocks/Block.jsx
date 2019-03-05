@@ -1,19 +1,14 @@
 import React, { Component } from "react";
+import Modular from "modular-redux";
+import { compose } from "redux";
+import { connect } from "react-redux";
+import { mapToDispatch, mapToState } from "shared-utils";
 
-import actionSprite from "@salesforce-ux/design-system/assets/icons/action-sprite/svg/symbols.svg";
-import customSprite from "@salesforce-ux/design-system/assets/icons/custom-sprite/svg/symbols.svg";
-import utilitySprite from "@salesforce-ux/design-system/assets/icons/utility-sprite/svg/symbols.svg";
-import standardSprite from "@salesforce-ux/design-system/assets/icons/standard-sprite/svg/symbols.svg";
-import doctypeSprite from "@salesforce-ux/design-system/assets/icons/doctype-sprite/svg/symbols.svg";
-import {
-  IconSettings,
-  Accordion,
-  AccordionPanel,
-  Button
-} from "@salesforce/design-system-react";
+import { Button } from "@salesforce/design-system-react";
+import { Form, Field } from "shared-form";
 
 import Inputs from "../Inputs/Inputs";
-// import data from "../../data/data";
+//import data from "../../data/data";
 import RowEdit from "../Inputs/RowEdit";
 
 import Tabs from "../Tabs";
@@ -25,10 +20,6 @@ class Block extends Component {
       fieldsGot: false,
       fields: []
     };
-  }
-
-  componentDidMount() {
-    this.getRowEditFields();
   }
 
   //Get Fields only once from Row Edit Block
@@ -45,17 +36,9 @@ class Block extends Component {
     return (
       <>
         {this.props.blocktype == "Fields" ? (
+          //When type of block is "Fields"(render normal fields)
           <div className="slds-grid slds-wrap">
-            {this.props.fields.map((field, i) => (
-              <div className="slds-col slds-size_1-of-2" style={{ marginTop: "10px" }}>
-                <Inputs
-                  // fieldid={field.fieldid}
-                  // cbfield={field.label}
-                  // value={field.value}
-                  field={field}
-                />
-              </div>
-            ))}
+            <Inputs fields={this.props.fields} />
           </div>
         ) : this.props.blocktype == "DocumentForm" ? (
           <div className="slds-grid slds-wrap">
@@ -107,4 +90,22 @@ class Block extends Component {
   }
 }
 
-export default Block;
+const mapStateToProps = (state, { Module }) =>
+  mapToState(state, Module.selectors, [
+    "busy",
+    "shown",
+    "initialValues",
+    "fieldDependencies"
+  ]);
+
+const mapDispatchToProps = (dispatch, { Module }) => ({
+  actions: mapToDispatch(dispatch, Module.actions)
+});
+
+export default compose(
+  Modular.view,
+  connect(
+    mapStateToProps,
+    mapDispatchToProps
+  )
+)(Block);
