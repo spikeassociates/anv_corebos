@@ -19,47 +19,25 @@ const data = {
               uitype: 1,
               fieldid: "f01",
               blockid: "ba",
-              cbfield: "firstname",
+              name: "firstname2",
               sequence: "1",
               label: "Asset Name asdasdasd"
             },
+
             {
               uitype: 1,
-              fieldid: "f02",
-              blockid: "ba",
-              cbfield: "lastname",
-              sequence: "2",
-              label: "Asset Serial Number"
-            },
-            {
-              uitype: 56,
               fieldid: "f03",
               blockid: "bb",
-              cbfield: "cf_999",
+              name: "firstname",
               sequence: "3",
               label: "Asset Image"
             },
+
             {
               uitype: 1,
               fieldid: "f02",
               blockid: "ba",
-              cbfield: "lastname",
-              sequence: "2",
-              label: "Asset Serial Number"
-            },
-            {
-              uitype: 1,
-              fieldid: "f02",
-              blockid: "ba",
-              cbfield: "lastname",
-              sequence: "2",
-              label: "Asset Serial Number"
-            },
-            {
-              uitype: 1,
-              fieldid: "f02",
-              blockid: "ba",
-              cbfield: "lastname",
+              name: "lastname",
               sequence: "2",
               label: "Asset Serial Number"
             }
@@ -76,7 +54,7 @@ const data = {
               uitype: 1,
               fieldid: 1,
               blockid: "ba2",
-              cbfield: "Input #1",
+              name: "Input #1",
               sequence: "1",
               label: "Input #1"
             },
@@ -84,7 +62,7 @@ const data = {
               uitype: 1,
               fieldid: 2,
               blockid: "ba",
-              cbfield: "Input #2",
+              name: "Input #2",
               sequence: "2",
               label: "Input #2"
             },
@@ -92,7 +70,7 @@ const data = {
               uitype: 1,
               fieldid: 3,
               blockid: "ba",
-              cbfield: "Input #1",
+              name: "Input #1",
               sequence: "1",
               label: "Input #3"
             },
@@ -100,7 +78,7 @@ const data = {
               uitype: 1,
               fieldid: 4,
               blockid: "ba",
-              cbfield: "Input #2",
+              name: "Input #2",
               sequence: "2",
               label: "Input #4"
             }
@@ -138,15 +116,15 @@ const data = {
                       uitype: 1,
                       fieldid: "f01",
                       blockid: "ba",
-                      cbfield: "assetname",
+                      name: "assetname",
                       sequence: "1",
                       label: "Document name"
                     },
                     {
-                      uitype: 1,
+                      uitype: 5,
                       fieldid: "f01",
                       blockid: "ba",
-                      cbfield: "assetname",
+                      name: "assetname2",
                       sequence: "1",
                       label: "Upload file"
                     }
@@ -171,7 +149,7 @@ const data = {
                       uitype: 1,
                       fieldid: "f01",
                       blockid: "ba",
-                      cbfield: "assetname",
+                      name: "assetname",
                       sequence: "1",
                       label: "Asset Name"
                     },
@@ -179,7 +157,7 @@ const data = {
                       uitype: 1,
                       fieldid: "f02",
                       blockid: "ba",
-                      cbfield: "serailno",
+                      name: "serailno",
                       sequence: "2",
                       label: "Asset Serial Number"
                     },
@@ -187,7 +165,7 @@ const data = {
                       uitype: 1,
                       fieldid: "f03",
                       blockid: "bb",
-                      cbfield: "cf_999",
+                      name: "cf_999",
                       sequence: "3",
                       label: "Asset Image"
                     }
@@ -202,28 +180,28 @@ const data = {
                     {
                       fieldid: 1,
                       blockid: "ba",
-                      cbfield: "Input #1",
+                      name: "Input #1",
                       sequence: "1",
                       label: "Input #1"
                     },
                     {
                       fieldid: 2,
                       blockid: "ba",
-                      cbfield: "Input #2",
+                      name: "Input #2",
                       sequence: "2",
                       label: "Input #2"
                     },
                     {
                       fieldid: 3,
                       blockid: "ba",
-                      cbfield: "Input #1",
+                      name: "Input #1",
                       sequence: "1",
                       label: "Input #3"
                     },
                     {
                       fieldid: 4,
                       blockid: "ba",
-                      cbfield: "Input #2",
+                      name: "Input #2",
                       sequence: "2",
                       label: "Input #4"
                     }

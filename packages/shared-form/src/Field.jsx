@@ -3,7 +3,6 @@ import Context from "./Context";
 
 class Field extends Component {
   handleChange(value, Form) {
-    console.log(value);
     const { name, normalize, onChange } = this.props;
     if (normalize) {
       value = normalize(value);
