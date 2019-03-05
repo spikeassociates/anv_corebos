@@ -19,6 +19,7 @@
     "feature-detailview": "*",
     "feature-authentication": "*",
     "feature-modal": "*",
-    "feature-form": "*"
+    "feature-form": "*",
+    "feature-form-builder": "*"
   }
 }

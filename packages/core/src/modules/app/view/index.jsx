@@ -28,7 +28,7 @@ class App extends React.Component {
 
     const props = { moduleMeta, isPrimary: true };
 
-    return <Module.view.formbuilder />;
+    return <Module.view.formbuilder modules={modules} />;
 
     if (!(authenticated && Object.keys(modules).length)) {
       return <Module.view.authentication />;
