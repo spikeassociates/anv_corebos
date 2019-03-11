@@ -2,57 +2,41 @@ import React, { Component } from "react";
 import Modular from "modular-redux";
 import { compose } from "redux";
 import { connect } from "react-redux";
+
+import { mapToDispatch } from "shared-utils";
 import Form from "./components/FormBuilder";
 import data2 from "../data";
 import NewForm from "./form";
 
 import { Tabs, TabsPanel, Button } from "@salesforce/design-system-react";
-import update from "immutability-helper";
 
 class FormBuilder extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      data: {},
       formData: {},
-      data: data2
+      data_form: data2,
+      renderRowEdit: 0
     };
-
-    this.addRow = this.addRow.bind(this);
   }
 
-  //Used for blocktype='RowEdit' to make it dynamic
-  addRow = () => {
-    let newState = update(this.state, {
-      data: {
-        steps: {
-          [0]: {
-            blocks: {
-              [0]: {
-                fields: {
-                  $push: [
-                    {
-                      uitype: 1,
-                      fieldid: "f011",
-                      blockid: "ba",
-                      name: "firstname",
-                      sequence: "10",
-                      label: "Added"
-                    }
-                  ]
-                }
-              }
-            }
-          }
-        }
-      }
+  saveData = () => {
+    const { actions, id } = this.props;
+    const { data } = this.state;
+    const values = id ? { id, ...data } : data;
+    console.log(values);
+
+    actions.saveItem({
+      values,
+      name: "Contacts",
+      operation: id ? "UpdateWithValidation" : "CreateWithValidation"
     });
-    this.setState(newState);
   };
 
   //Main Render
   render() {
-    const { steps } = this.state.data;
-    console.log(steps);
+    const { steps } = this.state.data_form;
     return (
       <div>
         <Tabs id="tabs-example-default">
@@ -62,8 +46,6 @@ class FormBuilder extends Component {
             </TabsPanel>
           ))}
         </Tabs>
-        {/* <div>{name}</div>
-          <div onClick={() => actions.rename("wow")}>Change Name</div> */}
       </div>
     );
   }
@@ -71,21 +53,20 @@ class FormBuilder extends Component {
   //Render Steps
   renderStep = step => {
     const { modules } = this.props;
-    console.log(step);
-    console.log("----");
-
     let meta = modules[step.module];
-    return step.blocks
-      .sort((a, b) => {
-        const aSequence = parseInt(a.sequence);
-        const bSequence = parseInt(b.sequence);
-        return aSequence - bSequence;
-      })
-      .map(({ blocktype, ...rest }) => {
-        if (blocktype === "Fields") {
-          return this.renderBlockFields(meta, rest);
-        }
-      });
+    return (
+      step.blocks
+        // .sort((a, b) => {
+        //   const aSequence = parseInt(a.sequence);
+        //   const bSequence = parseInt(b.sequence);
+        //   return aSequence - bSequence;
+        // })
+        .map(({ blocktype, ...rest }) => {
+          if (blocktype === "Fields") {
+            return this.renderBlockFields(meta, rest);
+          }
+        })
+    );
   };
 
   //Render fields of blocktype=='Fields'
@@ -93,6 +74,7 @@ class FormBuilder extends Component {
     const { formData } = this.state;
     let { fields, blockid, label, sequence } = block;
     fields = fields
+
       .map(field => ({
         displaytype: "1",
         ...meta.fields[field.name],
@@ -106,13 +88,28 @@ class FormBuilder extends Component {
       .reduce((acc, field) => ({ ...acc, [field.name]: field }), {});
     meta = { ...meta, fields };
     return (
+      //Add here for loop for RowEdit to render it as many times as the button + is pressed
+      //There should be two buttons, one in side of each block, and one in bottom
+      //to add more blocks(arrays)
       <>
-        <NewForm
-          onFormChange={data => this.setState({ formData: { ...formData, ...data } })}
-          key={blockid}
-          moduleMeta={meta}
-        />
-        <Button onClick={this.addRow} label="Add new" variant="brand" />
+        <div className="slds-grid slds-gutters">
+          <div className="slds-col slds-size_5-of-7">
+            <NewForm
+              onFormChange={data => this.setState({ data })}
+              key={blockid}
+              moduleMeta={meta}
+            />
+          </div>
+          <div className="slds-col slds-size_2-of-7 slds-align_absolute-center">
+            <Button
+              iconCategory="utility"
+              iconName="delete"
+              iconSize="large"
+              variant="icon"
+            />
+          </div>
+        </div>
+        <Button key="save" label="Save" variant="brand" onClick={this.saveData} />
       </>
     );
   };
@@ -144,18 +141,14 @@ class FormBuilder extends Component {
   };
 }
 
-// const mapStateToProps = (state, { Module }) =>
-//   mapToState(state, Module.selectors, ["name"]);
+const mapDispatchToProps = (dispatch, { Module }) => ({
+  actions: mapToDispatch(dispatch, Module.actions)
+});
 
-// const mapDispatchToProps = (dispatch, { Module }) => ({
-//   actions: mapToDispatch(dispatch, Module.actions)
-// });
-
-// export default compose(
-//   Modular.view,
-//   connect(
-//     mapStateToProps,
-//     mapDispatchToProps
-//   )
-// )(FormBuilder);
-export default FormBuilder;
+export default compose(
+  Modular.view,
+  connect(
+    null,
+    mapDispatchToProps
+  )
+)(FormBuilder);

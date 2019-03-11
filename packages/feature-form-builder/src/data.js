@@ -40,15 +40,22 @@ const data = {
               name: "lastname",
               sequence: "2",
               label: "Asset Serial Number"
+            },
+            {
+              uitype: 1,
+              fieldid: "f02",
+              blockid: "ba",
+              name: "lastname2",
+              sequence: "2",
+              label: "Asset Serial Number"
             }
           ]
         },
         {
-          blockid: 1,
+          blockid: 3,
           label: "Main Data2",
           sequence: "2",
-          blocktype: "RowEdit",
-
+          blocktype: "Fields",
           fields: [
             {
               uitype: 1,
@@ -70,7 +77,7 @@ const data = {
               uitype: 1,
               fieldid: 3,
               blockid: "ba",
-              name: "Input #1",
+              name: "Input #3",
               sequence: "1",
               label: "Input #3"
             },
@@ -78,7 +85,7 @@ const data = {
               uitype: 1,
               fieldid: 4,
               blockid: "ba",
-              name: "Input #2",
+              name: "Input #4",
               sequence: "2",
               label: "Input #4"
             }
