@@ -46,6 +46,7 @@ class FormBuilder extends Component {
             </TabsPanel>
           ))}
         </Tabs>
+        <Button key="save" label="Save" variant="brand" onClick={this.saveData} />
       </div>
     );
   }
@@ -109,7 +110,6 @@ class FormBuilder extends Component {
             />
           </div>
         </div>
-        <Button key="save" label="Save" variant="brand" onClick={this.saveData} />
       </>
     );
   };
