@@ -14,7 +14,13 @@ const preview = module =>
     ({ data }) => data.preview
   );
 
-const selectors = { listviewData, preview };
+const totalRowsCount = module =>
+  createSelector(
+    module,
+    ({ data }) => data.totalRowsCount
+  );
+
+const selectors = { listviewData, preview, totalRowsCount };
 
 export default Modular.selectors(moduleState =>
   selectorUtils.getSelectors(moduleState, selectors)

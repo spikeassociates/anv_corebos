@@ -4,10 +4,11 @@ import {
   Dropdown,
   DropdownTrigger,
   Button,
-  Input
+  Input,
+  Icon
 } from "@salesforce/design-system-react";
 
-import { HeaderActionRow, PaginationContainer } from "../styles";
+import { HeaderActionRow, PaginationContainer, Arrows } from "../styles";
 
 export default class PageHeaderContainer extends Component {
   actions = [{ label: "Delete All", value: "delete" }];
@@ -41,7 +42,7 @@ export default class PageHeaderContainer extends Component {
   };
 
   render() {
-    const { filters, title, moduleName, showModal, isPrimary } = this.props;
+    const { filters, title, moduleName, showModal, isPrimary, lastPage } = this.props;
     const { page } = this.state;
 
     return (
@@ -71,12 +72,17 @@ export default class PageHeaderContainer extends Component {
           <>
             <HeaderActionRow>
               <PaginationContainer>
+                <Arrows onClick={() => this.onPageChange(1)}>
+                  <Icon category="utility" name="chevronleft" size="x-small" />
+                  <Icon category="utility" name="chevronleft" size="x-small" />
+                </Arrows>
+
                 <Button
                   iconCategory="utility"
                   iconName="chevronleft"
                   iconSize="small"
                   iconVariant="bare"
-                  onClick={() => this.onPageChange(page - 1)}
+                  onClick={() => this.onPageChange(Math.max(page - 1, 1))}
                   variant="icon"
                 />
 
@@ -92,9 +98,14 @@ export default class PageHeaderContainer extends Component {
                   iconName="chevronright"
                   iconSize="small"
                   iconVariant="bare"
-                  onClick={() => this.onPageChange(page + 1)}
+                  onClick={() => this.onPageChange(Math.min(page + 1, lastPage))}
                   variant="icon"
                 />
+
+                <Arrows onClick={() => this.onPageChange(lastPage)}>
+                  <Icon category="utility" name="chevronright" size="x-small" />
+                  <Icon category="utility" name="chevronright" size="x-small" />
+                </Arrows>
               </PaginationContainer>
 
               {isPrimary && (
