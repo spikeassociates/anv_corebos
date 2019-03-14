@@ -51,6 +51,14 @@ class FormBuilder extends Component {
             return this.renderBlockFields({ meta, block: rest });
           } else if (blocktype === "RowEdit") {
             return this.renderBlockRowEdit({ meta, block: rest, step });
+          } else {
+            const blocks = rest.steps
+              .map(({ blocks }) => blocks)
+              .reduce((acc, blockArr) => [...acc, ...blockArr], []);
+
+            return (
+              <div>{blocks.map(block => this.renderBlockFields({ meta, block }))}</div>
+            );
           }
         })
     );
@@ -150,7 +158,6 @@ class FormBuilder extends Component {
       data_form: { steps },
       formData
     } = this.state;
-    console.log(formData);
 
     return (
       <div>
