@@ -35,7 +35,7 @@ class ListView extends Component {
     const prevModuleName = prevState.moduleMeta.name;
 
     if (name !== prevModuleName) {
-      this.loadData();
+      this.setState({ page: 1 }, this.loadData());
     }
   }
 
