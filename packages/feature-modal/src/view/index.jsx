@@ -4,7 +4,7 @@ import Modular from "modular-redux";
 import { compose } from "redux";
 import { connect } from "react-redux";
 
-import { mapToDispatch } from "shared-utils";
+import { mapToDispatch, mapToState } from "shared-utils";
 
 class FormModal extends Component {
   state = { data: {} };
@@ -22,7 +22,7 @@ class FormModal extends Component {
   };
 
   render() {
-    const { moduleMeta, close, Module, id } = this.props;
+    const { moduleMeta, close, Module, id, errors } = this.props;
 
     return (
       <div>
@@ -41,6 +41,7 @@ class FormModal extends Component {
             id={id}
             moduleMeta={moduleMeta}
             onFormChange={data => this.setState({ data })}
+            errors={errors}
           />
         </Modal>
       </div>
@@ -52,10 +53,13 @@ const mapDispatchToProps = (dispatch, { Module }) => ({
   actions: mapToDispatch(dispatch, Module.actions)
 });
 
+const mapStateToProps = (state, { Module }) =>
+  mapToState(state, Module.selectors, ["errors"]);
+
 export default compose(
   Modular.view,
   connect(
-    null,
+    mapStateToProps,
     mapDispatchToProps
   )
 )(FormModal);

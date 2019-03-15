@@ -89,7 +89,7 @@ class FormModal extends Component {
 
   renderField = field => {
     const { hidden, readOnly } = this.state;
-    const { initialValues, fieldDependencies = {}, onFormChange } = this.props;
+    const { initialValues, fieldDependencies = {}, onFormChange, errors } = this.props;
 
     const uitype = parseInt(field.uitype);
     const isTextField = [1, 2, 4, 7, 9, 11, 13, 14, 17, 55, 71, 72, 85, 255].includes(
@@ -105,7 +105,8 @@ class FormModal extends Component {
       name: field.name,
       label: field.label,
       render: () => null,
-      normalize: this.normalizeField(uitype)
+      normalize: this.normalizeField(uitype),
+      error: errors[field.name] ? errors[field.name][0] : undefined
     };
 
     if (isTextField) {

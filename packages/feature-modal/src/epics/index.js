@@ -9,7 +9,10 @@ const epics = ({ actions, api }) => {
     type: types.SAVE_ITEM,
     onRequest: [() => actions.setBusy("form")],
     onSuccess: [() => actions.setBusy("form", false)],
-    onFailure: [() => actions.setBusy("form", false)]
+    onFailure: [
+      () => actions.setBusy("form", false),
+      action => actions.setData("errors", action.payload)
+    ]
   });
 
   return { ...saveItem };

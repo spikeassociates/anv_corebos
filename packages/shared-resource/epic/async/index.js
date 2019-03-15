@@ -39,23 +39,23 @@ const asyncAction = ({ type, api, onRequest, onFailure, onSuccess }) => {
                   requestPayload: action.payload || {},
                   payload: res.result
                 }
-              : res.error.code != "INVALID_SESSIONID"
+              : !res.error || res.error.code != "INVALID_SESSIONID"
               ? {
                   type: types.failure,
                   requestPayload: action.payload || {},
-                  payload: { ...res }
+                  payload: res.result
                 }
               : {
                   type: types.retry,
                   requestPayload: action.payload || {},
-                  payload: { ...res }
+                  payload: res.result
                 };
           })
           .catch(err =>
             Observable.of({
               type: types.failure,
               requestPayload: action.payload || {},
-              payload: { ...err }
+              payload: { ...errr }
             })
           )
       );
