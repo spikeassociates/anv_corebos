@@ -63,6 +63,7 @@ class FormModal extends Component {
 
     actions.setShown("form", false);
     actions.setData("initial", {});
+    actions.setData("errors", {});
   }
 
   componentDidUpdate(prevProps) {
