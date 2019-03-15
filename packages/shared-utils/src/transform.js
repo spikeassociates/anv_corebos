@@ -75,6 +75,10 @@ const getModuleReferenceFields = moduleName => {
 
   return moduleMeta.filterFields.fields
     .filter(({ key }) => {
+      if (!moduleMeta.fields[key]) {
+        return false;
+      }
+
       const uitype = parseInt(moduleMeta.fields[key].uitype);
       return referenceTypes.includes(uitype);
     })

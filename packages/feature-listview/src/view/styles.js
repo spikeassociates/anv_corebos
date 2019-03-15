@@ -89,7 +89,7 @@ const PaginationContainer = styled.div`
   margin-right: 15px;
 
   .slds-input {
-    width: 40px;
+    width: 42px;
     padding: 0 5px;
     text-align: center;
   }
