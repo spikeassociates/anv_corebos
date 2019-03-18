@@ -3,6 +3,7 @@ import Modular from "modular-redux";
 import { compose } from "redux";
 import { connect } from "react-redux";
 import { setPath } from "utils";
+import update from "immutability-helper";
 
 import { mapToDispatch } from "shared-utils";
 import Form from "./components/FormBuilder";
@@ -26,7 +27,6 @@ class FormBuilder extends Component {
     const { actions, id } = this.props;
     const { data } = this.state;
     const values = id ? { id, ...data } : data;
-    console.log(values);
 
     actions.saveItem({
       values,
@@ -66,9 +66,13 @@ class FormBuilder extends Component {
 
   //Render fields of blocktype=='Fields'
   renderBlockRowEdit = ({ meta, block, step }) => {
+    console.log(this.state);
     const { formData } = this.state;
     const id = `${block.blockid}x${step.stepid}`;
+    console.log(id);
     const counter = this.state[id] || [1];
+    const counter_length = counter.length;
+    console.log(this.state);
 
     const onBlockData = (data, index) => {
       {
@@ -79,40 +83,50 @@ class FormBuilder extends Component {
     };
 
     return (
-      //Add here for loop for RowEdit to render it as many times as the button + is pressed
-      //There should be two buttons, one in side of each block, and one in bottom
-      //to add more blocks(arrays)
       <>
-        <div className="slds-grid slds-gutters">
-          {counter.map((_, index) => (
+        <div className="slds-grid slds-wrap">
+          {counter.map((item, index) => (
             <div style={{ width: "100%" }}>
-              <div className="slds-col slds-size_5-of-7">
-                {this.renderBlockFields({
-                  meta,
-                  block,
-                  onFormChange: data => onBlockData(data, index)
-                })}
-              </div>
-
-              <div className="slds-col slds-size_2-of-7 slds-align_absolute-center">
-                <Button
-                  iconCategory="utility"
-                  iconName="delete"
-                  iconSize="large"
-                  variant="icon"
-                  onClick={() => {
-                    // counter[index] = 0;
-                    // this.setState({ id: counter });
-                  }}
-                />
-              </div>
+              {item == 1 && (
+                <div className="slds-grid slds-gutters">
+                  <div className="slds-col slds-size_5-of-7">
+                    {this.renderBlockFields({
+                      meta,
+                      block,
+                      onFormChange: data => onBlockData(data, index)
+                    })}
+                  </div>
+                  {counter_length > 1 && (
+                    <div className="slds-col slds-size_1-of-7 slds-align_absolute-center">
+                      <Button
+                        iconCategory="utility"
+                        iconName="delete"
+                        iconSize="large"
+                        variant="icon"
+                        //this.state.id.filter((_, i) => i !== index)
+                        // this.setState((prevState) => ({
+                        //   id: prevState.id.filter((_, i) => i !== index)
+                        // }));
+                        onClick={() =>
+                          this.setState({
+                            id: [...id.slice(0, index), ...id.slice(index + 1)]
+                          })
+                        }
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ))}
-
-          <div>
+          <div className=" slds-align_absolute-center">
             <Button
-              label="Add"
-              variant="brand"
+              label="Add Another Block"
+              iconCategory="utility"
+              iconName="add"
+              iconSize="large"
+              variant="icon"
+              // counter[index] = 0;
               onClick={() => this.setState({ [id]: [...counter, 1] })}
             />
           </div>
@@ -125,6 +139,7 @@ class FormBuilder extends Component {
   renderBlockFields = ({ meta, block, onFormChange }) => {
     const { formData } = this.state;
     let { fields, blockid, label, sequence } = block;
+
     fields = fields
       .map(field => ({
         displaytype: "1",
