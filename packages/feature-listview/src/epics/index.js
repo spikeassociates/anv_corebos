@@ -23,15 +23,15 @@ const epics = ({ actions, api, name }) => {
     ]
   });
 
-  if (name === "modal") {
-    return { ...doQuery };
-  }
-
   const getRowsCount = asyncAction({
     api: api.getRowsCount,
     type: types.GET_ROWS_COUNT,
     onSuccess: [action => actions.setData("totalRowsCount", action.payload[0].count)]
   });
+
+  if (name === "modal") {
+    return { ...doQuery, ...getRowsCount };
+  }
 
   const doRetrieve = asyncAction({
     api: api.doRetrieve,
