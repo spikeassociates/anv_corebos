@@ -63,7 +63,6 @@ class FormModal extends Component {
 
     actions.setShown("form", false);
     actions.setData("initial", {});
-    actions.setData("errors", {});
   }
 
   componentDidUpdate(prevProps) {
@@ -284,7 +283,7 @@ class FormModal extends Component {
 
   render() {
     const { sections, groupedFields, expandedSections } = this.state;
-    const { initialValues, shown, busy } = this.props;
+    const { initialValues, shown, busy, loading } = this.props;
 
     if (!shown.form || !initialValues) {
       return <div />;
@@ -292,7 +291,7 @@ class FormModal extends Component {
 
     return (
       <Form formApi={formApi => (this.formApi = formApi)} initialValues={initialValues}>
-        {busy.form && (
+        {(busy.form || loading) && (
           <Overlay>
             <Loader variant="inverse" />
           </Overlay>
