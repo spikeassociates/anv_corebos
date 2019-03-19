@@ -19,7 +19,7 @@ class FormBuilder extends Component {
       data: {},
       formData: {},
       data_form: data2,
-      renderRowEdit: 0
+      tabIndex: 0
     };
   }
 
@@ -39,40 +39,35 @@ class FormBuilder extends Component {
   renderStep = step => {
     const { modules } = this.props;
     let meta = modules[step.module];
-    return (
-      step.blocks
-        // .sort((a, b) => {
-        //   const aSequence = parseInt(a.sequence);
-        //   const bSequence = parseInt(b.sequence);
-        //   return aSequence - bSequence;
-        // })
-        .map(({ blocktype, ...rest }) => {
-          if (blocktype === "Fields") {
-            return this.renderBlockFields({ meta, block: rest });
-          } else if (blocktype === "RowEdit") {
-            return this.renderBlockRowEdit({ meta, block: rest, step });
-          } else {
-            const blocks = rest.steps
-              .map(({ blocks }) => blocks)
-              .reduce((acc, blockArr) => [...acc, ...blockArr], []);
+    return step.blocks
+      .sort((a, b) => {
+        const aSequence = parseInt(a.sequence);
+        const bSequence = parseInt(b.sequence);
+        return aSequence - bSequence;
+      })
+      .map(({ blocktype, ...rest }) => {
+        if (blocktype === "Fields") {
+          return this.renderBlockFields({ meta, block: rest });
+        } else if (blocktype === "RowEdit") {
+          return this.renderBlockRowEdit({ meta, block: rest, step, blocktype });
+        } else {
+          const blocks = rest.steps
+            .map(({ blocks }) => blocks)
+            .reduce((acc, blockArr) => [...acc, ...blockArr], []);
 
-            return (
-              <div>{blocks.map(block => this.renderBlockFields({ meta, block }))}</div>
-            );
-          }
-        })
-    );
+          return (
+            <div>{blocks.map(block => this.renderBlockFields({ meta, block }))}</div>
+          );
+        }
+      });
   };
 
   //Render fields of blocktype=='Fields'
-  renderBlockRowEdit = ({ meta, block, step }) => {
-    console.log(this.state);
+  renderBlockRowEdit = ({ meta, block, step, blocktype }) => {
     const { formData } = this.state;
     const id = `${block.blockid}x${step.stepid}`;
-    console.log(id);
     const counter = this.state[id] || [1];
     const counter_length = counter.length;
-    console.log(this.state);
 
     const onBlockData = (data, index) => {
       {
@@ -89,11 +84,12 @@ class FormBuilder extends Component {
             <div style={{ width: "100%" }}>
               {item == 1 && (
                 <div className="slds-grid slds-gutters">
-                  <div className="slds-col slds-size_5-of-7">
+                  <div className="slds-col slds-size_6-of-7">
                     {this.renderBlockFields({
                       meta,
                       block,
-                      onFormChange: data => onBlockData(data, index)
+                      onFormChange: data => onBlockData(data, index),
+                      blocktype
                     })}
                   </div>
                   {counter_length > 1 && (
@@ -119,7 +115,7 @@ class FormBuilder extends Component {
               )}
             </div>
           ))}
-          <div className=" slds-align_absolute-center">
+          <div className=" slds-align_absolute-center  slds-m-vertical_large">
             <Button
               label="Add Another Block"
               iconCategory="utility"
@@ -136,9 +132,12 @@ class FormBuilder extends Component {
   };
 
   //Render fields of blocktype=='Fields'
-  renderBlockFields = ({ meta, block, onFormChange }) => {
+  renderBlockFields = ({ meta, block, onFormChange, blocktype }) => {
     const { formData } = this.state;
     let { fields, blockid, label, sequence } = block;
+    if (blocktype == "RowEdit") {
+      label = `${label} (Row Edit)`;
+    }
 
     fields = fields
       .map(field => ({
@@ -171,19 +170,63 @@ class FormBuilder extends Component {
   render() {
     const {
       data_form: { steps },
-      formData
+      tabIndex
     } = this.state;
+    const numRows = steps.length;
+    const nextStep = numRows - (tabIndex + 1);
+    console.log(numRows);
 
     return (
       <div>
-        <Tabs id="tabs-example-default">
+        <Tabs id="tabs-example-default" selectedIndex={tabIndex}>
           {steps.map(step => (
-            <TabsPanel key={step.stepid} label={step.stepname}>
+            <TabsPanel
+              key={step.stepid}
+              label={step.stepname}
+              disabled={tabIndex == step.stepid}
+            >
               <div className="slds-p-horizontal_xx-large">{this.renderStep(step)}</div>
             </TabsPanel>
           ))}
         </Tabs>
-        <Button key="save" label="Save" variant="brand" onClick={this.saveData} />
+        <div className="slds-m-left_xx-large">
+          <div style={{ textAlign: "left" }}>
+            {tabIndex != 0 && (
+              <Button
+                key="goback"
+                label=" Go Back"
+                iconName="back"
+                iconSize="large"
+                variant="icon"
+                onClick={() =>
+                  this.setState(prevState => ({
+                    tabIndex: prevState.tabIndex - 1
+                  }))
+                }
+              />
+            )}
+          </div>
+        </div>
+        <div className="slds-m-bottom_xx-large">
+          <div className="slds-m-right_xx-large">
+            <div style={{ textAlign: "right" }}>
+              {nextStep > 0 && (
+                <Button
+                  key="nextstep"
+                  label="Next Step"
+                  iconName="forward"
+                  iconSize="large"
+                  variant="icon"
+                  onClick={() =>
+                    this.setState(prevState => ({
+                      tabIndex: prevState.tabIndex + 1
+                    }))
+                  }
+                />
+              )}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
