@@ -1,4 +1,5 @@
 import base from "shared-api";
+import { PersistentRepo } from "shared-repo";
 
 const api = {
   doRetrieve: ({ id }) => base.get("", { operation: "retrieve", id }),
@@ -26,14 +27,19 @@ const api = {
       businessactionid: id
     }),
 
-  updateField: ({ values, moduleMeta }) =>
-    base.post("", {
+  updateField: ({ values, moduleMeta }) => {
+    if (!values["assigned_user_id"]) {
+      values["assigned_user_id"] = PersistentRepo.get("userId");
+    }
+
+    return base.post("", {
       operation: "ReviseWithValidation",
       elementType: moduleMeta.name,
       element: JSON.stringify({
         ...values
       })
-    })
+    });
+  }
 };
 
 export default api;
