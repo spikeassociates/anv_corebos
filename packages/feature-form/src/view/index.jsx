@@ -42,7 +42,9 @@ class FormModal extends Component {
       groupedFields: getFieldsGroupedBySection(fields),
       expandedSections: getExpandedSections(fields),
       hidden: [],
-      readOnly: []
+      readOnly: [],
+      showOptions: {},
+      hideOptions: {}
     };
 
     actions.setData("currentModule", moduleMeta.name);
@@ -88,7 +90,7 @@ class FormModal extends Component {
   };
 
   renderField = field => {
-    const { hidden, readOnly } = this.state;
+    const { hidden, readOnly, showOptions, hideOptions } = this.state;
     const { initialValues, fieldDependencies = {}, onFormChange, errors } = this.props;
 
     const uitype = parseInt(field.uitype);
@@ -112,9 +114,21 @@ class FormModal extends Component {
     if (isTextField) {
       fieldOptions = { ...fieldOptions, readOnly: uitype === 4, render: Input };
     } else if (isPicklist) {
+      let options = field.type.picklistValues;
+      const activeOptions = showOptions[field.name];
+      const inactiveOptions = hideOptions[field.name];
+
+      if (activeOptions) {
+        options = options.filter(({ value }) => activeOptions.includes(value));
+      }
+
+      if (inactiveOptions) {
+        options = options.filter(({ value }) => !inactiveOptions.includes(value));
+      }
+
       fieldOptions = {
         ...fieldOptions,
-        options: field.type.picklistValues,
+        options,
         render: Dropdown
       };
     } else if (isTextArea) {
@@ -181,6 +195,7 @@ class FormModal extends Component {
 
     if (readOnly.includes(field.name)) {
       fieldOptions.readOnly = true;
+      fieldOptions.render = Input;
     }
 
     const dependencies = fieldDependencies[field.name];
@@ -208,8 +223,16 @@ class FormModal extends Component {
   };
 
   excecuteAction = (isValid, [type, target]) => {
-    const { hidden, sections, expandedSections, readOnly } = this.state;
+    const {
+      hidden,
+      sections,
+      expandedSections,
+      readOnly,
+      showOptions,
+      hideOptions
+    } = this.state;
     const targetField = target.field;
+    const targetValue = target.value;
 
     if ((type === "collapse" || type === "open") && isValid) {
       const section = sections.find(({ blocklabel }) => blocklabel === targetField);
@@ -226,7 +249,7 @@ class FormModal extends Component {
     }
 
     if (type === "change" && isValid) {
-      this.formApi.setField(targetField, target.value);
+      this.formApi.setField(targetField, targetValue);
     }
 
     if (type === "readonly") {
@@ -234,6 +257,24 @@ class FormModal extends Component {
         this.setState({ readOnly: [...readOnly, targetField] });
       } else {
         this.setState({ readOnly: readOnly.filter(field => field !== targetField) });
+      }
+    }
+
+    if (type === "setoptions") {
+      if (isValid) {
+        this.setState({ showOptions: { ...showOptions, [targetField]: targetValue } });
+      } else {
+        delete showOptions[targetField];
+        this.setState({ showOptions });
+      }
+    }
+
+    if (type === "deloptions") {
+      if (isValid) {
+        this.setState({ hideOptions: { ...hideOptions, [targetField]: targetValue } });
+      } else {
+        delete hideOptions[targetField];
+        this.setState({ hideOptions });
       }
     }
   };
