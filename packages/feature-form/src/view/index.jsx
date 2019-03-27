@@ -186,12 +186,14 @@ class FormModal extends Component {
     const dependencies = fieldDependencies[field.name];
 
     if (dependencies) {
-      const { actions, conditions } = dependencies;
+      dependencies.forEach(dependency => {
+        const { actions, conditions } = dependency;
 
-      fieldOptions.onChange = () => {
-        const isValid = this.evaluateConditions(conditions);
-        Object.entries(actions).forEach(action => this.excecuteAction(isValid, action));
-      };
+        fieldOptions.onChange = () => {
+          const isValid = this.evaluateConditions(conditions);
+          Object.entries(actions).forEach(action => this.excecuteAction(isValid, action));
+        };
+      });
     }
 
     const onChangeEvent = value => {
@@ -217,12 +219,10 @@ class FormModal extends Component {
       });
     }
 
-    if (type === "hide") {
-      if (isValid) {
-        this.setState({ hidden: [...hidden, targetField] });
-      } else {
-        this.setState({ hidden: hidden.filter(field => field !== targetField) });
-      }
+    if ((type === "hide" && isValid) || (type === "show" && !isValid)) {
+      this.setState({ hidden: [...hidden, targetField] });
+    } else if ((type === "hide" && !isValid) || (type === "show" && isValid)) {
+      this.setState({ hidden: hidden.filter(field => field !== targetField) });
     }
 
     if (type === "change" && isValid) {

@@ -24,6 +24,15 @@ const api = {
     base.get("", {
       operation: "executeBusinessAction",
       businessactionid: id
+    }),
+
+  updateField: ({ values, moduleMeta }) =>
+    base.post("", {
+      operation: "ReviseWithValidation",
+      elementType: moduleMeta.name,
+      element: JSON.stringify({
+        ...values
+      })
     })
 };
 

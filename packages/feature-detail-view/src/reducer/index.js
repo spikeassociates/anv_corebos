@@ -5,7 +5,9 @@ const initialState = {
   shown: {
     relatedRecords: false
   },
-  busy: {},
+  busy: {
+    fieldUpdate: {}
+  },
   data: {
     item: {
       headerData: [],

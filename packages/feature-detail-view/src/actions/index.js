@@ -7,7 +7,8 @@ const asyncTypes = [
   "DO_RETRIEVE",
   "GET_RELATED_RECORDS",
   "GET_WIDGETS",
-  "EXCECUTE_BUSINESS_ACTION"
+  "EXCECUTE_BUSINESS_ACTION",
+  "UPDATE_FIELD"
 ];
 const types = [
   ...syncTypes,
