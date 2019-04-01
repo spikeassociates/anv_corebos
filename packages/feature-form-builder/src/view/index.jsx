@@ -10,7 +10,17 @@ import Form from "./components/FormBuilder";
 import data2 from "../data";
 import NewForm from "./form";
 
-import { Tabs, TabsPanel, Button } from "@salesforce/design-system-react";
+import { Card, Tabs, TabsPanel, Button } from "@salesforce/design-system-react";
+
+const ColoredLine = ({ color }) => (
+  <hr
+    style={{
+      color: color,
+      backgroundColor: color,
+      height: 5
+    }}
+  />
+);
 
 class FormBuilder extends Component {
   constructor(props) {
@@ -56,7 +66,9 @@ class FormBuilder extends Component {
             .reduce((acc, blockArr) => [...acc, ...blockArr], []);
 
           return (
-            <div>{blocks.map(block => this.renderBlockFields({ meta, block }))}</div>
+            <>
+              <div>{blocks.map(block => this.renderBlockFields({ meta, block }))}</div>
+            </>
           );
         }
       });
@@ -126,6 +138,7 @@ class FormBuilder extends Component {
               onClick={() => this.setState({ [id]: [...counter, 1] })}
             />
           </div>
+          <ColoredLine color="grey" />
         </div>
       </>
     );
@@ -172,9 +185,13 @@ class FormBuilder extends Component {
       data_form: { steps },
       tabIndex
     } = this.state;
+
+    //get length of steps so later we can use it for moving
+    //through tabs, enabling and disabling them
     const numRows = steps.length;
+
+    //To show "Next Step" only where there are more steps
     const nextStep = numRows - (tabIndex + 1);
-    console.log(numRows);
 
     return (
       <div>
@@ -207,24 +224,22 @@ class FormBuilder extends Component {
             )}
           </div>
         </div>
-        <div className="slds-m-bottom_xx-large">
-          <div className="slds-m-right_xx-large">
-            <div style={{ textAlign: "right" }}>
-              {nextStep > 0 && (
-                <Button
-                  key="nextstep"
-                  label="Next Step"
-                  iconName="forward"
-                  iconSize="large"
-                  variant="icon"
-                  onClick={() =>
-                    this.setState(prevState => ({
-                      tabIndex: prevState.tabIndex + 1
-                    }))
-                  }
-                />
-              )}
-            </div>
+        <div className="slds-m-right_xx-large">
+          <div style={{ textAlign: "right" }}>
+            {nextStep > 0 && (
+              <Button
+                key="nextstep"
+                label="Next Step"
+                iconName="forward"
+                iconSize="large"
+                variant="icon"
+                onClick={() =>
+                  this.setState(prevState => ({
+                    tabIndex: prevState.tabIndex + 1
+                  }))
+                }
+              />
+            )}
           </div>
         </div>
       </div>
