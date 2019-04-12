@@ -5,9 +5,9 @@ const api = {
 
   getFieldDependencies: moduleName =>
     base.get("", {
-      operation: "query",
-      elementType: "",
-      query: `select contentjson from cbMap where maptype = 'FieldDependency' and targetname = '${moduleName}';`
+      operation: "SearchGlobalVar",
+      gvmodule: moduleName,
+      gvname: `BusinessMapping_${moduleName}_FieldDependency`
     })
 };
 
