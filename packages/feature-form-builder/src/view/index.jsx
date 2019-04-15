@@ -74,7 +74,6 @@ const FormBuilder = props => {
   const renderBlockRowEdit = ({ meta, block, step, blocktype }) => {
     // const { formData } = state;
     const id = `${block.blockid}x${step.stepid}`;
-    console.log(rowEdit);
     const counter = rowEdit[id] || [1];
     const counter_length = counter.length;
 
@@ -104,19 +103,17 @@ const FormBuilder = props => {
                   {counter_length > 1 && (
                     <div className="slds-col slds-size_1-of-7 slds-align_absolute-center">
                       <Button
+                        label="delete"
                         iconCategory="utility"
                         iconName="delete"
                         iconSize="large"
                         variant="icon"
-                        //this.state.id.filter((_, i) => i !== index)
-                        // this.setState((prevState) => ({
-                        //   id: prevState.id.filter((_, i) => i !== index)
-                        // }));
-                        // onClick={() =>
-                        //   this.setState({
-                        //     id: [...id.slice(0, index), ...id.slice(index + 1)]
-                        //   })
-                        // }
+                        onClick={() =>
+                          setRowEdit({
+                            ...rowEdit,
+                            [id]: [(rowEdit[id][index] = 0)]
+                          })
+                        }
                       />
                     </div>
                   )}
