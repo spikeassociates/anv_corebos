@@ -15,7 +15,7 @@ import {
   Button
 } from "@salesforce/design-system-react";
 import data from "../../data";
-import update from "immutability-helper";
+// import update from "immutability-helper";
 const id = 1;
 
 class GeneralForm extends Component {

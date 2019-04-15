@@ -3,7 +3,7 @@ import Modular from "modular-redux";
 import { compose } from "redux";
 import { connect } from "react-redux";
 import { setPath } from "utils";
-import update from "immutability-helper";
+// import update from "immutability-helper";
 
 import { mapToDispatch } from "shared-utils";
 import Form from "./components/FormBuilder";
