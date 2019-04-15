@@ -26,7 +26,7 @@ class FormModal extends Component {
   };
 
   saveData = () => {
-    const { actions, moduleMeta, id, reRenderComponent } = this.props;
+    const { actions, moduleMeta, id } = this.props;
     const { data } = this.state;
     const values = id ? { id, ...data } : data;
 
@@ -35,9 +35,6 @@ class FormModal extends Component {
       name: moduleMeta.name,
       operation: id ? "UpdateWithValidation" : "CreateWithValidation"
     });
-    setTimeout(function() {
-      window.location.reload();
-    }, 1000);
   };
 
   render() {
