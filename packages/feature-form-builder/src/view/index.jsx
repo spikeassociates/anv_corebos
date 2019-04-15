@@ -1,16 +1,14 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import Modular from "modular-redux";
 import { compose } from "redux";
 import { connect } from "react-redux";
 import { setPath } from "utils";
-// import update from "immutability-helper";
 
 import { mapToDispatch } from "shared-utils";
-import Form from "./components/FormBuilder";
 import data2 from "../data";
 import NewForm from "./form";
 
-import { Card, Tabs, TabsPanel, Button } from "@salesforce/design-system-react";
+import { Tabs, TabsPanel, Button } from "@salesforce/design-system-react";
 
 const ColoredLine = ({ color }) => (
   <hr
@@ -22,20 +20,18 @@ const ColoredLine = ({ color }) => (
   />
 );
 
-class FormBuilder extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: {},
-      formData: {},
-      data_form: data2,
-      tabIndex: 0
-    };
-  }
+const FormBuilder = props => {
+  const [data, setData] = useState({});
+  const [formData, setFormData] = useState({});
+  const [data_form, setData_form] = useState(data2);
+  const [tabIndex, setTabIndex] = useState(0);
 
-  saveData = () => {
-    const { actions, id } = this.props;
-    const { data } = this.state;
+  //used to dynamically add and delete rowEdit blocks
+  const [rowEdit, setRowEdit] = useState({});
+
+  const saveData = () => {
+    const { actions, id } = props;
+    // const { data } = this.state;
     const values = id ? { id, ...data } : data;
 
     actions.saveItem({
@@ -46,8 +42,8 @@ class FormBuilder extends Component {
   };
 
   //Render Steps
-  renderStep = step => {
-    const { modules } = this.props;
+  const renderStep = step => {
+    const { modules } = props;
     let meta = modules[step.module];
     return step.blocks
       .sort((a, b) => {
@@ -57,9 +53,9 @@ class FormBuilder extends Component {
       })
       .map(({ blocktype, ...rest }) => {
         if (blocktype === "Fields") {
-          return this.renderBlockFields({ meta, block: rest });
+          return renderBlockFields({ meta, block: rest });
         } else if (blocktype === "RowEdit") {
-          return this.renderBlockRowEdit({ meta, block: rest, step, blocktype });
+          return renderBlockRowEdit({ meta, block: rest, step, blocktype });
         } else {
           const blocks = rest.steps
             .map(({ blocks }) => blocks)
@@ -67,7 +63,7 @@ class FormBuilder extends Component {
 
           return (
             <>
-              <div>{blocks.map(block => this.renderBlockFields({ meta, block }))}</div>
+              <div>{blocks.map(block => renderBlockFields({ meta, block }))}</div>
             </>
           );
         }
@@ -75,17 +71,18 @@ class FormBuilder extends Component {
   };
 
   //Render fields of blocktype=='Fields'
-  renderBlockRowEdit = ({ meta, block, step, blocktype }) => {
-    const { formData } = this.state;
+  const renderBlockRowEdit = ({ meta, block, step, blocktype }) => {
+    // const { formData } = state;
     const id = `${block.blockid}x${step.stepid}`;
-    const counter = this.state[id] || [1];
+    console.log(rowEdit);
+    const counter = rowEdit[id] || [1];
     const counter_length = counter.length;
 
     const onBlockData = (data, index) => {
       {
         const key = `rowEditx${id}x${index}`;
         setPath(formData, key, data);
-        this.setState({ formData });
+        setFormData({ formData });
       }
     };
 
@@ -97,7 +94,7 @@ class FormBuilder extends Component {
               {item == 1 && (
                 <div className="slds-grid slds-gutters">
                   <div className="slds-col slds-size_6-of-7">
-                    {this.renderBlockFields({
+                    {renderBlockFields({
                       meta,
                       block,
                       onFormChange: data => onBlockData(data, index),
@@ -115,11 +112,11 @@ class FormBuilder extends Component {
                         // this.setState((prevState) => ({
                         //   id: prevState.id.filter((_, i) => i !== index)
                         // }));
-                        onClick={() =>
-                          this.setState({
-                            id: [...id.slice(0, index), ...id.slice(index + 1)]
-                          })
-                        }
+                        // onClick={() =>
+                        //   this.setState({
+                        //     id: [...id.slice(0, index), ...id.slice(index + 1)]
+                        //   })
+                        // }
                       />
                     </div>
                   )}
@@ -135,7 +132,9 @@ class FormBuilder extends Component {
               iconSize="large"
               variant="icon"
               // counter[index] = 0;
-              onClick={() => this.setState({ [id]: [...counter, 1] })}
+              onClick={() =>
+                setRowEdit({ ...rowEdit, [id]: [...(rowEdit[id] || [1]), 1] })
+              }
             />
           </div>
           <ColoredLine color="grey" />
@@ -145,8 +144,8 @@ class FormBuilder extends Component {
   };
 
   //Render fields of blocktype=='Fields'
-  renderBlockFields = ({ meta, block, onFormChange, blocktype }) => {
-    const { formData } = this.state;
+  const renderBlockFields = ({ meta, block, onFormChange, blocktype }) => {
+    // const { formData } = this.state;
     let { fields, blockid, label, sequence } = block;
     if (blocktype == "RowEdit") {
       label = `${label} (Row Edit)`;
@@ -169,9 +168,7 @@ class FormBuilder extends Component {
     return (
       <NewForm
         onFormChange={data => {
-          onFormChange
-            ? onFormChange(data)
-            : this.setState({ formData: { ...formData, ...data } });
+          onFormChange ? onFormChange(data) : setFormData({ ...formData, ...data });
         }}
         key={blockid}
         moduleMeta={meta}
@@ -179,73 +176,59 @@ class FormBuilder extends Component {
     );
   };
 
-  //Main Render
-  render() {
-    const {
-      data_form: { steps },
-      tabIndex
-    } = this.state;
+  const { steps } = data_form;
 
-    //get length of steps so later we can use it for moving
-    //through tabs, enabling and disabling them
-    const numRows = steps.length;
+  //get length of steps so later we can use it for moving
+  //through tabs, enabling and disabling them
+  const numRows = steps.length;
 
-    //To show "Next Step" only where there are more steps
-    const nextStep = numRows - (tabIndex + 1);
+  //To show "Next Step" only where there are more steps
+  const nextStep = numRows - (tabIndex + 1);
 
-    return (
-      <div>
-        <Tabs id="tabs-example-default" selectedIndex={tabIndex}>
-          {steps.map(step => (
-            <TabsPanel
-              key={step.stepid}
-              label={step.stepname}
-              disabled={tabIndex == step.stepid}
-            >
-              <div className="slds-p-horizontal_xx-large">{this.renderStep(step)}</div>
-            </TabsPanel>
-          ))}
-        </Tabs>
-        <div className="slds-m-left_xx-large">
-          <div style={{ textAlign: "left" }}>
-            {tabIndex != 0 && (
-              <Button
-                key="goback"
-                label=" Go Back"
-                iconName="back"
-                iconSize="large"
-                variant="icon"
-                onClick={() =>
-                  this.setState(prevState => ({
-                    tabIndex: prevState.tabIndex - 1
-                  }))
-                }
-              />
-            )}
-          </div>
-        </div>
-        <div className="slds-m-right_xx-large">
-          <div style={{ textAlign: "right" }}>
-            {nextStep > 0 && (
-              <Button
-                key="nextstep"
-                label="Next Step"
-                iconName="forward"
-                iconSize="large"
-                variant="icon"
-                onClick={() =>
-                  this.setState(prevState => ({
-                    tabIndex: prevState.tabIndex + 1
-                  }))
-                }
-              />
-            )}
-          </div>
+  return (
+    <div>
+      <Tabs id="tabs-example-default" selectedIndex={tabIndex}>
+        {steps.map(step => (
+          <TabsPanel
+            key={step.stepid}
+            label={step.stepname}
+            disabled={tabIndex == step.stepid}
+          >
+            <div className="slds-p-horizontal_xx-large">{renderStep(step)}</div>
+          </TabsPanel>
+        ))}
+      </Tabs>
+      <div className="slds-m-left_xx-large">
+        <div style={{ textAlign: "left" }}>
+          {tabIndex != 0 && (
+            <Button
+              key="goback"
+              label=" Go Back"
+              iconName="back"
+              iconSize="large"
+              variant="icon"
+              onClick={() => setTabIndex(tabIndex - 1)}
+            />
+          )}
         </div>
       </div>
-    );
-  }
-}
+      <div className="slds-m-right_xx-large">
+        <div style={{ textAlign: "right" }}>
+          {nextStep > 0 && (
+            <Button
+              key="nextstep"
+              label="Next Step"
+              iconName="forward"
+              iconSize="large"
+              variant="icon"
+              onClick={() => setTabIndex(tabIndex + 1)}
+            />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const mapDispatchToProps = (dispatch, { Module }) => ({
   actions: mapToDispatch(dispatch, Module.actions)
