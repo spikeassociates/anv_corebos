@@ -4,13 +4,29 @@ import Modular from "modular-redux";
 import { compose } from "redux";
 import { connect } from "react-redux";
 
-import { mapToDispatch } from "shared-utils";
+import { mapToDispatch, mapToState } from "shared-utils";
 
 class FormModal extends Component {
   state = { data: {} };
 
+  componentWillUnmount = () => {
+    const { actions } = this.props;
+
+    actions.setData("errors", {});
+    actions.setBusy("updated", false);
+  };
+
+  componentDidUpdate = prevProps => {
+    const { busy, close } = this.props;
+    const prevUpdated = prevProps.busy.updated;
+
+    if (!prevUpdated && busy.updated) {
+      close();
+    }
+  };
+
   saveData = () => {
-    const { actions, moduleMeta, id } = this.props;
+    const { actions, moduleMeta, id, reRenderComponent } = this.props;
     const { data } = this.state;
     const values = id ? { id, ...data } : data;
 
@@ -19,15 +35,19 @@ class FormModal extends Component {
       name: moduleMeta.name,
       operation: id ? "UpdateWithValidation" : "CreateWithValidation"
     });
+    setTimeout(function() {
+      window.location.reload();
+    }, 1000);
   };
 
   render() {
-    const { moduleMeta, close, Module, id } = this.props;
+    const { moduleMeta, close, Module, id, errors, busy } = this.props;
 
     return (
       <div>
         <Modal
           isOpen
+          dismissible={false}
           ariaHideApp={false}
           containerClassName="form-modal"
           title={`New ${moduleMeta.label}`}
@@ -41,6 +61,8 @@ class FormModal extends Component {
             id={id}
             moduleMeta={moduleMeta}
             onFormChange={data => this.setState({ data })}
+            errors={errors}
+            loading={busy.form}
           />
         </Modal>
       </div>
@@ -52,10 +74,13 @@ const mapDispatchToProps = (dispatch, { Module }) => ({
   actions: mapToDispatch(dispatch, Module.actions)
 });
 
+const mapStateToProps = (state, { Module }) =>
+  mapToState(state, Module.selectors, ["errors", "busy"]);
+
 export default compose(
   Modular.view,
   connect(
-    null,
+    mapStateToProps,
     mapDispatchToProps
   )
 )(FormModal);

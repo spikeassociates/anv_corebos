@@ -13,7 +13,8 @@ const initialState = {
       bodyData: [],
       title: ""
     },
-    listview: []
+    listview: [],
+    totalRowsCount: 1
   }
 };
 

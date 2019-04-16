@@ -6,12 +6,17 @@ import ModalViewModule from "feature-modal";
 import FormViewModule from "feature-form";
 import FormBuilderModule from "feature-form-builder";
 
-const FormView = FormViewModule(PlainListView());
-const ListViewModal = ModalViewModule(FormView);
+const ListViewForm = FormViewModule(PlainListView());
+const ListViewModal = ModalViewModule(ListViewForm);
 
-const ModalView = ModalViewModule(FormView);
+const DetailViewForm = FormViewModule(PlainListView());
+const DetailViewModal = ModalViewModule(DetailViewForm);
+
+const ModalViewForm = FormViewModule(PlainListView());
+
+const ModalView = ModalViewModule(ModalViewForm);
 const ListView = ListViewModule(ListViewModal);
-const DetailView = DetailViewModule();
+const DetailView = DetailViewModule(PlainListView(), DetailViewModal);
 const AuthenticationView = AuthenticationViewModule();
 const FormBuilderView = FormBuilderModule();
 

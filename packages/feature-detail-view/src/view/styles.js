@@ -58,6 +58,23 @@ const PreviewContainer = styled.div`
   max-heigh: 400px;
 `;
 
+const InlineField = styled.div`
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  grid-gap: 5px;
+  align-items: flex-end;
+
+  .slds-button {
+    margin-left: 0 !important;
+  }
+`;
+
+const SpinnerContainer = styled.div`
+  position: relative;
+  width: 32px;
+  height: 32px;
+`;
+
 export {
   Container,
   SectionContainer,
@@ -68,5 +85,7 @@ export {
   Image,
   RelatedList,
   RelatedModule,
-  PreviewContainer
+  PreviewContainer,
+  InlineField,
+  SpinnerContainer
 };

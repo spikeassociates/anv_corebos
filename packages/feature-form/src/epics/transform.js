@@ -7,8 +7,9 @@ const transformDependencies = dependencies =>
       comparator,
       operator: columncondition
     }));
+    const dependency = { field, actions, conditions };
 
-    return { ...acc, [field]: { field, actions, conditions } };
+    return { ...acc, [field]: [...(acc[field] || []), dependency] };
   }, {});
 
 export { transformDependencies };

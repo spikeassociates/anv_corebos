@@ -7,7 +7,8 @@ import {
   TabsPanel,
   DataTable,
   DataTableColumn,
-  Button
+  Button,
+  Spinner
 } from "@salesforce/design-system-react";
 import { compose } from "redux";
 import { connect } from "react-redux";
@@ -21,9 +22,8 @@ import {
   mapToDispatch,
   mapToState
 } from "shared-utils";
-import { changeRoute } from "utils";
 
-import { Widget } from "./components";
+import { Widget, Field } from "./components";
 import {
   Container,
   SectionContainer,
@@ -34,7 +34,9 @@ import {
   Image,
   RelatedList,
   RelatedModule,
-  PreviewContainer
+  PreviewContainer,
+  InlineField,
+  SpinnerContainer
 } from "./styles";
 import "./styles.css";
 
@@ -49,7 +51,8 @@ class DetailView extends Component {
       expandedSections: getExpandedSections(moduleMeta.fields),
       collapseHeader: moduleMeta.headerFields.length === 0,
       previewModule: { relatedModule: "", fields: [] },
-      previewTopDistance: 0
+      previewTopDistance: 0,
+      inlineEdit: {}
     };
   }
 
@@ -66,9 +69,18 @@ class DetailView extends Component {
     window.removeEventListener("click", this.handleClick);
   }
 
-  handleClick = e => {
+  componentDidUpdate(prevProps) {
+    const prevFieldUpdate = prevProps.busy.fieldUpdate;
+    const { fieldUpdate } = this.props.busy;
+
+    Object.entries(prevFieldUpdate)
+      .filter(([key, value]) => value && !fieldUpdate[key])
+      .forEach(([key]) => this.clearInlineEdit(key));
+  }
+
+  handleClick = ({ target }) => {
     const { actions, shown } = this.props;
-    const clickedInsidePreview = this.preview.contains(e.target);
+    const clickedInsidePreview = this.preview.contains(target);
 
     if (!clickedInsidePreview && shown.relatedRecords) {
       actions.setShown("relatedRecords", false);
@@ -88,10 +100,76 @@ class DetailView extends Component {
     return item.headerData.map(({ label, value }) => ({ label, content: value }));
   };
 
+  submitFieldValue = name => {
+    const { inlineEdit } = this.state;
+    const { actions, moduleMeta, item } = this.props;
+
+    actions.updateField({
+      fieldName: name,
+      values: { id: item.id, [name]: inlineEdit[name] },
+      moduleMeta
+    });
+  };
+
+  clearInlineEdit = name => {
+    const { inlineEdit } = this.state;
+    delete inlineEdit[name];
+    this.setState({ inlineEdit });
+  };
+
+  updateFieldValue = (name, value) => {
+    const { inlineEdit } = this.state;
+
+    this.setState({ inlineEdit: { ...inlineEdit, [name]: value } });
+  };
+
   renderField = field => {
-    const { item } = this.props;
+    const { inlineEdit } = this.state;
+    const { item, busy, original } = this.props;
     const { name, label, uitype } = field;
     const value = item.data[name];
+
+    if (inlineEdit.hasOwnProperty(name)) {
+      return (
+        <InlineField key={name}>
+          <FieldContainer>
+            <Field
+              field={field}
+              onChange={fieldValue => this.updateFieldValue(name, fieldValue)}
+              initialValues={original}
+            />
+          </FieldContainer>
+          {!busy.fieldUpdate[name] && (
+            <>
+              <Button
+                style={{ backgroundColor: "#00c6b7" }}
+                iconCategory="action"
+                iconName="approval"
+                iconVariant="border"
+                variant="icon"
+                inverse
+                onClick={() => this.submitFieldValue(name)}
+              />
+
+              <Button
+                style={{ backgroundColor: "#ef6e64" }}
+                iconCategory="action"
+                iconName="close"
+                iconVariant="border"
+                variant="icon"
+                inverse
+                onClick={() => this.clearInlineEdit(name)}
+              />
+            </>
+          )}
+          {busy.fieldUpdate[name] && (
+            <SpinnerContainer>
+              <Spinner size="small" variant="base" />
+            </SpinnerContainer>
+          )}
+        </InlineField>
+      );
+    }
 
     if (uitype == 69 && value) {
       return (
@@ -102,7 +180,14 @@ class DetailView extends Component {
     }
 
     return (
-      <FieldContainer key={name}>
+      <FieldContainer
+        key={name}
+        onClick={() => {
+          if (uitype != 4 && Object.keys(inlineEdit).length === 0) {
+            this.setState({ inlineEdit: { ...inlineEdit, [name]: value } });
+          }
+        }}
+      >
         <Label>{label}</Label>
         <Value>{value}</Value>
         <Separator />
@@ -158,7 +243,16 @@ class DetailView extends Component {
       previewModule,
       previewTopDistance
     } = this.state;
-    const { item, moduleMeta, id, relatedRecords, shown, widgets } = this.props;
+    const {
+      item,
+      moduleMeta,
+      id,
+      relatedRecords,
+      shown,
+      widgets,
+      actions,
+      Module
+    } = this.props;
     const { fields } = moduleMeta;
     const sections = getSections(fields);
     const groupedFields = getFieldsGroupedBySection(fields);
@@ -166,6 +260,15 @@ class DetailView extends Component {
 
     return (
       <Container>
+        {shown.modal && (
+          <Module.view.modal
+            id={id}
+            initialValues={item}
+            moduleMeta={moduleMeta}
+            close={() => actions.setShown("modal", false)}
+          />
+        )}
+
         <PreviewContainer
           innerRef={preview => (this.preview = preview)}
           top={previewTopDistance}
@@ -187,9 +290,7 @@ class DetailView extends Component {
             <>
               <Button
                 label="Edit record"
-                onClick={() =>
-                  changeRoute({ view: "edit", id, moduleName: moduleMeta.name })
-                }
+                onClick={() => actions.setShown("modal")}
                 iconCategory="utility"
                 iconName="edit"
                 iconPosition="right"
@@ -241,7 +342,14 @@ class DetailView extends Component {
 }
 
 const mapStateToProps = (state, { Module }) =>
-  mapToState(state, Module.selectors, ["item", "relatedRecords", "shown", "widgets"]);
+  mapToState(state, Module.selectors, [
+    "item",
+    "relatedRecords",
+    "shown",
+    "widgets",
+    "busy",
+    "original"
+  ]);
 
 const mapDispatchToProps = (dispatch, { Module }) => ({
   actions: mapToDispatch(dispatch, Module.actions)

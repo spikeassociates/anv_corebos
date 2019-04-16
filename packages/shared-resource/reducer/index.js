@@ -1,6 +1,8 @@
 import { clone, setPath, getPath } from "utils";
 
 let data = {};
+let shown = {};
+let busy = {};
 
 const reducer = (state, actions, action) => {
   switch (action.type) {
@@ -20,16 +22,16 @@ const reducer = (state, actions, action) => {
       return { ...state, data };
 
     case actions.types.SET_SHOWN:
-      return {
-        ...state,
-        shown: { ...state.shown, [action.payload.key]: action.payload.val }
-      };
+      shown = clone(state.shown);
+      setPath(shown, `${action.payload.key}`, action.payload.val);
+
+      return { ...state, shown };
 
     case actions.types.SET_BUSY:
-      return {
-        ...state,
-        busy: { ...state.busy, [action.payload.key]: action.payload.val }
-      };
+      busy = clone(state.busy);
+      setPath(busy, `${action.payload.key}`, action.payload.val);
+
+      return { ...state, busy };
   }
 };
 

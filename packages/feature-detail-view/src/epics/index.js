@@ -9,6 +9,7 @@ const epics = ({ actions, api }) => {
     api: api.doRetrieve,
     type: types.DO_RETRIEVE,
     onSuccess: [
+      action => actions.setData("original", action.payload),
       action => {
         const item = transformItem(action.requestPayload.moduleMeta, action.payload);
         return actions.setData("item", item);
@@ -21,7 +22,7 @@ const epics = ({ actions, api }) => {
     type: types.GET_RELATED_RECORDS,
     onSuccess: [
       action => actions.setData("relatedRecords", action.payload.records),
-      action => actions.setShown("relatedRecords")
+      () => actions.setShown("relatedRecords")
     ]
   });
 
@@ -55,11 +56,29 @@ const epics = ({ actions, api }) => {
     ]
   });
 
+  const updateField = asyncAction({
+    api: api.updateField,
+    type: types.UPDATE_FIELD,
+    onRequest: [action => actions.setBusy(`fieldUpdate.${action.payload.fieldName}`)],
+    onSuccess: [
+      action => {
+        const { values, fieldName } = action.requestPayload;
+
+        return actions.setData(`item.data.${fieldName}`, values[fieldName]);
+      },
+      action => actions.setBusy(`fieldUpdate.${action.requestPayload.fieldName}`, false)
+    ],
+    onFailure: [
+      action => actions.setBusy(`fieldUpdate.${action.requestPayload.fieldName}`, false)
+    ]
+  });
+
   return {
     ...doRetrieve,
     ...getRelatedRecords,
     ...getWidgets,
-    ...excecuteBusinessAction
+    ...excecuteBusinessAction,
+    ...updateField
   };
 };
 

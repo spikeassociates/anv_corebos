@@ -35,7 +35,7 @@ class ListView extends Component {
     const prevModuleName = prevState.moduleMeta.name;
 
     if (name !== prevModuleName) {
-      this.loadData();
+      this.setState({ page: 1 }, this.loadData());
     }
   }
 
@@ -67,6 +67,7 @@ class ListView extends Component {
       page,
       sort
     });
+    actions.getRowsCount(moduleMeta.name);
   };
 
   handleSelect = (e, selectedRows) => {
@@ -100,9 +101,12 @@ class ListView extends Component {
   };
 
   handleMultiDelete = () => {
+    const { actions } = this.props;
     const { selectedRows } = this.state;
 
-    selectedRows.forEach(row => this.handleSingleDelete(row.id));
+    const ids = selectedRows.map(({ id }) => id).join();
+
+    actions.doDelete(ids);
   };
 
   handleEdit = item => {
@@ -163,7 +167,8 @@ class ListView extends Component {
       preview,
       actions,
       isPrimary,
-      Module
+      Module,
+      totalRowsCount
     } = this.props;
     const { id } = modalInitialValues;
 
@@ -186,6 +191,7 @@ class ListView extends Component {
           handleDelete={this.handleMultiDelete}
           handlePageChange={this.handlePageChange}
           showModal={this.showCreateModal}
+          lastPage={Math.ceil(totalRowsCount / moduleMeta.filterFields.pagesize)}
         />
 
         <TableContainer>
@@ -231,7 +237,13 @@ class ListView extends Component {
 }
 
 const mapStateToProps = (state, { Module }) =>
-  mapToState(state, Module.selectors, ["busy", "shown", "listviewData", "preview"]);
+  mapToState(state, Module.selectors, [
+    "busy",
+    "shown",
+    "listviewData",
+    "preview",
+    "totalRowsCount"
+  ]);
 
 const mapDispatchToProps = (dispatch, { Module }) => ({
   actions: mapToDispatch(dispatch, Module.actions)

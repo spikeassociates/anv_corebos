@@ -12,6 +12,8 @@
     "shared-resource": "*",
     "shared-utils": "*",
     "shared-repo": "*",
-    "shared-components": "*"
+    "shared-components": "*",
+    "shared-form-helper": "*",
+    "shared-form": "*"
   }
 }

@@ -86,11 +86,25 @@ const FormRowContainer = styled.div`
 const PaginationContainer = styled.div`
   display: flex;
   align-items: center;
+  margin-right: 15px;
 
   .slds-input {
-    width: 40px;
+    width: 42px;
     padding: 0 5px;
     text-align: center;
+  }
+`;
+
+const Arrows = styled.div`
+  margin-top: -2px;
+  cursor: pointer;
+
+  &:first-child {
+    margin-right: 10px;
+  }
+
+  .slds-icon {
+    margin-right: -10px;
   }
 `;
 
@@ -109,5 +123,6 @@ export {
   PreviewHeaderContainer,
   ListViewContainer,
   FormRowContainer,
-  PaginationContainer
+  PaginationContainer,
+  Arrows
 };

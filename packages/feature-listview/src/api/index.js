@@ -27,7 +27,14 @@ const api = {
 
   doDelete: id => base.post("", { operation: "delete", id }),
 
-  doRetrieve: ({ id }) => base.get("", { operation: "retrieve", id })
+  doRetrieve: ({ id }) => base.get("", { operation: "retrieve", id }),
+
+  getRowsCount: moduleName =>
+    base.get("", {
+      operation: "query",
+      elementType: moduleName,
+      query: `select count(*) from ${moduleName};`
+    })
 };
 
 export default api;

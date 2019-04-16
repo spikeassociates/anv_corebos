@@ -8,6 +8,12 @@ const item = module =>
     ({ data }) => data.item
   );
 
+const original = module =>
+  createSelector(
+    module,
+    ({ data }) => data.original
+  );
+
 const relatedRecords = module =>
   createSelector(
     module,
@@ -20,7 +26,7 @@ const widgets = module =>
     ({ data }) => data.widgets || {}
   );
 
-const selectors = { item, relatedRecords, widgets };
+const selectors = { item, relatedRecords, widgets, original };
 
 export default Modular.selectors(moduleState =>
   selectorUtils.getSelectors(moduleState, selectors)

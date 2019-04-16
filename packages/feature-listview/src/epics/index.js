@@ -23,8 +23,14 @@ const epics = ({ actions, api, name }) => {
     ]
   });
 
+  const getRowsCount = asyncAction({
+    api: api.getRowsCount,
+    type: types.GET_ROWS_COUNT,
+    onSuccess: [action => actions.setData("totalRowsCount", action.payload[0].count)]
+  });
+
   if (name === "modal") {
-    return { ...doQuery };
+    return { ...doQuery, ...getRowsCount };
   }
 
   const doRetrieve = asyncAction({
@@ -50,8 +56,12 @@ const epics = ({ actions, api, name }) => {
       action => {
         const state = Repo.get("store").getState();
         const data = [...state.app.listview._module.data.listview];
-        const index = data.findIndex(row => row.id === action.requestPayload);
-        data.splice(index, 1);
+        const ids = String(action.requestPayload).split(",");
+
+        ids.forEach(id => {
+          const index = data.findIndex(row => row.id === id);
+          data.splice(index, 1);
+        });
 
         return actions.setData("listview", data);
       }
@@ -78,7 +88,7 @@ const epics = ({ actions, api, name }) => {
       );
     });
 
-  return { ...doQuery, ...doDelete, ...doRetrieve, onItemSaved };
+  return { ...doQuery, ...doDelete, ...doRetrieve, onItemSaved, ...getRowsCount };
 };
 
 export default epics;

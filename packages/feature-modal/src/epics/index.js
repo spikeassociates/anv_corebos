@@ -8,8 +8,11 @@ const epics = ({ actions, api }) => {
     api: api.saveItem,
     type: types.SAVE_ITEM,
     onRequest: [() => actions.setBusy("form")],
-    onSuccess: [() => actions.setBusy("form", false)],
-    onFailure: [() => actions.setBusy("form", false)]
+    onSuccess: [() => actions.setBusy("form", false), () => actions.setBusy("updated")],
+    onFailure: [
+      () => actions.setBusy("form", false),
+      action => actions.setData("errors", action.payload)
+    ]
   });
 
   return { ...saveItem };

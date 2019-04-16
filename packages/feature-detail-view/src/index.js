@@ -8,28 +8,20 @@ import selectors from "./selectors";
 import epics from "./epics";
 import view from "./view";
 
-const Main = () =>
+const Main = (ListView, ModalView) =>
   Module(
     {
       name: "main",
-      actions: {
-        module: actions
-      },
-      reducers: {
-        module: reducer
-      },
+      actions: { module: actions, listview: ListView.actions, modal: ModalView.actions },
+      reducers: { module: reducer, listview: ListView.reducer, modal: ModalView.reducer },
       selectors: {
-        module: selectors
+        module: selectors,
+        listview: ListView.selectors,
+        modal: ModalView.selectors
       },
-      views: {
-        module: view
-      },
-      api: {
-        module: api
-      },
-      epics: {
-        module: epics
-      }
+      views: { module: view, listview: ListView.view, modal: ModalView.view },
+      api: { module: api, listview: ListView.api, modal: ModalView.api },
+      epics: { module: epics, listview: ListView.epic, modal: ModalView.epic }
     },
     [{ feature: "api" }, epicsUtils.modulist.feature]
   );
