@@ -34,7 +34,7 @@ const data = {
             },
 
             {
-              uitype: 1,
+              uitype: 56,
               fieldid: "f02",
               blockid: "ba",
               name: "lastname",
@@ -42,7 +42,7 @@ const data = {
               label: "Asset Serial Number"
             },
             {
-              uitype: 1,
+              uitype: 56,
               fieldid: "f02",
               blockid: "ba",
               name: "contact_no",
@@ -86,6 +86,22 @@ const data = {
               fieldid: 4,
               blockid: "ba",
               name: "Input #4",
+              sequence: "2",
+              label: "Input #4"
+            },
+            {
+              uitype: 1,
+              fieldid: 5,
+              blockid: "ba",
+              name: "Input #5",
+              sequence: "2",
+              label: "Input #4"
+            },
+            {
+              uitype: 1,
+              fieldid: 6,
+              blockid: "ba",
+              name: "Input #6",
               sequence: "2",
               label: "Input #4"
             }

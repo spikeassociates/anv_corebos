@@ -1,4 +1,13 @@
 import React, { useState } from "react";
+import {
+  CardWrapper,
+  CardHeader,
+  CardHeading,
+  CardBody,
+  CardFieldset,
+  HorizontalLine
+} from "./styles";
+
 import Modular from "modular-redux";
 import { compose } from "redux";
 import { connect } from "react-redux";
@@ -8,17 +17,7 @@ import { mapToDispatch } from "shared-utils";
 import data2 from "../data";
 import NewForm from "./form";
 
-import { Tabs, TabsPanel, Button } from "@salesforce/design-system-react";
-
-const ColoredLine = ({ color }) => (
-  <hr
-    style={{
-      color: color,
-      backgroundColor: color,
-      height: 5
-    }}
-  />
-);
+import { Card, Tabs, TabsPanel, Button } from "@salesforce/design-system-react";
 
 const FormBuilder = props => {
   const [data, setData] = useState({});
@@ -63,7 +62,11 @@ const FormBuilder = props => {
 
           return (
             <>
-              <div>{blocks.map(block => renderBlockFields({ meta, block }))}</div>
+              <div>
+                {blocks.map(block => (
+                  <div>renderBlockFields({(meta, block)})</div>
+                ))}
+              </div>
             </>
           );
         }
@@ -85,14 +88,25 @@ const FormBuilder = props => {
       }
     };
 
+    const removeRow = index => {
+      setRowEdit(prevState => ({
+        ...prevState,
+        rowEdit: {
+          ...prevState.rowEdit,
+          id: prevState.rowEdit[id].map((row, i) => (i === index ? 0 : row))
+        }
+      }));
+    };
+
     return (
       <>
         <div className="slds-grid slds-wrap">
           {counter.map((item, index) => (
-            <div style={{ width: "100%" }}>
-              {item == 1 && (
+            <div key={index} style={{ width: "100%" }}>
+              {item === 1 ? (
+                // <CardWrapper>
                 <div className="slds-grid slds-gutters">
-                  <div className="slds-col slds-size_6-of-7">
+                  <div className="slds-col slds-size_6-of-7" key={index}>
                     {renderBlockFields({
                       meta,
                       block,
@@ -103,24 +117,29 @@ const FormBuilder = props => {
                   {counter_length > 1 && (
                     <div className="slds-col slds-size_1-of-7 slds-align_absolute-center">
                       <Button
+                        key={index}
                         label="delete"
                         iconCategory="utility"
                         iconName="delete"
                         iconSize="large"
                         variant="icon"
-                        onClick={() =>
+                        onClick={() => {
+                          let rowData = [...rowEdit[id]];
+                          rowData[index] = 0;
                           setRowEdit({
                             ...rowEdit,
-                            [id]: [(rowEdit[id][index] = 0)]
-                          })
-                        }
+                            [id]: rowData
+                          });
+                        }}
                       />
                     </div>
                   )}
                 </div>
-              )}
+              ) : // </CardWrapper>
+              null}
             </div>
           ))}
+
           <div className=" slds-align_absolute-center  slds-m-vertical_large">
             <Button
               label="Add Another Block"
@@ -134,7 +153,6 @@ const FormBuilder = props => {
               }
             />
           </div>
-          <ColoredLine color="grey" />
         </div>
       </>
     );
@@ -183,7 +201,7 @@ const FormBuilder = props => {
   const nextStep = numRows - (tabIndex + 1);
 
   return (
-    <div>
+    <div className="slds-m-around_medium">
       <Tabs id="tabs-example-default" selectedIndex={tabIndex}>
         {steps.map(step => (
           <TabsPanel
@@ -195,33 +213,29 @@ const FormBuilder = props => {
           </TabsPanel>
         ))}
       </Tabs>
-      <div className="slds-m-left_xx-large">
-        <div style={{ textAlign: "left" }}>
-          {tabIndex != 0 && (
-            <Button
-              key="goback"
-              label=" Go Back"
-              iconName="back"
-              iconSize="large"
-              variant="icon"
-              onClick={() => setTabIndex(tabIndex - 1)}
-            />
-          )}
-        </div>
+      <div style={{ textAlign: "left" }}>
+        {tabIndex != 0 && (
+          <Button
+            key="goback"
+            label=" Go Back"
+            iconName="back"
+            iconSize="large"
+            variant="icon"
+            onClick={() => setTabIndex(tabIndex - 1)}
+          />
+        )}
       </div>
-      <div className="slds-m-right_xx-large">
-        <div style={{ textAlign: "right" }}>
-          {nextStep > 0 && (
-            <Button
-              key="nextstep"
-              label="Next Step"
-              iconName="forward"
-              iconSize="large"
-              variant="icon"
-              onClick={() => setTabIndex(tabIndex + 1)}
-            />
-          )}
-        </div>
+      <div style={{ textAlign: "right" }}>
+        {nextStep > 0 && (
+          <Button
+            key="nextstep"
+            label=" Next Step"
+            iconName="forward"
+            iconSize="large"
+            variant="icon"
+            onClick={() => setTabIndex(tabIndex + 1)}
+          />
+        )}
       </div>
     </div>
   );

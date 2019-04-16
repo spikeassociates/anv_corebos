@@ -26,7 +26,7 @@ import {
   mapToState
 } from "shared-utils";
 
-import { FormRowContainer, Overlay } from "./styles";
+import { FormRowContainer, Overlay, CardWrapper, HorizontalLine } from "./styles";
 
 class FormModal extends Component {
   constructor(props) {
@@ -306,9 +306,8 @@ class FormModal extends Component {
               summary={blockname}
               className="slds-p-around--large"
             >
-              <FormRowContainer>
-                {groupedFields[blockid].map(this.renderField)}
-              </FormRowContainer>
+              <CardWrapper>{groupedFields[blockid].map(this.renderField)}</CardWrapper>
+              <HorizontalLine />
             </AccordionPanel>
           ))}
         </Accordion>
