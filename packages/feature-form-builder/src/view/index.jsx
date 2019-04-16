@@ -7,6 +7,7 @@ import {
   CardFieldset,
   HorizontalLine
 } from "./styles";
+import ActionsExecutor from "./components/Actions";
 
 import Modular from "modular-redux";
 import { compose } from "redux";
@@ -17,7 +18,14 @@ import { mapToDispatch } from "shared-utils";
 import data2 from "../data";
 import NewForm from "./form";
 
-import { Card, Tabs, TabsPanel, Button } from "@salesforce/design-system-react";
+import {
+  Card,
+  Tabs,
+  TabsPanel,
+  Button,
+  Illustration
+} from "@salesforce/design-system-react";
+import { relative } from "path";
 
 const FormBuilder = props => {
   const [data, setData] = useState({});
@@ -106,23 +114,29 @@ const FormBuilder = props => {
               {item === 1 ? (
                 // <CardWrapper>
                 <div className="slds-grid slds-gutters">
-                  <div className="slds-col slds-size_6-of-7" key={index}>
+                  <div
+                    className="slds-col slds-size_7-of-7"
+                    style={{ position: "relative" }}
+                    key={index}
+                  >
                     {renderBlockFields({
                       meta,
                       block,
                       onFormChange: data => onBlockData(data, index),
                       blocktype
                     })}
-                  </div>
-                  {counter_length > 1 && (
-                    <div className="slds-col slds-size_1-of-7 slds-align_absolute-center">
+                    {counter_length > 1 && (
                       <Button
                         key={index}
-                        label="delete"
                         iconCategory="utility"
                         iconName="delete"
                         iconSize="large"
                         variant="icon"
+                        style={{
+                          position: "absolute",
+                          right: "37px",
+                          top: "86px"
+                        }}
                         onClick={() => {
                           let rowData = [...rowEdit[id]];
                           rowData[index] = 0;
@@ -132,8 +146,8 @@ const FormBuilder = props => {
                           });
                         }}
                       />
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </div>
               ) : // </CardWrapper>
               null}
@@ -209,13 +223,18 @@ const FormBuilder = props => {
             label={step.stepname}
             disabled={tabIndex == step.stepid}
           >
+            <div className="slds-p-horizontal_xx-large">
+              <Illustration heading="Actions" />
+              <ActionsExecutor />
+            </div>
             <div className="slds-p-horizontal_xx-large">{renderStep(step)}</div>
           </TabsPanel>
         ))}
       </Tabs>
-      <div style={{ textAlign: "left" }}>
+      <div>
         {tabIndex != 0 && (
           <Button
+            style={{ float: "left" }}
             key="goback"
             label=" Go Back"
             iconName="back"
@@ -224,10 +243,10 @@ const FormBuilder = props => {
             onClick={() => setTabIndex(tabIndex - 1)}
           />
         )}
-      </div>
-      <div style={{ textAlign: "right" }}>
+
         {nextStep > 0 && (
           <Button
+            style={{ float: "right" }}
             key="nextstep"
             label=" Next Step"
             iconName="forward"
