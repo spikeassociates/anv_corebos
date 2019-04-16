@@ -307,7 +307,6 @@ class FormModal extends Component {
               className="slds-p-around--large"
             >
               <CardWrapper>{groupedFields[blockid].map(this.renderField)}</CardWrapper>
-              <HorizontalLine />
             </AccordionPanel>
           ))}
         </Accordion>

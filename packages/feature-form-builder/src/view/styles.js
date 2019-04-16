@@ -1,21 +1,42 @@
 import styled, { injectGlobal } from "styled-components";
-const sc = styled.default;
 
-// hr.style14 {
+const FormRowContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
+  grid-gap: 20px 4%;
+  padding-bottom: 15px;
+  align-items: center;
+`;
 
-// }
-
-const HorizontalLine = styled.hr`
-  border: 0;
-  height: 1px;
-  background-image: -webkit-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
-  background-image: -moz-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
-  background-image: -ms-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
-  background-image: -o-linear-gradient(left, #f0f0f0, #8c8b8b, #f0f0f0);
+const Loading = styled.div`
+  display: inline-block;
+  width: 64px;
+  height: 64px;
+  &:after {
+    content: " ";
+    display: block;
+    width: 46px;
+    height: 46px;
+    margin: 1px;
+    border-radius: 50%;
+    border: 5px solid #cef;
+    border-color: #cef transparent #cef transparent;
+    animation: lds-dual-ring 1.2s linear infinite;
+  }
+  @keyframes lds-dual-ring {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
 `;
 
 const CardWrapper = styled.div`
   display: grid;
+  border-top: 1px solid #02e5ce;
+  border-left: 1px solid #02e5ce;
   grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
   grid-gap: 20px 4%;
   overflow: hidden;
@@ -26,6 +47,17 @@ const CardWrapper = styled.div`
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05), 0 0px 20px rgba(0, 0, 0, 0.08);
   border-radius: 5px;
 `;
+const ActionCardWrapper = styled.div`
+  display: grid;
+  border-top: 1px solid #dd0f73;
+  border-left: 1px solid #dd0f73;
+  overflow: hidden;
+  margin: 10px auto 20px;
+  width: 100%;
+  font-family: Quicksand, arial, sans-serif;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05), 0 0px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 15px;
+`;
 
 const CardHeader = styled.header`
   padding-top: 32px;
@@ -33,7 +65,7 @@ const CardHeader = styled.header`
 `;
 
 const CardHeading = styled.h1`
-  font-size: 24px;
+  font-size: 16px;
   font-weight: bold;
   text-align: center;
 `;
@@ -178,14 +210,6 @@ injectGlobal`
 }
 `;
 
-const FormRowContainer = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
-  grid-gap: 20px 4%;
-  padding-bottom: 15px;
-  align-items: center;
-`;
-
 const Overlay = styled.div`
   position: absolute;
   left: 0;
@@ -200,4 +224,13 @@ const Overlay = styled.div`
   pointer-events: none;
 `;
 
-export { FormRowContainer, Overlay, CardBody, CardHeader, CardWrapper, HorizontalLine };
+export {
+  FormRowContainer,
+  Overlay,
+  CardBody,
+  CardHeading,
+  CardHeader,
+  CardWrapper,
+  ActionCardWrapper,
+  Loading
+};
