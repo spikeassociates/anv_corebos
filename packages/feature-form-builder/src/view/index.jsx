@@ -1,12 +1,5 @@
 import React, { useState } from "react";
-import {
-  CardWrapper,
-  CardHeader,
-  CardHeading,
-  CardBody,
-  CardFieldset,
-  HorizontalLine
-} from "./styles";
+import { CardWrapper, ButtonsContainer } from "./styles";
 import ActionsExecutor from "./components/Actions";
 
 import Modular from "modular-redux";
@@ -112,7 +105,6 @@ const FormBuilder = props => {
           {counter.map((item, index) => (
             <div key={index} style={{ width: "100%" }}>
               {item === 1 ? (
-                // <CardWrapper>
                 <div className="slds-grid slds-gutters">
                   <div
                     className="slds-col slds-size_7-of-7"
@@ -149,8 +141,7 @@ const FormBuilder = props => {
                     )}
                   </div>
                 </div>
-              ) : // </CardWrapper>
-              null}
+              ) : null}
             </div>
           ))}
 
@@ -161,7 +152,6 @@ const FormBuilder = props => {
               iconName="add"
               iconSize="large"
               variant="icon"
-              // counter[index] = 0;
               onClick={() =>
                 setRowEdit({ ...rowEdit, [id]: [...(rowEdit[id] || [1]), 1] })
               }
@@ -231,30 +221,36 @@ const FormBuilder = props => {
           </TabsPanel>
         ))}
       </Tabs>
-      <div>
-        {tabIndex != 0 && (
-          <Button
-            style={{ float: "left" }}
-            key="goback"
-            label=" Go Back"
-            iconName="back"
-            iconSize="large"
-            variant="icon"
-            onClick={() => setTabIndex(tabIndex - 1)}
-          />
-        )}
+      <div className="slds-p-horizontal_large">
+        <ButtonsContainer>
+          {tabIndex != 0 && (
+            <div>
+              <Button
+                className="slds-p-horizontal_medium"
+                key="goback"
+                label=" Go Back"
+                iconName="back"
+                iconSize="large"
+                variant="icon"
+                onClick={() => setTabIndex(tabIndex - 1)}
+              />
+            </div>
+          )}
 
-        {nextStep > 0 && (
-          <Button
-            style={{ float: "right" }}
-            key="nextstep"
-            label=" Next Step"
-            iconName="forward"
-            iconSize="large"
-            variant="icon"
-            onClick={() => setTabIndex(tabIndex + 1)}
-          />
-        )}
+          {nextStep > 0 && (
+            <div style={{ marginLeft: "auto" }}>
+              <Button
+                className="slds-p-horizontal_medium"
+                key="nextstep"
+                label=" Next Step"
+                iconName="forward"
+                iconSize="large"
+                variant="icon"
+                onClick={() => setTabIndex(tabIndex + 1)}
+              />
+            </div>
+          )}
+        </ButtonsContainer>
       </div>
     </div>
   );
