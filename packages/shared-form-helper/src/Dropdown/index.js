@@ -4,8 +4,8 @@ import { Dropdown, DropdownTrigger, Button } from "@salesforce/design-system-rea
 import { DropdownContainer } from "./styles";
 
 const FormDropdown = ({ value = "", onChange, label, options = [], ...rest }) => {
+  const fallbackLabel = "Please select an option";
   const selectedOption = options.find(opt => opt.value === value);
-  const fallbackLabel = options.length ? options[0].label : "";
 
   return (
     <DropdownContainer>

@@ -57,6 +57,7 @@ class FormModal extends Component {
 
   componentDidMount() {
     const { actions, moduleMeta } = this.props;
+
     actions.getFieldDependencies(moduleMeta.name);
   }
 
@@ -67,14 +68,28 @@ class FormModal extends Component {
     actions.setData("initial", {});
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate = prevProps => {
     const prevInitial = prevProps.initialValues || {};
-    const { initialValues = {}, onFormChange } = this.props;
+    const { initialValues = {}, onFormChange, fieldDependencies } = this.props;
+
+    if (!prevProps.fieldDependencies && fieldDependencies) {
+      Object.values(fieldDependencies).map(dependencies => {
+        dependencies.forEach(async dependency => {
+          const { actions, conditions } = dependency;
+
+          const isValid = this.evaluateConditions(conditions);
+
+          for (let key in actions) {
+            await this.excecuteAction(isValid, [key, actions[key]]);
+          }
+        });
+      });
+    }
 
     if (Object.keys(prevInitial).length !== Object.keys(initialValues).length) {
       onFormChange(initialValues);
     }
-  }
+  };
 
   normalizeField(uitype) {
     if (uitype === 7) {
@@ -201,14 +216,14 @@ class FormModal extends Component {
     const dependencies = fieldDependencies[field.name];
 
     if (dependencies) {
-      dependencies.forEach(dependency => {
-        const { actions, conditions } = dependency;
+      fieldOptions.onChange = () => {
+        dependencies.forEach(dependency => {
+          const { actions, conditions } = dependency;
 
-        fieldOptions.onChange = () => {
           const isValid = this.evaluateConditions(conditions);
           Object.entries(actions).forEach(action => this.excecuteAction(isValid, action));
-        };
-      });
+        });
+      };
     }
 
     const onChangeEvent = value => {
@@ -234,49 +249,65 @@ class FormModal extends Component {
     const targetField = target.field;
     const targetValue = target.value;
 
-    if ((type === "collapse" || type === "open") && isValid) {
-      const section = sections.find(({ blocklabel }) => blocklabel === targetField);
+    return new Promise(resolve => {
+      if ((type === "collapse" || type === "open") && isValid) {
+        const section = sections.find(({ blocklabel }) => blocklabel === targetField);
 
-      this.setState({
-        expandedSections: { ...expandedSections, [section.blockid]: type === "open" }
-      });
-    }
-
-    if ((type === "hide" && isValid) || (type === "show" && !isValid)) {
-      this.setState({ hidden: [...hidden, targetField] });
-    } else if ((type === "hide" && !isValid) || (type === "show" && isValid)) {
-      this.setState({ hidden: hidden.filter(field => field !== targetField) });
-    }
-
-    if (type === "change" && isValid) {
-      this.formApi.setField(targetField, targetValue);
-    }
-
-    if (type === "readonly") {
-      if (isValid) {
-        this.setState({ readOnly: [...readOnly, targetField] });
-      } else {
-        this.setState({ readOnly: readOnly.filter(field => field !== targetField) });
+        this.setState(
+          {
+            expandedSections: { ...expandedSections, [section.blockid]: type === "open" }
+          },
+          () => resolve()
+        );
       }
-    }
 
-    if (type === "setoptions") {
-      if (isValid) {
-        this.setState({ showOptions: { ...showOptions, [targetField]: targetValue } });
-      } else {
-        delete showOptions[targetField];
-        this.setState({ showOptions });
+      if ((type === "hide" && isValid) || (type === "show" && !isValid)) {
+        this.setState({ hidden: [...hidden, targetField] }, () => resolve());
+      } else if ((type === "hide" && !isValid) || (type === "show" && isValid)) {
+        this.setState({ hidden: hidden.filter(field => field !== targetField) }, () =>
+          resolve()
+        );
       }
-    }
 
-    if (type === "deloptions") {
-      if (isValid) {
-        this.setState({ hideOptions: { ...hideOptions, [targetField]: targetValue } });
-      } else {
-        delete hideOptions[targetField];
-        this.setState({ hideOptions });
+      if (type === "change" && isValid) {
+        this.formApi.setField(targetField, targetValue).then(() => resolve());
       }
-    }
+
+      if (type === "readonly") {
+        if (isValid) {
+          this.setState({ readOnly: [...readOnly, targetField] }, () => resolve());
+        } else {
+          this.setState(
+            { readOnly: readOnly.filter(field => field !== targetField) },
+            () => resolve()
+          );
+        }
+      }
+
+      if (type === "setoptions") {
+        if (isValid) {
+          this.setState(
+            { showOptions: { ...showOptions, [targetField]: targetValue } },
+            () => resolve()
+          );
+        } else {
+          delete showOptions[targetField];
+          this.setState({ showOptions }, () => resolve());
+        }
+      }
+
+      if (type === "deloptions") {
+        if (isValid) {
+          this.setState(
+            { hideOptions: { ...hideOptions, [targetField]: targetValue } },
+            () => resolve()
+          );
+        } else {
+          delete hideOptions[targetField];
+          this.setState({ hideOptions }, () => resolve());
+        }
+      }
+    });
   };
 
   evaluateConditions = conditions => {
@@ -295,6 +326,7 @@ class FormModal extends Component {
       (acc, condition) => {
         const { name, value, operator, comparator } = condition;
         const fieldValue = this.formApi.getField(name);
+
         let comparision = `"${fieldValue}" # "${value}"`;
         comparision = comparision.replace("#", comparatorToSymbol[comparator]);
 
@@ -324,14 +356,23 @@ class FormModal extends Component {
 
   render() {
     const { sections, groupedFields, expandedSections } = this.state;
-    const { initialValues, shown, busy, loading } = this.props;
+    const { initialValues, shown, busy, loading, moduleMeta } = this.props;
+    const selectInitial = Object.values(moduleMeta.fields)
+      .filter(({ uitype }) => [15, 16, 26, 77, 117].includes(parseInt(uitype)))
+      .reduce(
+        (acc, { name, type }) => ({ ...acc, [name]: type.picklistValues[0].value }),
+        {}
+      );
 
     if (!shown.form || !initialValues) {
       return <div />;
     }
 
     return (
-      <Form formApi={formApi => (this.formApi = formApi)} initialValues={initialValues}>
+      <Form
+        formApi={formApi => (this.formApi = formApi)}
+        initialValues={{ ...selectInitial, ...initialValues }}
+      >
         {(busy.form || loading) && (
           <Overlay>
             <Loader variant="inverse" />
