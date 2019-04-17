@@ -8,7 +8,8 @@ import {
   DataTable,
   DataTableColumn,
   Button,
-  Spinner
+  Spinner,
+  Icon
 } from "@salesforce/design-system-react";
 import { compose } from "redux";
 import { connect } from "react-redux";
@@ -52,7 +53,8 @@ class DetailView extends Component {
       collapseHeader: moduleMeta.headerFields.length === 0,
       previewModule: { relatedModule: "", fields: [] },
       previewTopDistance: 0,
-      inlineEdit: {}
+      inlineEdit: {},
+      showEditIcon: {}
     };
   }
 
@@ -124,7 +126,7 @@ class DetailView extends Component {
   };
 
   renderField = field => {
-    const { inlineEdit } = this.state;
+    const { inlineEdit, showEditIcon } = this.state;
     const { item, busy, original } = this.props;
     const { name, label, uitype } = field;
     const value = item.data[name];
@@ -187,9 +189,29 @@ class DetailView extends Component {
             this.setState({ inlineEdit: { ...inlineEdit, [name]: value } });
           }
         }}
+        onMouseOver={() => {
+          this.setState({ showEditIcon: { ...showEditIcon, [name]: 1 } });
+        }}
+        onMouseLeave={() => {
+          console.log("left");
+          this.setState({ showEditIcon: { ...showEditIcon, [name]: 0 } });
+        }}
       >
         <Label>{label}</Label>
-        <Value>{value}</Value>
+        <Value>
+          <div>{value}</div>
+          {this.state.showEditIcon[name] === 1 && (
+            <div>
+              <Icon
+                style={{ cursor: "pointer", width: "1.1rem", height: "1.1rem" }}
+                assistiveText={{ label: "Edit" }}
+                category="utility"
+                name="edit"
+                size="small"
+              />
+            </div>
+          )}
+        </Value>
         <Separator />
       </FieldContainer>
     );

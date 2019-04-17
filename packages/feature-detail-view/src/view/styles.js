@@ -22,7 +22,10 @@ const Label = styled.div`
   opacity: 0.7;
 `;
 
-const Value = styled.div``;
+const Value = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
 
 const Separator = styled.div`
   border-top: 1px solid #dddbda;
