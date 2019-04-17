@@ -34,9 +34,7 @@ const epics = ({ actions, api }) => {
     type: types.GET_WIDGETS,
     onSuccess: [
       action => {
-        let blocks = JSON.parse(action.payload).DETAILVIEWWIDGET;
-
-        blocks = blocks
+        const blocks = action.payload
           .map(({ linkid }) => linkid)
           .filter(id => id === "44698")
           .map(id => `41x${id}`);
