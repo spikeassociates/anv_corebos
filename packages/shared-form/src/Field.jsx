@@ -4,7 +4,6 @@ import Context from "./Context";
 class Field extends Component {
   handleChange(value, Form) {
     const { name, normalize, onChange } = this.props;
-
     if (normalize) {
       value = normalize(value);
     }
