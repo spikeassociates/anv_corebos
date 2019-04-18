@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { CardWrapper, ButtonsContainer } from "./styles";
 import ActionsExecutor from "./components/Actions";
+// import ScrollButton from "./components/ScrollTop";
 
 import Modular from "modular-redux";
 import { compose } from "redux";
@@ -19,6 +20,11 @@ import {
   Illustration
 } from "@salesforce/design-system-react";
 import { relative } from "path";
+const scrollToTop = () => {
+  setTimeout(() => {
+    window.scrollTo(0, 0);
+  }, 1);
+};
 
 const FormBuilder = props => {
   const [data, setData] = useState({});
@@ -205,7 +211,7 @@ const FormBuilder = props => {
   const nextStep = numRows - (tabIndex + 1);
 
   return (
-    <div className="slds-m-around_medium">
+    <div className="slds-m-around_medium" style={{ height: "100%" }}>
       <Tabs id="tabs-example-default" selectedIndex={tabIndex}>
         {steps.map(step => (
           <TabsPanel
@@ -232,7 +238,10 @@ const FormBuilder = props => {
                 iconName="back"
                 iconSize="large"
                 variant="icon"
-                onClick={() => setTabIndex(tabIndex - 1)}
+                onClick={() => {
+                  scrollToTop();
+                  setTabIndex(tabIndex - 1);
+                }}
               />
             </div>
           )}
@@ -246,12 +255,16 @@ const FormBuilder = props => {
                 iconName="forward"
                 iconSize="large"
                 variant="icon"
-                onClick={() => setTabIndex(tabIndex + 1)}
+                onClick={() => {
+                  scrollToTop();
+                  setTabIndex(tabIndex + 1);
+                }}
               />
             </div>
           )}
         </ButtonsContainer>
       </div>
+      {/* <ScrollButton scrollStepInPx="50" delayInMs="16.66" /> */}
     </div>
   );
 };

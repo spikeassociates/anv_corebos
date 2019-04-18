@@ -12,7 +12,7 @@ const PageContainer = styled.div`
 `;
 
 const Container = styled.div`
-  position: absolute;
+  position: relative;
   left: ${getElemStyle("#app-content", "marginLeft")};
   right: 0;
   top: ${getElemStyle("#channel-header", "height")};
