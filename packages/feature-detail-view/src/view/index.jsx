@@ -190,17 +190,18 @@ class DetailView extends Component {
           }
         }}
         onMouseOver={() => {
-          this.setState({ showEditIcon: { ...showEditIcon, [name]: 1 } });
+          if (uitype != 4 && Object.keys(inlineEdit).length === 0) {
+            this.setState({ showEditIcon: { [name]: true } });
+          }
         }}
         onMouseLeave={() => {
-          console.log("left");
-          this.setState({ showEditIcon: { ...showEditIcon, [name]: 0 } });
+          this.setState({ showEditIcon: { [name]: false } });
         }}
       >
         <Label>{label}</Label>
         <Value>
           <div>{value}</div>
-          {this.state.showEditIcon[name] === 1 && (
+          {this.state.showEditIcon[name] && (
             <div>
               <Icon
                 style={{ cursor: "pointer", width: "1.1rem", height: "1.1rem" }}
