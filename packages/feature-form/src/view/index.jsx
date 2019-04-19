@@ -106,9 +106,9 @@ class FormModal extends Component {
       key: field.name,
       name: field.name,
       label: field.label,
+      uitype: field.uitype,
       render: () => null,
-      normalize: this.normalizeField(uitype),
-      error: errors[field.name] ? errors[field.name][0] : undefined
+      normalize: this.normalizeField(uitype)
     };
 
     if (isTextField) {
