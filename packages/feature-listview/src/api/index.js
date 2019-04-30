@@ -34,7 +34,14 @@ const api = {
       operation: "query",
       elementType: moduleName,
       query: `select count(*) from ${moduleName};`
-    })
+    }),
+
+  getFilters: moduleName =>
+    base.get("", {
+      operation: "getViewsByModule",
+      module: moduleName,
+  })
+        
 };
 
 export default api;

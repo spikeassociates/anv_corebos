@@ -88,7 +88,13 @@ const epics = ({ actions, api, name }) => {
       );
     });
 
-  return { ...doQuery, ...doDelete, ...doRetrieve, onItemSaved, ...getRowsCount };
+    const getFilters = asyncAction({
+      api: api.getFilters,
+      type: types.GET_FILTERS,
+      onSuccess: [action => actions.setData("filters", action.payload.filters)]
+    });
+
+  return { ...doQuery, ...doDelete, ...doRetrieve, onItemSaved, ...getRowsCount, ...getFilters };
 };
 
 export default epics;

@@ -14,7 +14,8 @@ const initialState = {
       title: ""
     },
     listview: [],
-    totalRowsCount: 1
+    totalRowsCount: 1,
+    filters: []
   }
 };
 

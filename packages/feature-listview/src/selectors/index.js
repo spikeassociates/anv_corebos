@@ -20,7 +20,13 @@ const totalRowsCount = module =>
     ({ data }) => data.totalRowsCount
   );
 
-const selectors = { listviewData, preview, totalRowsCount };
+const filters = module =>
+  createSelector(
+    module,
+    ({ data }) => Object.entries(data.filters).map(item => ({label:item[1].name, value:item[0]}) )
+  );
+
+const selectors = { listviewData, preview, totalRowsCount, filters };
 
 export default Modular.selectors(moduleState =>
   selectorUtils.getSelectors(moduleState, selectors)

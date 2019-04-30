@@ -68,6 +68,8 @@ class ListView extends Component {
       sort
     });
     actions.getRowsCount(moduleMeta.name);
+
+    actions.getFilters(moduleMeta.name);
   };
 
   handleSelect = (e, selectedRows) => {
@@ -168,7 +170,8 @@ class ListView extends Component {
       actions,
       isPrimary,
       Module,
-      totalRowsCount
+      totalRowsCount,
+      filters
     } = this.props;
     const { id } = modalInitialValues;
 
@@ -186,7 +189,7 @@ class ListView extends Component {
           isPrimary={isPrimary}
           page={page}
           moduleName={moduleMeta.label}
-          filters={[{ label: `All ${moduleMeta.label}`, value: "all" }]}
+          filters={filters}
           title={`All ${moduleMeta.label}`}
           handleDelete={this.handleMultiDelete}
           handlePageChange={this.handlePageChange}
@@ -242,7 +245,8 @@ const mapStateToProps = (state, { Module }) =>
     "shown",
     "listviewData",
     "preview",
-    "totalRowsCount"
+    "totalRowsCount",
+    "filters"
   ]);
 
 const mapDispatchToProps = (dispatch, { Module }) => ({
