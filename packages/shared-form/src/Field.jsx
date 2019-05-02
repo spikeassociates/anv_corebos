@@ -9,13 +9,11 @@ class Field extends Component {
     this.state = { errorText: "" };
   }
   handleChange(value, Form) {
-    const { uitype } = this.props.uitype;
-
-    const { name, normalize, onChange } = this.props;
+    const { name, normalize, onChange, uitype } = this.props;
     if (normalize) {
       value = normalize(value);
     }
-    const fieldValidated = validateField(value, this.props.uitype);
+    const fieldValidated = validateField(value, uitype);
     this.setState({ errorText: fieldValidated });
     Form.setField(name, value).then(() => onChange && onChange(value));
   }

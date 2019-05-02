@@ -44,6 +44,7 @@ class FieldUI extends Component {
       key: field.name,
       name: field.name,
       label: field.label,
+      uitype: field.uitype,
       render: () => null,
       value,
       onChange
