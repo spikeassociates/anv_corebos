@@ -16,14 +16,18 @@ export default class PageHeaderContainer extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { page: props.page };
+    this.state = { page: props.page, filterData:props.filterData };
   }
 
   componentDidUpdate(prevProps) {
-    const { page } = this.props;
+    const { page, filterData } = this.props;
 
     if (prevProps.page !== page) {
       this.setState({ page });
+    }
+
+    if (prevProps.filterData !== filterData) {
+      this.setState({ filterData });
     }
   }
 
@@ -41,6 +45,11 @@ export default class PageHeaderContainer extends Component {
     this.setState({ page }, handlePageChange(page));
   };
 
+  onFilterChange = selected => {
+    const { handleFilterChange } = this.props;
+    this.setState({ filterData:selected }, handleFilterChange(selected));
+  }
+
   render() {
     const { filters, title, moduleName, showModal, isPrimary, lastPage } = this.props;
     const { page } = this.state;
@@ -53,7 +62,10 @@ export default class PageHeaderContainer extends Component {
         label={moduleName}
         title={
           <h1 className="slds-page-header__title">
-            <Dropdown value="all" options={filters}>
+            <Dropdown value="all"
+              options={filters}
+              onSelect={this.onFilterChange}
+              >
               <DropdownTrigger>
                 <Button
                   className="slds-button--reset"

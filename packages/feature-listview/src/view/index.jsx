@@ -27,7 +27,8 @@ class ListView extends Component {
       property: "id",
       direction: "asc"
     },
-    modalInitialValues: {}
+    modalInitialValues: {},
+    filterData: {}
   };
 
   componentDidUpdate(prevState) {
@@ -58,14 +59,15 @@ class ListView extends Component {
   };
 
   loadData = () => {
-    const { page, sort } = this.state;
+    const { page, sort, filterData } = this.state;
     const { actions, moduleMeta } = this.props;
 
     actions.doQuery({
       moduleName: moduleMeta.name,
       pageLimit: moduleMeta.filterFields.pagesize,
       page,
-      sort
+      sort,
+      filterData
     });
     actions.getRowsCount(moduleMeta.name);
 
@@ -79,7 +81,7 @@ class ListView extends Component {
   handleSort = sortColumn => {
     const { property, sortDirection } = sortColumn;
 
-    this.setState({ sort: { property, direction: sortDirection }, page: 1 }, () =>
+    this.setState({ sort: { property, direction: sortDirection }, page: 1, filterData }, () =>
       this.loadData()
     );
   };
@@ -159,6 +161,12 @@ class ListView extends Component {
     this.setState({ modalInitialValues: {} }, () => actions.setShown("modal"));
   };
 
+  handleFilterChange = filterData => {
+    if (filterData != this.state.filterData) {
+      this.setState({ filterData, page:1 }, () => this.loadData());
+    }
+  };
+
   render() {
     const { selectedRows, page, modalInitialValues } = this.state;
     const {
@@ -171,7 +179,8 @@ class ListView extends Component {
       isPrimary,
       Module,
       totalRowsCount,
-      filters
+      filters,
+      filterData
     } = this.props;
     const { id } = modalInitialValues;
 
@@ -189,10 +198,12 @@ class ListView extends Component {
           isPrimary={isPrimary}
           page={page}
           moduleName={moduleMeta.label}
+          filterData={filterData}
           filters={filters}
           title={`All ${moduleMeta.label}`}
           handleDelete={this.handleMultiDelete}
           handlePageChange={this.handlePageChange}
+          handleFilterChange={this.handleFilterChange}
           showModal={this.showCreateModal}
           lastPage={Math.ceil(totalRowsCount / moduleMeta.filterFields.pagesize)}
         />

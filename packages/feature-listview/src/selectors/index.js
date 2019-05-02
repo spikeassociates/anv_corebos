@@ -23,7 +23,16 @@ const totalRowsCount = module =>
 const filters = module =>
   createSelector(
     module,
-    ({ data }) => Object.entries(data.filters).map(item => ({label:item[1].name, value:item[0]}) )
+    ({ data }) => (
+      Object.entries(data.filters).map(item => {
+        let id = (item[0] != undefined) ? item[0] : undefined;
+        let label = (item[1] != undefined) ? item[1].name : undefined;
+        let data = item[1];
+
+        //filter data for Dropdown module
+        return {id, label, data};
+      })
+    )
   );
 
 const selectors = { listviewData, preview, totalRowsCount, filters };
