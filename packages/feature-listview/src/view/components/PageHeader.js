@@ -88,7 +88,7 @@ export default class PageHeaderContainer extends Component {
                 className={ (lastPage && lastPage == 1) ? 'slds-hide' : ''} >
                 <Arrows
                   onClick={() => this.onPageChange(1)}
-                  className={ (page <= 1 || !page) ? 'slds-hide' : ''} >
+                  className={ (page <= 2 || !page) ? 'slds-hide' : ''} >
                   <Icon category="utility" name="chevronleft" size="x-small" />
                   <Icon category="utility" name="chevronleft" size="x-small" />
                 </Arrows>
