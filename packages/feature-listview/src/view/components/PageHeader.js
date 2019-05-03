@@ -84,8 +84,11 @@ export default class PageHeaderContainer extends Component {
         navRight={
           <>
             <HeaderActionRow>
-              <PaginationContainer>
-                <Arrows onClick={() => this.onPageChange(1)}>
+              <PaginationContainer
+                className={ (lastPage && lastPage == 1) ? 'slds-hide' : ''} >
+                <Arrows
+                  onClick={() => this.onPageChange(1)}
+                  className={ (page <= 1 || !page) ? 'slds-hide' : ''} >
                   <Icon category="utility" name="chevronleft" size="x-small" />
                   <Icon category="utility" name="chevronleft" size="x-small" />
                 </Arrows>
@@ -97,6 +100,7 @@ export default class PageHeaderContainer extends Component {
                   iconVariant="bare"
                   onClick={() => this.onPageChange(Math.max(page - 1, 1))}
                   variant="icon"
+                  className={ (page <= 1 || !page) ? 'slds-hide' : ''}
                 />
 
                 <Input
@@ -113,9 +117,12 @@ export default class PageHeaderContainer extends Component {
                   iconVariant="bare"
                   onClick={() => this.onPageChange(Math.min(page + 1, lastPage))}
                   variant="icon"
+                  className={ (page >= lastPage || !lastPage) ? 'slds-hide' : ''}
                 />
 
-                <Arrows onClick={() => this.onPageChange(lastPage)}>
+                <Arrows
+                  onClick={() => this.onPageChange(lastPage)}
+                  className={ (page >= lastPage || !lastPage) ? 'slds-hide' : ''} >
                   <Icon category="utility" name="chevronright" size="x-small" />
                   <Icon category="utility" name="chevronright" size="x-small" />
                 </Arrows>
