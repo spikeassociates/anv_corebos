@@ -52,7 +52,8 @@ export default class PageHeaderContainer extends Component {
 
   render() {
     const { filters, title, moduleName, showModal, isPrimary, lastPage } = this.props;
-    const { page } = this.state;
+    const { page, filterData } = this.state;
+    const filterLabel = filterData ? filterData.label : null;
 
     return (
       <PageHeader
@@ -74,7 +75,7 @@ export default class PageHeaderContainer extends Component {
                   iconPosition="right"
                   responsive
                   variant="base"
-                  label={title}
+                  label={filterLabel || title}
                 />
               </DropdownTrigger>
             </Dropdown>

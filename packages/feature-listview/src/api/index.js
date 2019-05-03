@@ -2,57 +2,64 @@ import base from "shared-api";
 import { PersistentRepo } from "shared-repo";
 import { getModuleReferenceFields } from "shared-utils";
 
-const buildAdvCriteriaQuery = advCriteria => {
-  let advCriteriaString = ``;
-  switch (advCriteria.comparator) {
+const buildCriteriaQuery = criteria => {
+  let criteriaString = ``;
+  switch (criteria.comparator) {
     case 'e': //equals
-      advCriteriaString += ` (${advCriteria.columname} = '${advCriteria.value}') ${advCriteria.column_condition}`;
+      criteriaString += ` (${criteria.columnname} = '${criteria.value}') ${criteria.column_condition}`;
       break;
     case 'n': //not equal to
-      advCriteriaString += ` (${advCriteria.columname} != '${advCriteria.value}') ${advCriteria.column_condition}`;
+      criteriaString += ` (${criteria.columnname} != '${criteria.value}') ${criteria.column_condition}`;
       break;
     case 's': //starts with
-      advCriteriaString += ` (${advCriteria.columname} like '${advCriteria.value}%') ${advCriteria.column_condition}`;
+      criteriaString += ` (${criteria.columnname} like '${criteria.value}%') ${criteria.column_condition}`;
       break;
     case 'ew': //ends with
-      advCriteriaString += ` (${advCriteria.columname} like '%${advCriteria.value}') ${advCriteria.column_condition}`;
+      criteriaString += ` (${criteria.columnname} like '%${criteria.value}') ${criteria.column_condition}`;
       break;
     case 'dnsw': //does not start with
-      advCriteriaString += ` (${advCriteria.columname} not like '${advCriteria.value}%') ${advCriteria.column_condition}`;
+      criteriaString += ` (${criteria.columnname} not like '${criteria.value}%') ${criteria.column_condition}`;
       break;
     case 'dnew': //does not end with
-      advCriteriaString += ` (${advCriteria.columname} not like '%${advCriteria.value}') ${advCriteria.column_condition}`;
+      criteriaString += ` (${criteria.columnname} not like '%${criteria.value}') ${criteria.column_condition}`;
       break;
     case 'c': //contains
-      advCriteriaString += ` (${advCriteria.columname} like '%${advCriteria.value}%') ${advCriteria.column_condition}`;
+      criteriaString += ` (${criteria.columnname} like '%${criteria.value}%') ${criteria.column_condition}`;
       break;
     case 'k': //does not contain
-      advCriteriaString += ` (${advCriteria.columname} not like '%${advCriteria.value}%') ${advCriteria.column_condition}`;
+      criteriaString += ` (${criteria.columnname} not like '%${criteria.value}%') ${criteria.column_condition}`;
+      break;
+    case 'bw': //between (used in stdConditions)
+      let bwCriteria = criteria.value.split(',');
+      let dStart = new Date(bwCriteria[0]).toJSON().slice(0, 19).replace('T', ' ');
+      let dEnd   = new Date(bwCriteria[1]).toJSON().slice(0, 19).replace('T', ' ');
+      criteriaString += ` (${criteria.columnname} >= '${dStart}' and ${criteria.columnname} <= '${dEnd}') ${criteria.column_condition}`;
       break;
     default:
-      advCriteriaString += ``;
+      criteriaString += ``;
   }
-  return advCriteriaString;
+  return criteriaString;
 }
 
 const buildQueryFilter = filterData => {
   let queryFilter = ` where`; //default
   if( Object.keys(filterData).length && Object.keys(filterData.data).length ){
-    if( filterData.data.advcriteria != '' ){
-      //build the query string and join criteria
-      queryFilter += JSON.parse(filterData.data.advcriteria).map(criteria => (buildAdvCriteriaQuery(criteria))).join(' ');
-    }
+
+    //build the query string and join criteria
+    let advCriteria = JSON.parse(filterData.data.advcriteria);
+    (advCriteria.length)
+      ? queryFilter += advCriteria.map(criteria => (buildCriteriaQuery(criteria))).join(' ')
+      : '';
 
     //add stdcriteria if any
-    if( filterData.data.stdcriteria != '' ){
-      queryFilter += ` and ${filterData.data.stdcriteria}`;
-    }
+    let stdCriteria = JSON.parse(filterData.data.stdcriteria);
+    (stdCriteria.length)
+      ? queryFilter += ` and` + stdCriteria.map(criteria => (buildCriteriaQuery(criteria))).join(' ')
+      : '';
   }
 
   //if filter hasn't changed, clear the filter query string
-  if( queryFilter == ' where' ){
-    queryFilter = ``;
-  }
+  (queryFilter == ' where') ? queryFilter = '' : null;
 
   return queryFilter;
 }
@@ -74,6 +81,7 @@ const api = {
     const offset = page * pageLimit;
 
     const queryFilter = buildQueryFilter(filterData);
+    //console.log(queryFilter);
 
     return base.get("", {
       operation: "query",
