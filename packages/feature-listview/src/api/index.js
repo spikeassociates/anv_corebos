@@ -43,7 +43,7 @@ const buildCriteriaQuery = criteria => {
 
 const buildQueryFilter = filterData => {
   let queryFilter = ` where`; //default
-  if( Object.keys(filterData).length && Object.keys(filterData.data).length ){
+  if( filterData && Object.keys(filterData).length && Object.keys(filterData.data).length ){
 
     //build the query string and join criteria
     let advCriteria = JSON.parse(filterData.data.advcriteria);
@@ -94,12 +94,16 @@ const api = {
 
   doRetrieve: ({ id }) => base.get("", { operation: "retrieve", id }),
 
-  getRowsCount: moduleName =>
-    base.get("", {
+  getRowsCount: ({moduleName, filterData}) => {
+    const queryFilter = filterData ? buildQueryFilter(filterData) : '';
+    console.log(filterData, queryFilter);
+
+    return base.get("", {
       operation: "query",
       elementType: moduleName,
-      query: `select count(*) from ${moduleName};`
-    }),
+      query: `select count(*) from ${moduleName} ${queryFilter};`
+    })
+  },
 
   getFilters: moduleName =>
     base.get("", {

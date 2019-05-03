@@ -28,7 +28,7 @@ class ListView extends Component {
       direction: "asc"
     },
     modalInitialValues: {},
-    filterData: {}
+    filterData: null
   };
 
   componentDidUpdate(prevState) {
@@ -69,7 +69,10 @@ class ListView extends Component {
       sort,
       filterData
     });
-    actions.getRowsCount(moduleMeta.name);
+    actions.getRowsCount({
+      moduleName: moduleMeta.name,
+      filterData
+    });
 
     actions.getFilters(moduleMeta.name);
   };
@@ -80,6 +83,7 @@ class ListView extends Component {
 
   handleSort = sortColumn => {
     const { property, sortDirection } = sortColumn;
+    const { filterData } = this.state;
 
     this.setState({ sort: { property, direction: sortDirection }, page: 1, filterData }, () =>
       this.loadData()
