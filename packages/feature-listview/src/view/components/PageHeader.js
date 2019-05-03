@@ -100,7 +100,7 @@ export default class PageHeaderContainer extends Component {
                   iconVariant="bare"
                   onClick={() => this.onPageChange(Math.max(page - 1, 1))}
                   variant="icon"
-                  className={ (page <= 1 || !page) ? 'slds-hide' : ''}
+                  disabled={ (page <= 1 || !page) ? true : false}
                 />
 
                 <Input
@@ -117,7 +117,7 @@ export default class PageHeaderContainer extends Component {
                   iconVariant="bare"
                   onClick={() => this.onPageChange(Math.min(page + 1, lastPage))}
                   variant="icon"
-                  className={ (page >= lastPage || !lastPage) ? 'slds-hide' : ''}
+                  disabled={ (page >= lastPage || !lastPage) ? true : false}
                 />
 
                 <Arrows
