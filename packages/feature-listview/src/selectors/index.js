@@ -20,22 +20,30 @@ const totalRowsCount = module =>
     ({ data }) => data.totalRowsCount
   );
 
+// format data.filters from reducer and return filters
 const filters = module =>
   createSelector(
     module,
     ({ data }) => (
       Object.entries(data.filters).map(item => {
-        let id = (item[0] != undefined) ? item[0] : undefined;
-        let label = (item[1] != undefined) ? item[1].name : undefined;
-        let data = item[1];
-
-        //filter data for Dropdown module
-        return {id, label, data};
+        //filter data for Dropdown filter selector
+        item[1].id = (item[0] != undefined) ? item[0] : undefined;
+        item[1].label = (item[1] != undefined) ? item[1].name : undefined;
+        return item[1];
       })
     )
   );
 
-const selectors = { listviewData, preview, totalRowsCount, filters };
+const currentFilter = module =>
+  createSelector(
+    module,
+    ({ data }) => {
+      //console.log('SELECTOR', data);
+      return data.currentFilter;
+    }
+  );
+
+const selectors = { listviewData, preview, totalRowsCount, filters, currentFilter };
 
 export default Modular.selectors(moduleState =>
   selectorUtils.getSelectors(moduleState, selectors)

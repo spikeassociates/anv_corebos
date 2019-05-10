@@ -88,10 +88,84 @@ const epics = ({ actions, api, name }) => {
       );
     });
 
+    const onFiltersReturned = action$ =>
+      action$.ofType(actions.types.GET_FILTERS_SUCCESS).mergeMap(action => {
+
+        console.log('GET_FILTERS_SUCCESS----------------------->>>');
+        let data = Repo.get("store").getState().app.listview._module.data;
+
+        if( !data.currentFilter ){
+          let defaultFilter = Object.entries(action.payload.filters).map(item => {
+            item[1].id = (item[0] != undefined) ? item[0] : undefined;
+            item[1].label = (item[1] != undefined) ? item[1].name : undefined;
+            return item[1];
+          }).find( item => item.default );
+
+          return Observable.of(
+            actions.setData("currentFilter", defaultFilter),
+          );
+        }
+      });
+
+    const getDefaultFilter = filters => (
+      Object.entries(filters).map(item => {
+        item[1].id = (item[0] != undefined) ? item[0] : undefined;
+        item[1].label = (item[1] != undefined) ? item[1].name : undefined;
+        return item[1];
+      }).find( item => item.default )
+    );
+
     const getFilters = asyncAction({
       api: api.getFilters,
       type: types.GET_FILTERS,
-      onSuccess: [action => actions.setData("filters", action.payload.filters)]
+      onSuccess: [
+        action => {
+          //set data.filters
+          return actions.setData("filters", action.payload.filters);
+        },
+        action => {
+          let data = Repo.get("store").getState().app.listview._module.data;
+          if( !data.currentFilter ){
+            let defaultFilter = getDefaultFilter(action.payload.filters);
+
+            //console.log('EPIC RESPONSE - DAFAULT', defaultFilter);
+            // set data.currentFilter
+            return actions.setData("currentFilter", defaultFilter);
+          }
+        },
+        action => {
+          let data = Repo.get("store").getState().app.listview._module.data;
+
+          if( !data.currentFilter ){
+            let defaultFilter = getDefaultFilter(action.payload.filters);
+
+            // TODO
+            // may need improvement to get pagination valirables
+            // from reducer but currently I don't know how.
+            // But it works! 👍
+            return actions.doQuery({
+              moduleName: action.requestPayload,
+              pageLimit: 30,
+              page: 1,
+              sort: { property: "id", direction: "asc" },
+              currentFilter: defaultFilter
+            });
+
+          }
+        },
+        action => {
+          let data = Repo.get("store").getState().app.listview._module.data;
+
+          if( !data.currentFilter ){
+            let defaultFilter = getDefaultFilter(action.payload.filters);
+
+            actions.getRowsCount({
+              moduleName: action.requestPayload,
+              currentFilter: defaultFilter
+            });
+          }
+        }
+      ]
     });
 
   return { ...doQuery, ...doDelete, ...doRetrieve, onItemSaved, ...getRowsCount, ...getFilters };

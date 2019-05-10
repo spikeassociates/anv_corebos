@@ -41,18 +41,18 @@ const buildCriteriaQuery = criteria => {
   return criteriaString;
 }
 
-const buildQueryFilter = filterData => {
+const buildQueryFilter = currentFilter => {
   let queryFilter = ` where`; //default
-  if( filterData && Object.keys(filterData).length && Object.keys(filterData.data).length ){
+  if( currentFilter && Object.keys(currentFilter).length ){
 
     //build the query string and join criteria
-    let advCriteria = JSON.parse(filterData.data.advcriteria);
+    let advCriteria = JSON.parse(currentFilter.advcriteria);
     (advCriteria.length)
       ? queryFilter += advCriteria.map(criteria => (buildCriteriaQuery(criteria))).join(' ')
       : '';
 
     //add stdcriteria if any
-    let stdCriteria = JSON.parse(filterData.data.stdcriteria);
+    let stdCriteria = JSON.parse(currentFilter.stdcriteria);
     (stdCriteria.length)
       ? queryFilter += ` and` + stdCriteria.map(criteria => (buildCriteriaQuery(criteria))).join(' ')
       : '';
@@ -65,7 +65,7 @@ const buildQueryFilter = filterData => {
 }
 
 const api = {
-  doQuery: ({ moduleName, page = 1, pageLimit = 0, sort, filterData }) => {
+  doQuery: ({ moduleName, page = 1, pageLimit = 0, sort, currentFilter }) => {
     const modules = PersistentRepo.get("modules");
     const columns = modules[moduleName].filterFields.fields.map(({ key }) => key);
 
@@ -80,8 +80,8 @@ const api = {
     page -= 1;
     const offset = page * pageLimit;
 
-    const queryFilter = buildQueryFilter(filterData);
-    //console.log(queryFilter);
+    const queryFilter = buildQueryFilter(currentFilter);
+    //console.log(queryFilter); 
 
     return base.get("", {
       operation: "query",
@@ -94,9 +94,8 @@ const api = {
 
   doRetrieve: ({ id }) => base.get("", { operation: "retrieve", id }),
 
-  getRowsCount: ({moduleName, filterData}) => {
-    const queryFilter = filterData ? buildQueryFilter(filterData) : '';
-    console.log(filterData, queryFilter);
+  getRowsCount: ({moduleName, currentFilter}) => {
+    const queryFilter = currentFilter ? buildQueryFilter(currentFilter) : '';
 
     return base.get("", {
       operation: "query",
@@ -105,12 +104,15 @@ const api = {
     })
   },
 
-  getFilters: moduleName =>
-    base.get("", {
+  getFilters: moduleName => {
+
+    console.log('API');
+
+    return base.get("", {
       operation: "getViewsByModule",
       module: moduleName,
   })
-
+  }
 };
 
 export default api;

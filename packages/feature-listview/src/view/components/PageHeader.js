@@ -16,18 +16,18 @@ export default class PageHeaderContainer extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { page: props.page, filterData:props.filterData };
+    this.state = { page: props.page, currentFilter:props.currentFilter };
   }
 
   componentDidUpdate(prevProps) {
-    const { page, filterData } = this.props;
+    const { page, currentFilter } = this.props;
 
     if (prevProps.page !== page) {
       this.setState({ page });
     }
 
-    if (prevProps.filterData !== filterData) {
-      this.setState({ filterData });
+    if (prevProps.currentFilter !== currentFilter) {
+      this.setState({ currentFilter });
     }
   }
 
@@ -47,13 +47,13 @@ export default class PageHeaderContainer extends Component {
 
   onFilterChange = selected => {
     const { handleFilterChange } = this.props;
-    this.setState({ filterData:selected }, handleFilterChange(selected));
+    this.setState({ currentFilter:selected }, handleFilterChange(selected));
   }
 
   render() {
     const { filters, title, moduleName, showModal, isPrimary, lastPage } = this.props;
-    const { page, filterData } = this.state;
-    const filterLabel = filterData ? filterData.label : null;
+    const { page, currentFilter } = this.state;
+    const filterLabel = currentFilter ? currentFilter.label : null;
 
     return (
       <PageHeader
