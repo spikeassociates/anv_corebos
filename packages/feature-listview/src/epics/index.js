@@ -88,25 +88,6 @@ const epics = ({ actions, api, name }) => {
       );
     });
 
-    const onFiltersReturned = action$ =>
-      action$.ofType(actions.types.GET_FILTERS_SUCCESS).mergeMap(action => {
-
-        console.log('GET_FILTERS_SUCCESS----------------------->>>');
-        let data = Repo.get("store").getState().app.listview._module.data;
-
-        if( !data.currentFilter ){
-          let defaultFilter = Object.entries(action.payload.filters).map(item => {
-            item[1].id = (item[0] != undefined) ? item[0] : undefined;
-            item[1].label = (item[1] != undefined) ? item[1].name : undefined;
-            return item[1];
-          }).find( item => item.default );
-
-          return Observable.of(
-            actions.setData("currentFilter", defaultFilter),
-          );
-        }
-      });
-
     const getDefaultFilter = filters => (
       Object.entries(filters).map(item => {
         item[1].id = (item[0] != undefined) ? item[0] : undefined;
@@ -132,6 +113,8 @@ const epics = ({ actions, api, name }) => {
             // set data.currentFilter
             return actions.setData("currentFilter", defaultFilter);
           }
+
+          return {type:''};
         },
         action => {
           let data = Repo.get("store").getState().app.listview._module.data;
@@ -150,8 +133,9 @@ const epics = ({ actions, api, name }) => {
               sort: { property: "id", direction: "asc" },
               currentFilter: defaultFilter
             });
-
           }
+
+          return {type:''};
         },
         action => {
           let data = Repo.get("store").getState().app.listview._module.data;
@@ -159,11 +143,13 @@ const epics = ({ actions, api, name }) => {
           if( !data.currentFilter ){
             let defaultFilter = getDefaultFilter(action.payload.filters);
 
-            actions.getRowsCount({
+            return actions.getRowsCount({
               moduleName: action.requestPayload,
               currentFilter: defaultFilter
             });
           }
+
+          return {type:''};
         }
       ]
     });

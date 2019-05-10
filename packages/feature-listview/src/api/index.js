@@ -81,7 +81,7 @@ const api = {
     const offset = page * pageLimit;
 
     const queryFilter = buildQueryFilter(currentFilter);
-    //console.log(queryFilter); 
+    //console.log(queryFilter);
 
     return base.get("", {
       operation: "query",
@@ -105,8 +105,7 @@ const api = {
   },
 
   getFilters: moduleName => {
-
-    console.log('API');
+    //console.log('API');
 
     return base.get("", {
       operation: "getViewsByModule",
