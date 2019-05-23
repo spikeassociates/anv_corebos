@@ -11,6 +11,7 @@ class FormMultiSelect extends Component {
 
     return (
       <Combobox
+        errorText={rest.error}
         {...rest}
         events={{
           onRequestRemoveSelectedOption: (event, data) => {

@@ -17,15 +17,25 @@ const FormDropdown = ({ value = "", onChange, label, options = [], ...rest }) =>
         options={options}
         onSelect={item => onChange(item.value)}
       >
-        <DropdownTrigger>
+        <DropdownTrigger triggerClassName={ rest.error ? 'slds-has-error' : '' }>
           <Button
             iconCategory="utility"
             iconName="down"
             iconPosition="right"
             label={selectedOption ? selectedOption.label : fallbackLabel}
+            className={ rest.error ? 'slds-input' : '' }
           />
         </DropdownTrigger>
       </Dropdown>
+
+      { rest.error ? (
+        <div className="slds-has-error">
+          <div className="slds-form-element__help">
+            { rest.error }
+          </div>
+        </div>
+        ) : ''
+      }
     </DropdownContainer>
   );
 };

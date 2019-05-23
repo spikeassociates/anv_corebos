@@ -13,9 +13,8 @@ class FormInput extends Component {
   constructor(props) {
     super(props);
 
-    const { options, value } = this.props;
+    const { options, value, error } = this.props;
     const optionKeys = Object.keys(options);
-
     this.state = {
       checked: optionKeys.reduce((acc, key) => {
         const valueExist = options[key].options
@@ -55,7 +54,7 @@ class FormInput extends Component {
       <div>
         <div>{label}</div>
         <Container>
-          <RadioGroup onChange={this.onRadioChange}>
+          <RadioGroup onChange={this.onRadioChange} labels={{error: this.props.error ? ' ' : undefined}}>
             {Object.entries(options).map(([key, opt]) => (
               <Radio
                 key={key}
@@ -73,16 +72,27 @@ class FormInput extends Component {
             options={dropdownOptions}
             onSelect={item => onChange(item.value)}
           >
-            <DropdownTrigger>
+            <DropdownTrigger triggerClassName={ this.props.error ? 'slds-has-error' : '' }>
               <Button
                 iconCategory="utility"
                 iconName="down"
                 iconPosition="right"
                 label={selectedValue ? selectedValue.label : label}
+                className={ this.props.error ? 'slds-input' : '' }
               />
             </DropdownTrigger>
           </Dropdown>
         </Container>
+
+        { this.props.error ? (
+          <div className="slds-has-error">
+            <div className="slds-form-element__help">
+              {this.props.error }
+            </div>
+          </div>
+          ) : ''
+        }
+
       </div>
     );
   }

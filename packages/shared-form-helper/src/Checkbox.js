@@ -8,6 +8,7 @@ const FormCheckbox = ({ value, onChange, label, ...rest }) => {
     <div style={{ display: "flex", justifyContent: "space-between" }}>
       <div className="slds-form-element__label">{label}</div>
       <Checkbox
+        errorText={rest.error}
         {...rest}
         checked={value}
         onChange={checked => onChange(checked ? 1 : 0)}

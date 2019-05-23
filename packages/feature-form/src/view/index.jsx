@@ -108,8 +108,8 @@ class FormModal extends Component {
     const { hidden, readOnly, showOptions, hideOptions } = this.state;
     const { initialValues, fieldDependencies = {}, onFormChange, errors } = this.props;
 
-    const uitype = parseInt(field.uitype); //added 1026, 70, 111
-    const isTextField = [1, 2, 4, 7, 9, 11, 13, 14, 17, 55, 71, 72, 85, 255, 1026, 70, 111].includes(
+    const uitype = parseInt(field.uitype); //need to add suppord for 1026, 70, 111
+    const isTextField = [1, 2, 4, 7, 9, 11, 13, 14, 17, 55, 71, 72, 85, 255].includes(
       uitype
     );
     const isTextArea = [19, 21, 22, 24].includes(uitype);
@@ -123,7 +123,8 @@ class FormModal extends Component {
       label: field.label,
       render: () => null,
       normalize: this.normalizeField(uitype),
-      errorText: errors[field.name] ? errors[field.name][0] : undefined
+      error: errors[field.name] ? errors[field.name][0] : undefined
+      //error: `${field.name.toUpperCase()} - errors will appear here.`
     };
 
     if (isTextField) {

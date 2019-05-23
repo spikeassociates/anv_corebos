@@ -57,6 +57,7 @@ class FormInputModal extends Component {
     const { isModalOpen, modules, label, referModules, selectedModule } = this.state;
 
     return (
+      <div>
       <Container>
         <Modal
           ariaHideApp={false}
@@ -72,7 +73,12 @@ class FormInputModal extends Component {
           />
         </Modal>
 
-        <Input {...rest} readOnly value={label} />
+        <Input
+          {...rest}
+          readOnly
+          value={label}
+          errorText={ rest.error ? ' ' : undefined }
+          />
 
         {referModules.length > 1 && (
           <Dropdown
@@ -96,6 +102,16 @@ class FormInputModal extends Component {
           <Icon category="action" name="new" size="xx-small" />
         </div>
       </Container>
+
+      { rest.error ? (
+        <div className="slds-has-error">
+          <div className="slds-form-element__help">
+            { rest.error }
+          </div>
+        </div>
+        ) : ''
+      }
+    </div>
     );
   }
 }

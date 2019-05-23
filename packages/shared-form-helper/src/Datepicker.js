@@ -8,16 +8,26 @@ const FormDatepicker = ({ value, onChange, label, defaultValue, ...rest }) => {
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div className="slds-form-element__label">{label}</div>
-      <Datepicker
-        {...rest}
-        value={value}
-        relativeYearFrom={-100}
-        relativeYearTo={100}
-        onChange={(e, data) => {
-          const date = moment(data.date).format("YYYY-MM-DD");
-          onChange(date);
-        }}
-      />
+        <div className={ rest.error ? 'slds-has-error' : '' }>
+        <Datepicker
+          {...rest}
+          value={value}
+          relativeYearFrom={-100}
+          relativeYearTo={100}
+          onChange={(e, data) => {
+            const date = moment(data.date).format("YYYY-MM-DD");
+            onChange(date);
+          }}
+          className={ rest.error ? 'slds-input' : '' }
+        />
+
+        { rest.error ? (
+          <div className="slds-form-element__help">
+            {rest.error }
+          </div>
+          ) : ''
+        }
+      </div>
     </div>
   );
 };
