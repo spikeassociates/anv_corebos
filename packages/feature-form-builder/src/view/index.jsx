@@ -34,11 +34,20 @@ const FormBuilder = props => {
     // const { data } = this.state;
     const values = id ? { id, ...data } : data;
 
-    actions.saveItem({
-      values,
-      name: "Contacts",
-      operation: id ? "UpdateWithValidation" : "CreateWithValidation"
-    });
+    (async () => {
+      const rets = await Promise.all(
+        Object.entries(data).forEach(([key, val]) => {
+          val.map(x => {
+            actions.saveItem({
+              values,
+              name: key,
+              operation: id ? "UpdateWithValidation" : "CreateWithValidation"
+            });
+          });
+        })
+      );
+      console.log(rets);
+    })();
   };
 
   //Render Steps

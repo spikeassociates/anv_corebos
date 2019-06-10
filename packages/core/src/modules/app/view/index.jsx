@@ -28,15 +28,14 @@ class App extends React.Component {
 
     const props = { moduleMeta, isPrimary: true };
 
-    // return <Module.view.formbuilder modules={modules} />;
-
     if (!(authenticated && Object.keys(modules).length)) {
       return <Module.view.authentication />;
     } else if (!moduleName) {
       return null;
     }
-
-    if (view === "list") {
+    if (view === "formbuilder") {
+      return <Module.view.formbuilder modules={modules} />;
+    } else if (view === "list") {
       return <Module.view.listview {...props} />;
     } else if (view === "detail" && id) {
       return <Module.view.detailview {...props} id={id} />;
