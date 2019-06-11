@@ -1,7 +1,7 @@
 import { epics as epicsUtils } from "shared-resource";
 import { Repo } from "shared-repo";
 import { transformItem } from "shared-utils";
-import { decodeQs } from "utils";
+import { decodeQs, changeRoute } from "utils";
 
 import { transformQueryResult } from "./transform";
 
@@ -80,18 +80,17 @@ const epics = ({ actions, api, name }) => {
       const { moduleName } = decodeQs(window.location.search);
 
       let item_id = item.id.split('x');
-      let replace_url = `/?view=detail&moduleName=${moduleName}&id=${item_id[1]}`;
 
+      if( item_id[1] ){
+        changeRoute({ view: 'detail', moduleName, id: item_id[1] });
+      }
 
-      console.log( action$.ofType(modal.types.SAVE_ITEM_SUCCESS), item, state.router.location, replace_url );
-
-      /* TODO - remove this if/else and add redirect to new item detail view */
       if (operation === "create") {
         data.unshift(item);
       } else {
         const index = data.findIndex(row => row.id === item.id);
         data[index] = item;
-      }
+      }      
 
       return Observable.of(
         actions.setData("listview", data),
