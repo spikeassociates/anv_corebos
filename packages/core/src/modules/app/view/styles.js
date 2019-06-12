@@ -15,9 +15,11 @@ const PageContainer = styled.div.attrs(props => ({
 
 let containerLeft = getElemStyle("#app-content", "marginLeft");
 let containerTop  = getElemStyle("#channel-header", "height");
+let navigationTop = getElemStyle("nav#navbar", "height");
 
-containerLeft = containerLeft=="0px" ? "220px" : containerLeft;
-containerTop = containerTop=="0px" ? "60px" : containerTop;
+containerLeft = GLOBALS.MODE === "PROD" && containerLeft=="0px" ? "220px" : containerLeft;
+containerTop  = GLOBALS.MODE === "PROD" && containerTop =="0px" ? "60px"  : containerTop;
+navigationTop = GLOBALS.MODE === "PROD" && navigationTop=="0px" ? "60px"  : navigationTop;
 
 const Container = styled.div.attrs(props => ({
   id: "client-app-container",
@@ -33,7 +35,7 @@ const Container = styled.div.attrs(props => ({
 
   @media (max-width: 768px) {
     left: 0;
-    top: ${getElemStyle("nav#navbar", "height")};
+    top: ${navigationTop};
   }
 `;
 
