@@ -10,6 +10,9 @@ import corebosStore from "./store";
 import Router from "./router";
 import Sidebar from "./modules/app/view/Sidebar";
 import "@salesforce-ux/design-system/assets/styles/salesforce-lightning-design-system.min.css";
+if (GLOBALS.MODE === "PROD") {
+  require('./modules/app/view/mattermost-styles.css');
+}
 
 const App = () => {
   const url = window.location.origin;
