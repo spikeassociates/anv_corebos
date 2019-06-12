@@ -28,20 +28,22 @@ class ListView extends Component {
       direction: "asc"
     },
     modalInitialValues: {},
-    currentFilter: null
   };
 
-  componentDidUpdate(prevState, prevProps) {
-    const { name } = this.props.moduleMeta;
-    const prevModuleName = prevState.moduleMeta.name;
+  componentDidUpdate(prevProps) {
+    const { moduleMeta, currentFilter = {} } = this.props;
+    const { name } = moduleMeta;
+    const prevModuleName = prevProps.moduleMeta.name;
+    const prevFilter = prevProps.currentFilter || {};
 
-    if (name !== prevModuleName) {
+    if (name !== prevModuleName || currentFilter.id !== prevFilter.id) {
       this.setState({ page: 1 }, this.loadData());
     }
   }
 
   async componentDidMount() {
-    this.loadData();
+    const { actions, moduleMeta } = this.props;
+    actions.getFilters(moduleMeta.name);
     window.addEventListener("click", this.handleClick);
   }
 
@@ -59,23 +61,10 @@ class ListView extends Component {
   };
 
   loadData = () => {
-    const { page, sort, currentFilter } = this.state;
-    const { actions, moduleMeta } = this.props;
+    const { page, sort } = this.state;
+    const { actions, moduleMeta, currentFilter } = this.props;
 
-    //console.log('VIEW');
-
-    // Get filters from server
-    // We always need this one
-    actions.getFilters(moduleMeta.name);
-
-    // currentFilters is set?
-    // That means this is not the first load so let's use it
-    if( currentFilter ){
-      //set reducer data.currentFilter
-      actions.setData("currentFilter", currentFilter);
-
-      //if currentFilter is set, we run doQuery() and getRowsCount() here
-      // otherwise we run them from epics/getFitlers action response
+    if (currentFilter) {
       actions.doQuery({
         moduleName: moduleMeta.name,
         pageLimit: moduleMeta.filterFields.pagesize,
@@ -89,7 +78,6 @@ class ListView extends Component {
         currentFilter
       });
     }
-
   };
 
   handleSelect = (e, selectedRows) => {
@@ -181,9 +169,9 @@ class ListView extends Component {
   };
 
   handleFilterChange = currentFilter => {
-    if (currentFilter != this.state.currentFilter) {
-      this.setState({ currentFilter, page:1 }, () => this.loadData());
-    }
+    const { actions } = this.props;
+    this.setState({ page:1 });
+    actions.setData("currentFilter", currentFilter);
   };
 
   render() {

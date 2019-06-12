@@ -16,7 +16,7 @@ const initialState = {
     listview: [],
     totalRowsCount: 1,
     filters: [],
-    currentFilter: null
+    currentFilter: {}
   }
 };
 

@@ -90,7 +90,7 @@ const epics = ({ actions, api, name }) => {
       } else {
         const index = data.findIndex(row => row.id === item.id);
         data[index] = item;
-      }      
+      }
 
       return Observable.of(
         actions.setData("listview", data),
@@ -112,55 +112,13 @@ const epics = ({ actions, api, name }) => {
       type: types.GET_FILTERS,
       onSuccess: [
         action => {
-          //set data.filters
-          return actions.setData("filters", action.payload.filters);
-        },
-        action => {
-          let data = Repo.get("store").getState().app.listview._module.data;
-          if( !data.currentFilter ){
-            let defaultFilter = getDefaultFilter(action.payload.filters);
+          const { filters } = action.payload;
+          let defaultFilter = getDefaultFilter(filters);
 
-            //console.log('EPIC RESPONSE - DAFAULT', defaultFilter);
-            // set data.currentFilter
-            return actions.setData("currentFilter", defaultFilter);
-          }
-
-          return {type:''};
-        },
-        action => {
-          let data = Repo.get("store").getState().app.listview._module.data;
-
-          if( !data.currentFilter ){
-            let defaultFilter = getDefaultFilter(action.payload.filters);
-
-            // TODO
-            // may need improvement to get pagination valirables
-            // from reducer but currently I don't know how.
-            // But it works! 👍
-            return actions.doQuery({
-              moduleName: action.requestPayload,
-              pageLimit: 30,
-              page: 1,
-              sort: { property: "id", direction: "asc" },
-              currentFilter: defaultFilter
-            });
-          }
-
-          return {type:''};
-        },
-        action => {
-          let data = Repo.get("store").getState().app.listview._module.data;
-
-          if( !data.currentFilter ){
-            let defaultFilter = getDefaultFilter(action.payload.filters);
-
-            return actions.getRowsCount({
-              moduleName: action.requestPayload,
-              currentFilter: defaultFilter
-            });
-          }
-
-          return {type:''};
+          return [
+            actions.setData("filters", filters),
+            actions.setData("currentFilter", defaultFilter)
+          ];
         }
       ]
     });
