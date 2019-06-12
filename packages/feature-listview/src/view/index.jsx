@@ -31,12 +31,20 @@ class ListView extends Component {
   };
 
   componentDidUpdate(prevProps) {
-    const { moduleMeta, currentFilter = {} } = this.props;
+    const { actions, moduleMeta, currentFilter = {} } = this.props;
     const { name } = moduleMeta;
     const prevModuleName = prevProps.moduleMeta.name;
     const prevFilter = prevProps.currentFilter || {};
 
-    if (name !== prevModuleName || currentFilter.id !== prevFilter.id) {
+    //console.log( name, prevModuleName );
+
+    if (name !== prevModuleName) {
+      this.setState({ page: 1 });
+      actions.setBusy("listview", true);
+      actions.getFilters(name);
+    }
+
+    if (currentFilter.id !== prevFilter.id) {
       this.setState({ page: 1 }, this.loadData());
     }
   }
