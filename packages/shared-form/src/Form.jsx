@@ -54,9 +54,17 @@ class Form extends Component {
   };
 
   setFields = (fields = {}) => {
+    const values = clone(this.state.values);
+
     for (let path in fields) {
-      this.setField(path, fields[path]);
+      setPath(values, path, fields[path]);
     }
+
+    this.setState({ values }, () => {
+      for (let path in fields) {
+        this.updateComponent(path);
+      }
+    });
   };
 
   resetField = (name = "") => {

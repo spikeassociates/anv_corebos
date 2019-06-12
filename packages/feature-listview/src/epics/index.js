@@ -1,6 +1,7 @@
 import { epics as epicsUtils } from "shared-resource";
 import { Repo } from "shared-repo";
 import { transformItem } from "shared-utils";
+import { decodeQs, changeRoute } from "utils";
 
 import { transformQueryResult } from "./transform";
 
@@ -69,11 +70,20 @@ const epics = ({ actions, api, name }) => {
   });
 
   const onItemSaved = action$ =>
-    action$.ofType(modal.types.SAVE_ITEM_SUCCESS).mergeMap(action => {
+    action$.ofType(modal.types.SAVE_ITEM_SUCCESS).mergeMap(
+      action => {
       const { operation } = action.requestPayload;
       const item = action.payload;
       const state = Repo.get("store").getState();
       let data = [...state.app.listview._module.data.listview];
+
+      const { moduleName } = decodeQs(window.location.search);
+
+      let item_id = item.id.split('x');
+
+      if( item_id[1] ){
+        changeRoute({ view: 'detail', moduleName, id: item_id[1] });
+      }
 
       if (operation === "create") {
         data.unshift(item);
@@ -86,9 +96,34 @@ const epics = ({ actions, api, name }) => {
         actions.setData("listview", data),
         actions.setShown("modal", false)
       );
+    }
+  );
+
+    const getDefaultFilter = filters => (
+      Object.entries(filters).map(item => {
+        item[1].id = (item[0] != undefined) ? item[0] : undefined;
+        item[1].label = (item[1] != undefined) ? item[1].name : undefined;
+        return item[1];
+      }).find( item => item.default )
+    );
+
+    const getFilters = asyncAction({
+      api: api.getFilters,
+      type: types.GET_FILTERS,
+      onSuccess: [
+        action => {
+          const { filters } = action.payload;
+          let defaultFilter = getDefaultFilter(filters);
+
+          return [
+            actions.setData("filters", filters),
+            actions.setData("currentFilter", defaultFilter)
+          ];
+        }
+      ]
     });
 
-  return { ...doQuery, ...doDelete, ...doRetrieve, onItemSaved, ...getRowsCount };
+  return { ...doQuery, ...doDelete, ...doRetrieve, onItemSaved, ...getRowsCount, ...getFilters };
 };
 
 export default epics;

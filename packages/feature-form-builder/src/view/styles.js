@@ -1,5 +1,16 @@
 import styled, { injectGlobal } from "styled-components";
 
+const ButtonsContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid #44ef34;
+  border-left: 1px solid #44ef34;
+  padding-top: 15px;
+  padding-bottom: 15px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05), 0 0px 20px rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+`;
+
 const FormRowContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(48%, 1fr));
@@ -232,5 +243,6 @@ export {
   CardHeader,
   CardWrapper,
   ActionCardWrapper,
-  Loading
+  Loading,
+  ButtonsContainer
 };

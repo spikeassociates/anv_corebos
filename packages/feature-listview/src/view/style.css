@@ -39,6 +39,15 @@ th:nth-child(2) {
   padding-left: 0.75rem !important;
 }
 
+a.slds-th__action svg{
+  display:inherit;
+  visibility:hidden;
+}
+
+a.slds-th__action:hover svg{
+  visibility:visible;
+}
+
 @media screen and (max-width: 750px) {
   .slds-page-header .slds-grid {
     display: grid;

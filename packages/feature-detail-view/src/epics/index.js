@@ -1,9 +1,12 @@
 import { epics as epicsUtils } from "shared-resource";
 import { transformItem } from "shared-utils";
+import { PersistentRepo } from "shared-repo";
+
+import { decodeQs } from "utils";
 
 const epics = ({ actions, api }) => {
   const { asyncAction } = epicsUtils.async;
-  const { types } = actions;
+  const { types, modal } = actions;
 
   const doRetrieve = asyncAction({
     api: api.doRetrieve,
@@ -31,10 +34,9 @@ const epics = ({ actions, api }) => {
     type: types.GET_WIDGETS,
     onSuccess: [
       action => {
-        let blocks = JSON.parse(action.payload).DETAILVIEWWIDGET;
-
-        blocks = blocks
-          .map(({ linkid }) => linkid)
+        let payload_json = JSON.parse(action.payload);
+        const blocks = payload_json.DETAILVIEWWIDGET
+          .map(({ id }) => id)
           .filter(id => id === "44698")
           .map(id => `41x${id}`);
 
@@ -62,10 +64,12 @@ const epics = ({ actions, api }) => {
     onRequest: [action => actions.setBusy(`fieldUpdate.${action.payload.fieldName}`)],
     onSuccess: [
       action => {
-        const { values, fieldName } = action.requestPayload;
+        const { moduleMeta } = action.requestPayload;
+        const item = transformItem(moduleMeta, action.payload);
 
-        return actions.setData(`item.data.${fieldName}`, values[fieldName]);
+        return actions.setData("item", item);
       },
+      action => actions.setData("original", action.payload),
       action => actions.setBusy(`fieldUpdate.${action.requestPayload.fieldName}`, false)
     ],
     onFailure: [
@@ -73,12 +77,26 @@ const epics = ({ actions, api }) => {
     ]
   });
 
+  const onItemSaved = action$ => {
+    return action$.ofType(modal.types.SAVE_ITEM_SUCCESS).mergeMap(action => {
+      const { moduleName } = decodeQs(window.location.search);
+      const moduleMeta = PersistentRepo.get("modules")[moduleName];
+      const item = transformItem(moduleMeta, action.payload);
+
+      return Observable.of(
+        actions.setData("original", action.payload),
+        actions.setData("item", item)
+      );
+    });
+  };
+
   return {
     ...doRetrieve,
     ...getRelatedRecords,
     ...getWidgets,
     ...excecuteBusinessAction,
-    ...updateField
+    ...updateField,
+    onItemSaved
   };
 };
 

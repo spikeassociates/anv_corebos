@@ -1,0 +1,6 @@
+#channel_view .post-create__container{
+  display:none;
+}
+#channel_view .sidebar--menu.move--left{
+  z-index:1;
+}

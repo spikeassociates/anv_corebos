@@ -27,20 +27,31 @@ class ListView extends Component {
       property: "id",
       direction: "asc"
     },
-    modalInitialValues: {}
+    modalInitialValues: {},
   };
 
-  componentDidUpdate(prevState) {
-    const { name } = this.props.moduleMeta;
-    const prevModuleName = prevState.moduleMeta.name;
+  componentDidUpdate(prevProps) {
+    const { actions, moduleMeta, currentFilter = {} } = this.props;
+    const { name } = moduleMeta;
+    const prevModuleName = prevProps.moduleMeta.name;
+    const prevFilter = prevProps.currentFilter || {};
+
+    //console.log( name, prevModuleName );
 
     if (name !== prevModuleName) {
+      this.setState({ page: 1 });
+      actions.setBusy("listview", true);
+      actions.getFilters(name);
+    }
+
+    if (currentFilter.id !== prevFilter.id) {
       this.setState({ page: 1 }, this.loadData());
     }
   }
 
   async componentDidMount() {
-    this.loadData();
+    const { actions, moduleMeta } = this.props;
+    actions.getFilters(moduleMeta.name);
     window.addEventListener("click", this.handleClick);
   }
 
@@ -59,15 +70,22 @@ class ListView extends Component {
 
   loadData = () => {
     const { page, sort } = this.state;
-    const { actions, moduleMeta } = this.props;
+    const { actions, moduleMeta, currentFilter } = this.props;
 
-    actions.doQuery({
-      moduleName: moduleMeta.name,
-      pageLimit: moduleMeta.filterFields.pagesize,
-      page,
-      sort
-    });
-    actions.getRowsCount(moduleMeta.name);
+    if (currentFilter) {
+      actions.doQuery({
+        moduleName: moduleMeta.name,
+        pageLimit: moduleMeta.filterFields.pagesize,
+        page,
+        sort,
+        currentFilter
+      });
+
+      actions.getRowsCount({
+        moduleName: moduleMeta.name,
+        currentFilter
+      });
+    }
   };
 
   handleSelect = (e, selectedRows) => {
@@ -76,8 +94,9 @@ class ListView extends Component {
 
   handleSort = sortColumn => {
     const { property, sortDirection } = sortColumn;
+    const { currentFilter } = this.state;
 
-    this.setState({ sort: { property, direction: sortDirection }, page: 1 }, () =>
+    this.setState({ sort: { property, direction: sortDirection }, page: 1, currentFilter }, () =>
       this.loadData()
     );
   };
@@ -157,6 +176,12 @@ class ListView extends Component {
     this.setState({ modalInitialValues: {} }, () => actions.setShown("modal"));
   };
 
+  handleFilterChange = currentFilter => {
+    const { actions } = this.props;
+    this.setState({ page:1 });
+    actions.setData("currentFilter", currentFilter);
+  };
+
   render() {
     const { selectedRows, page, modalInitialValues } = this.state;
     const {
@@ -168,7 +193,9 @@ class ListView extends Component {
       actions,
       isPrimary,
       Module,
-      totalRowsCount
+      totalRowsCount,
+      filters,
+      currentFilter
     } = this.props;
     const { id } = modalInitialValues;
 
@@ -186,10 +213,12 @@ class ListView extends Component {
           isPrimary={isPrimary}
           page={page}
           moduleName={moduleMeta.label}
-          filters={[{ label: `All ${moduleMeta.label}`, value: "all" }]}
+          currentFilter={currentFilter}
+          filters={filters}
           title={`All ${moduleMeta.label}`}
           handleDelete={this.handleMultiDelete}
           handlePageChange={this.handlePageChange}
+          handleFilterChange={this.handleFilterChange}
           showModal={this.showCreateModal}
           lastPage={Math.ceil(totalRowsCount / moduleMeta.filterFields.pagesize)}
         />
@@ -242,7 +271,9 @@ const mapStateToProps = (state, { Module }) =>
     "shown",
     "listviewData",
     "preview",
-    "totalRowsCount"
+    "totalRowsCount",
+    "filters",
+    "currentFilter"
   ]);
 
 const mapDispatchToProps = (dispatch, { Module }) => ({

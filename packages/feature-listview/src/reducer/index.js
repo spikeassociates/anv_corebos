@@ -14,7 +14,9 @@ const initialState = {
       title: ""
     },
     listview: [],
-    totalRowsCount: 1
+    totalRowsCount: 1,
+    filters: [],
+    currentFilter: {}
   }
 };
 
@@ -22,6 +24,8 @@ const reducer = (state = initialState, action, Module) => {
   const { actions } = Module;
 
   const resourceState = Resources.reducer(state, actions, action);
+
+  //console.log('REDUCER', resourceState);
 
   if (resourceState) {
     return resourceState;

@@ -21,8 +21,8 @@ const ActionsExecutor = props => {
   //on the response it will update the icon
   const handleClick = () => {
     setLoading(1);
-    let timer1 = setTimeout(() => setLoading(0), 2000);
-    let icon = setTimeout(() => setIcon("check"), 2000);
+    let timer1 = setTimeout(() => setLoading(0), 400);
+    let icon = setTimeout(() => setIcon("check"), 400);
   };
   const actionName = "Run Action id nr 10";
 
